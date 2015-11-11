@@ -6,55 +6,47 @@ import java.util.Map;
 
 /** A class that implements a directed graph. 
  * The graph may have self-loops, parallel edges. 
+ * Vertices are labeled by integers 0 .. n-1. 
  * The edges of the graph are not labeled.
- * Edges represented in adjacency list.
+ * Representation of edges is left abstract.
  * 
  * @author UC San Diego Intermediate Programming MOOC team
  *
  * @param <E> The type of elements stored in the vertices of the graph
  */
-public class GraphAdjList<E> extends Graph<E> {
+public class GraphAdjList extends Graph {
 
 
-	private Map<E,ArrayList<E>> adjLists;
+	private Map<Integer ,ArrayList<Integer>> adjListsMap;
 	
 	/** Create a new empty Graph */
 	public GraphAdjList () {
-		adjLists = new HashMap<E,ArrayList<E>>();
+		adjListsMap = new HashMap<Integer,ArrayList<Integer>>();
 	}
 	
-	public void addVertex(E v) {
-		ArrayList<E> neighbors = new ArrayList<E>();
-		adjLists.put(v,  neighbors);
-		setNumVertices(getNumVertices()+1);
+	public void implementAddVertex() {
+		int v = getNumVertices();
+		// System.out.println("Adding vertex "+v);
+		ArrayList<Integer> neighbors = new ArrayList<Integer>();
+		adjListsMap.put(v,  neighbors);
 	}
 	
-	public void addEdge(E v, E w) {
-		(adjLists.get(v)).add(w);
-		setNumEdges(getNumEdges()+1);
+	public void implementAddEdge(int v, int w) {
+		(adjListsMap.get(v)).add(w);
+
 	}
 	
 	public String adjacencyString() {
 		String s = "Adjacency list: ";
-		for (E v : adjLists.keySet()) {
+		for (int v : adjListsMap.keySet()) {
 			s += "\n\t"+v+": ";
-			for (E w : adjLists.get(v)) {
+			for (int w : adjListsMap.get(v)) {
 				s += w+", ";
 			}
 		}
 		return s;
 	}
 
-	public static void main (String[] args) {
-		GraphAdjList<String> graph1 = new GraphAdjList<String>();
-		graph1.addVertex("A");
-		graph1.addVertex("B");
-		graph1.addVertex("C");
-		graph1.addVertex("D");
-		graph1.addEdge("A", "B");
-		graph1.addEdge("A", "D");
-		graph1.addEdge("B", "B");
-		System.out.println(graph1);
-	}
+
 
 }
