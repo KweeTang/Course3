@@ -9,11 +9,15 @@ import java.util.List;
 /**
  * @author Christine
  *
+ * An undirected edge in a map graph.
  */
 public class MapEdge 
 {
 	/** The name of the road */
 	private String roadName;
+	
+	/** The type of the road */
+	private String roadType;
 	
 	/** The two endpoints of the edge */
 	private MapNode point1;
@@ -34,11 +38,50 @@ public class MapEdge
 	 */
 	public MapEdge(String roadName, MapNode n1, MapNode n2) 
 	{
+		this(roadName, null, new LinkedList<GeographicPoint>(), n1, n2);
+	}
+	
+	public MapEdge(String roadName, String roadType, MapNode n1, MapNode n2) 
+	{
+		this(roadName, roadType, new LinkedList<GeographicPoint>(), n1, n2);
+	}
+	
+	public MapEdge(String roadName, String roadType, List<GeographicPoint> ptsOnEdge,
+			MapNode n1, MapNode n2) 
+	{
 		this.roadName = roadName;
 		point1 = n1;
 		point2 = n2;
-		roadPoints = new LinkedList<GeographicPoint>();
+		roadPoints = new LinkedList<GeographicPoint>(ptsOnEdge);
+		this.roadType = roadType;
 	}
 	
+	public MapNode getOtherPoint(MapNode point)
+	{
+		if (point.equals(point1)) {
+			return point2;
+		}
+		else if (point.equals(point2)) {
+			return point1;
+		}
+		throw new IllegalArgumentException(point + " is not an endpoint for this edge");
+			
+	}
+	
+	public String toString()
+	{
+		String toReturn = "[EDGE between ";
+		toReturn += "\n\t" + point1;
+		toReturn += "\n\t" + point2;
+		toReturn += "\nRoad name: " + roadName + " Road type: " + roadType;
+		toReturn += "\nGeometry: [";
+		for (GeographicPoint p : roadPoints)
+		{
+			toReturn += "(" + p + ") ";
+		}
+		toReturn += "\n]";
+		
+		return toReturn;
+	}
 
 }

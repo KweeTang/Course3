@@ -64,5 +64,16 @@ public class MapNode
 		return location.hashCode();
 	}
 	
+	public String toString()
+	{
+		String toReturn = "[NODE at location (" + location + ")";
+		toReturn += " intersects streets: ";
+		for (String s : streets) {
+			toReturn += s + ", ";
+		}
+		toReturn += "]";
+		return toReturn;
+	}
+	
 	
 }
