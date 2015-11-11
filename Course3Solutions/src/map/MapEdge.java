@@ -39,4 +39,6 @@ public class MapEdge
 		point2 = n2;
 		roadPoints = new LinkedList<GeographicPoint>();
 	}
+	
+
 }

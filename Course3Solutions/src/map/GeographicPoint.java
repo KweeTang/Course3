@@ -2,6 +2,7 @@ package map;
 
 import java.awt.geom.Point2D.Double;
 
+@SuppressWarnings("serial")
 public class GeographicPoint extends Double {
 	
 	public GeographicPoint(double latitude, double longitude)
