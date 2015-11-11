@@ -6,15 +6,15 @@ import java.util.Map;
 
 /** An abstract class that implements a directed graph. 
  * The graph may have self-loops, parallel edges. 
+ * Vertices are labeled by integers 0 .. n-1. 
  * The edges of the graph are not labeled.
  * Representation of edges is left abstract.
  * 
  * @author UC San Diego Intermediate Programming MOOC team
  *
- * @param <E> The type of elements stored in the vertices of the graph
  */
 
-public abstract class Graph<E> {
+public abstract class Graph {
 
 	private int numVertices;
 	private int numEdges;
@@ -32,24 +32,54 @@ public abstract class Graph<E> {
 		return numEdges;
 	}
 	
-	public void setNumVertices(int n) {
-		numVertices = n;
-	}
-
-	public void setNumEdges(int n) {
-		numEdges = n;
+	public void addVertex( ) {
+		implementAddVertex();
+		numVertices ++;
 	}
 	
-	public abstract void addVertex(E v);
-	
-	public abstract void addEdge(E v, E w);
+	public abstract void implementAddVertex();
 
-	public abstract String adjacencyString();
+	public void addEdge( int v, int w ) {
+		//System.out.println("Adding edge between "+v+" and "+w);
+		numEdges ++;
+		if (v<numVertices && w<numVertices) {
+			implementAddEdge( v, w );			
+		}
+		else {
+			throw new IndexOutOfBoundsException();
+		}
+	}
 	
+	public abstract void implementAddEdge(int v, int w);
+
 	public String toString() {
 		String s = "Graph with "+numVertices+" vertices and "+numEdges+" edges.\n";
 		s += adjacencyString();
 		return s;
 	}
 
+	public abstract String adjacencyString();
+	
+	public static void main (String[] args) {
+
+		GraphAdjList graphList = new GraphAdjList();
+		graphList.addVertex();
+		graphList.addVertex();
+		graphList.addVertex();
+		graphList.addVertex();
+		graphList.addEdge(0, 0);
+		graphList.addEdge(0, 2);
+		graphList.addEdge(3, 3);
+		System.out.println(graphList);
+
+		GraphAdjMatrix graphMat = new GraphAdjMatrix();
+		graphMat.addVertex();
+		graphMat.addVertex();
+		graphMat.addVertex();
+		graphMat.addVertex();
+		graphMat.addEdge(0, 0);
+		graphMat.addEdge(0, 2);
+		graphMat.addEdge(3, 3);
+		System.out.println(graphMat);
+	}
 }
