@@ -2,7 +2,9 @@ package week1maps;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** An abstract class that implements a directed graph. 
  * The graph may have self-loops, parallel edges. 
@@ -51,6 +53,8 @@ public abstract class Graph {
 	}
 	
 	public abstract void implementAddEdge(int v, int w);
+
+	public abstract List<Integer> getNeighbors(int v); 
 
 	public String toString() {
 		String s = "Graph with "+numVertices+" vertices and "+numEdges+" edges.\n";
