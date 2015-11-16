@@ -167,6 +167,12 @@ public class MapGraph {
 		return pointNodeMap.keySet();
 	}
 	
+	public List<GeographicPoint> bfs(Intersection start, Intersection goal)
+	{
+		// TODO implement this method
+		return null;
+	}
+	
 	public static void main(String[] args)
 	{
 		System.out.print("Making a new map...");
