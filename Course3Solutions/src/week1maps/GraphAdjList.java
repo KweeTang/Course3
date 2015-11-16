@@ -2,7 +2,9 @@ package week1maps;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** A class that implements a directed graph. 
  * The graph may have self-loops, parallel edges. 
@@ -12,12 +14,11 @@ import java.util.Map;
  * 
  * @author UC San Diego Intermediate Programming MOOC team
  *
- * @param <E> The type of elements stored in the vertices of the graph
  */
 public class GraphAdjList extends Graph {
 
 
-	private Map<Integer ,ArrayList<Integer>> adjListsMap;
+	private Map<Integer,ArrayList<Integer>> adjListsMap;
 	
 	/** Create a new empty Graph */
 	public GraphAdjList () {
@@ -35,6 +36,11 @@ public class GraphAdjList extends Graph {
 		(adjListsMap.get(v)).add(w);
 
 	}
+	
+	public List<Integer> getNeighbors(int v) {
+		return adjListsMap.get(v);
+	}
+
 	
 	public String adjacencyString() {
 		String s = "Adjacency list: ";

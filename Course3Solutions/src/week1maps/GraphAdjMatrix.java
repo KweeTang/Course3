@@ -2,7 +2,9 @@ package week1maps;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** A class that implements a directed graph. 
  * The graph may have self-loops, parallel edges. 
@@ -41,6 +43,16 @@ public class GraphAdjMatrix extends Graph {
 	
 	public void implementAddEdge(int v, int w) {
 		adjMatrix[v][w] = 1;
+	}
+	
+	public List<Integer> getNeighbors(int v) {
+		List<Integer> neighbors = new ArrayList<Integer>();
+		for (int i =0; i<getNumVertices(); i++) {
+			if (adjMatrix[v][i] !=0) {
+				neighbors.add(i);
+			}
+		}
+		return neighbors;
 	}
 	
 	public String adjacencyString() {
