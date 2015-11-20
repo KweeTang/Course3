@@ -10,7 +10,7 @@ import java.util.Set;
  * @author Christine
  *
  */
-public class MapNode 
+class MapNode 
 {
 	/** The list of edges out of this node */
 	private HashSet<MapEdge> edges;
@@ -21,23 +21,44 @@ public class MapNode
 	/** the latitude and longitude of this node */
 	private GeographicPoint location;
 	
-	public MapNode(GeographicPoint loc)
+	MapNode(GeographicPoint loc)
 	{
 		location = loc;
 		edges = new HashSet<MapEdge>();
 		streets = new HashSet<String>();
 	}
 	
-	public void addStreet(String street)
+	void addStreet(String street)
 	{
 		//XXX might change to boolean
 		streets.add(street);
 	}
 	
-	public void addEdge(MapEdge edge)
+	void addEdge(MapEdge edge)
 	{
 		//XXX Again, might want to change to boolean
 		edges.add(edge);
+	}
+	
+	/** Return the neighbors of this MapNode */
+	Set<MapNode> getNeighbors()
+	{
+		Set<MapNode> neighbors = new HashSet<MapNode>();
+		for (MapEdge edge : edges) {
+			neighbors.add(edge.getOtherNode(this));
+		}
+		return neighbors;
+	}
+	
+	GeographicPoint getLocation()
+	{
+		return location;
+	}
+	
+	/** return the edges out of this node */
+	Set<MapEdge> getEdges()
+	{
+		return edges;
 	}
 	
 	/** Returns whether two nodes are equal.
@@ -72,6 +93,16 @@ public class MapNode
 			toReturn += s + ", ";
 		}
 		toReturn += "]";
+		return toReturn;
+	}
+	
+	public String roadNamesAsString()
+	{
+		String toReturn = "(";
+		for (String s : streets) {
+			toReturn += s + ", ";
+		}
+		toReturn += ")";
 		return toReturn;
 	}
 	

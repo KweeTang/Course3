@@ -3,10 +3,13 @@
  */
 package map;
 
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -167,10 +170,92 @@ public class MapGraph {
 		return pointNodeMap.keySet();
 	}
 	
-	public List<GeographicPoint> bfs(Intersection start, Intersection goal)
+	private Set<MapNode> getNeighbors(MapNode node)
 	{
+		return node.getNeighbors();
+	}
+	
+	public GeographicPath bfs(GeographicPoint start, GeographicPoint goal)
+	{
+		// Set up
+		if (start == null || goal == null) 
+			throw new NullPointerException("Cannot find route from or to null node");
+		MapNode startNode = pointNodeMap.get(start);
+		MapNode endNode = pointNodeMap.get(goal);
+		if (startNode == null) {
+			System.err.println("Start node " + start + " does not exist");
+			return null;
+		}
+		if (endNode == null) {
+			System.err.println("End node " + goal + " does not exist");
+			return null;
+		}
+
+		HashMap<MapNode,MapEdge> parentMap = new HashMap<MapNode,MapEdge>();
+		Queue<MapNode> toExplore = new LinkedList<MapNode>();
+		HashSet<MapNode> visited = new HashSet<MapNode>();
+		toExplore.add(startNode);
+		MapNode next = null;
+		while (!toExplore.isEmpty()) {
+			next = toExplore.remove();
+			if (next.equals(endNode)) break;
+			Set<MapEdge> edges = next.getEdges();
+			for (MapEdge e : edges) {
+				MapNode neighbor = e.getOtherNode(next);
+				if (!visited.contains(neighbor)) {
+					visited.add(neighbor);
+					parentMap.put(neighbor, e);
+					toExplore.add(neighbor);
+				}
+			}
+		
+		}
+		if (!next.equals(endNode)) {
+			System.out.println("No path found from " +start+ " to " + goal);
+			return null;
+		}
+		// Reconstruct the parent path
+		GeographicPath path = 
+				reconstructPath(parentMap, startNode, endNode);
+		
+		
 		// TODO implement this method
-		return null;
+		return path;
+	}
+	
+	private GeographicPath reconstructPath(HashMap<MapNode,MapEdge> parentMap,
+			MapNode start, MapNode goal)
+	{
+		GeographicPath path = new GeographicPath();
+		MapNode current = start;
+		LinkedList<GeographicPoint> intersections = 
+				new LinkedList<GeographicPoint>();
+		LinkedList<GeographicPoint> allPoints = 
+				new LinkedList<GeographicPoint>();
+		
+		while (!current.equals(goal)) {
+			intersections.addFirst(current.getLocation());
+			MapEdge backEdge = parentMap.get(current);
+			
+			//current = 
+		}
+		path.addNextIntersection(current.getLocation());
+		return path;
+	}
+	
+	public void printEdgePointsToFile(String filename)
+	{
+	
+		try {
+			PrintWriter writer = new PrintWriter(filename, "UTF-8");
+			for (MapEdge e : edges) {
+				writer.println(e.getPoint1() + " " + e.getPoint2());
+			}	
+		}
+		catch (Exception e) {
+			System.out.println("Exception opening file " + e);
+		}
+	
 	}
 	
 	public static void main(String[] args)
@@ -178,10 +263,14 @@ public class MapGraph {
 		System.out.print("Making a new map...");
 		MapGraph theMap = new MapGraph();
 		System.out.print("DONE. \nLoading the map...");
-		MapLoader.loadMap("data/ucsd.map", theMap);
+		MapLoader.loadMap("data/santa_monica.map", theMap);
 		System.out.println("DONE.");
-		theMap.printNodes();
-		theMap.printEdges();
+		
+		//System.out.println("Num nodes: " + theMap.getNumVertices());
+		//System.out.println("Num edges: " + theMap.getNumEdges());
+		theMap.printEdgePointsToFile("data/santa_monica.intersections.map");
+		//theMap.printNodes();
+		//theMap.printEdges();
 		
 	}
 	
