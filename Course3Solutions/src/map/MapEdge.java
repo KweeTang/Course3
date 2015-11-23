@@ -99,12 +99,6 @@ class MapEdge
 		toReturn += "\n\t" + point1.getLocation();
 		toReturn += "\n\t" + point2.getLocation();
 		toReturn += "\nRoad name: " + roadName + " Road type: " + roadType;
-		toReturn += "\nGeometry: [";
-		for (GeographicPoint p : roadPoints)
-		{
-			toReturn += "(" + p + ") ";
-		}
-		toReturn += "]\n";
 		
 		return toReturn;
 	}

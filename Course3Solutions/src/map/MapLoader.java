@@ -30,7 +30,8 @@ public class MapLoader
 	 * @param filename
 	 * @param map
 	 */
-	public static void loadMap(String filename, MapGraph map)
+	public static void loadMap(String filename, MapGraph map, 
+				HashMap<GeographicPoint,HashSet<RoadSegment>> segments)
 	{
 		BufferedReader reader = null;
         HashMap<GeographicPoint,List<LineInfo>> pointMap = 
@@ -90,7 +91,27 @@ public class MapLoader
 					List<GeographicPoint> pointsOnEdge = 
 							findPointsOnEdge(pointMap, info, pt, map, used);
 					GeographicPoint end = pointsOnEdge.remove(pointsOnEdge.size()-1);
-					map.addEdge(pt, end, pointsOnEdge, info.roadName, info.roadType);
+					map.addEdge(pt, end, info.roadName, info.roadType);
+					//map.addEdge(end, pt, info.roadName, info.roadType);
+					//System.out.println( "Adding road segment: " + pt + " " + end);
+					//System.out.println("There are " + pointsOnEdge.size() 
+					//  + " points on the edge");
+					
+					HashSet<RoadSegment> segs = segments.get(pt);
+					if (segs == null) {
+						segs = new HashSet<RoadSegment>();
+						segments.put(pt,segs);
+					}
+					RoadSegment seg = new RoadSegment(pt, end, pointsOnEdge, 
+							info.roadName, info.roadType);
+					segs.add(seg);
+					segs = segments.get(end);
+					if (segs == null) {
+						segs = new HashSet<RoadSegment>();
+						segments.put(end,segs);
+					}
+					segs.add(seg);
+					
 				}	
 			}
 		}

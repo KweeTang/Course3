@@ -125,18 +125,6 @@ public class MapGraph {
 		addEdge(n1, n2, roadName, roadType);
 	}
 	
-	public void addEdge(GeographicPoint pt1, GeographicPoint pt2, 
-			List<GeographicPoint> pointsOnEdge, String roadName, String roadType)
-	{
-		MapNode n1 = pointNodeMap.get(pt1);
-		MapNode n2 = pointNodeMap.get(pt2);
-
-		// XXX Should error check and throw exception here if the points 
-		// aren't already in the graph.
-		
-		addEdge(n1, n2, pointsOnEdge, roadName, roadType);
-		
-	}
 	
 	public boolean isNode(GeographicPoint point)
 	{
@@ -263,14 +251,15 @@ public class MapGraph {
 		System.out.print("Making a new map...");
 		MapGraph theMap = new MapGraph();
 		System.out.print("DONE. \nLoading the map...");
-		MapLoader.loadMap("data/santa_monica.map", theMap);
+		HashMap theRoads = new HashMap<GeographicPoint,RoadSegment>();
+		MapLoader.loadMap("data/test.map", theMap, theRoads);
 		System.out.println("DONE.");
 		
 		//System.out.println("Num nodes: " + theMap.getNumVertices());
 		//System.out.println("Num edges: " + theMap.getNumEdges());
-		theMap.printEdgePointsToFile("data/santa_monica.intersections.map");
-		//theMap.printNodes();
-		//theMap.printEdges();
+		//theMap.printEdgePointsToFile("data/santa_monica.intersections.map");
+		theMap.printNodes();
+		theMap.printEdges();
 		
 	}
 	
