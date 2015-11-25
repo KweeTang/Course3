@@ -174,6 +174,7 @@ public class MapGraph {
 		// we have no check for duplicate edges
 		MapEdge edge = new MapEdge(roadName, roadType, n1, n2, length);
 		edges.add(edge);
+		n1.addEdge(edge);
 	}
 
 
@@ -270,7 +271,7 @@ public class MapGraph {
 		System.out.print("DONE. \nLoading the map...");
 		HashMap<GeographicPoint,HashSet<RoadSegment>> theRoads = 
 				new HashMap<GeographicPoint,HashSet<RoadSegment>>();
-		MapLoader.loadMap("data/ucsd.map", theMap, theRoads);
+		MapLoader.loadMap("data/simpletest.map", theMap, theRoads);
 		System.out.println("DONE.");
 		
 		//System.out.println("Num nodes: " + theMap.getNumVertices());

@@ -16,10 +16,7 @@ class MapNode
 {
 	/** The list of edges out of this node */
 	private HashSet<MapEdge> edges;
-	
-	/** The list of streets that this node is part of */
-	private HashSet<String> streets;
-	
+		
 	/** the latitude and longitude of this node */
 	private GeographicPoint location;
 	
@@ -27,18 +24,10 @@ class MapNode
 	{
 		location = loc;
 		edges = new HashSet<MapEdge>();
-		streets = new HashSet<String>();
 	}
-	
-	void addStreet(String street)
-	{
-		//XXX might change to boolean
-		streets.add(street);
-	}
-	
+		
 	void addEdge(MapEdge edge)
 	{
-		//XXX Again, might want to change to boolean
 		edges.add(edge);
 	}
 	
@@ -91,8 +80,8 @@ class MapNode
 	{
 		String toReturn = "[NODE at location (" + location + ")";
 		toReturn += " intersects streets: ";
-		for (String s : streets) {
-			toReturn += s + ", ";
+		for (MapEdge e: edges) {
+			toReturn += e.getRoadName() + ", ";
 		}
 		toReturn += "]";
 		return toReturn;
@@ -101,8 +90,8 @@ class MapNode
 	public String roadNamesAsString()
 	{
 		String toReturn = "(";
-		for (String s : streets) {
-			toReturn += s + ", ";
+		for (MapEdge e: edges) {
+			toReturn += e.getRoadName() + ", ";
 		}
 		toReturn += ")";
 		return toReturn;

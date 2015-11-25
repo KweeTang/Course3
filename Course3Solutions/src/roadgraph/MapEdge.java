@@ -86,6 +86,11 @@ class MapEdge
 			
 	}
 	
+	public String getRoadName()
+	{
+		return roadName;
+	}
+	
 	MapNode getOtherNode(MapNode node)
 	{
 		if (node.equals(point1)) 
