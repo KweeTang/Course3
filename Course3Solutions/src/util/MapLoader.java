@@ -223,7 +223,7 @@ public class MapLoader
 		GeographicPoint end = info.getOtherPoint(pt);
 		List<LineInfo> nextLines = pointMap.get(end);
 		Integer endNum = reverseMap.get(end);
-		while (!graph.hasVertex(endNum)) {
+		while (endNum==null) {
 			if (nextLines.size() != 2) {
 				System.out.println("Something went wrong building edges");
 			}

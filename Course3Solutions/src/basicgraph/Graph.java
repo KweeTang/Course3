@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import util.MapLoader;
+
 /** An abstract class that implements a directed graph. 
  * The graph may have self-loops, parallel edges. 
  * Vertices are labeled by integers 0 .. n-1. 
@@ -98,5 +100,10 @@ public abstract class Graph {
 		System.out.println(graphMat);
 		graphMat.getDistance2(0);		
 		graphMat.getDistance2(3);
+		
+		GraphAdjList graphFromFile = new GraphAdjList();
+		MapLoader.loadMap("data/test.map", graphFromFile);
+		System.out.println(graphFromFile);
+
 	}
 }
