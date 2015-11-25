@@ -256,6 +256,7 @@ public class MapGraph {
 			for (MapEdge e : edges) {
 				writer.println(e.getPoint1() + " " + e.getPoint2());
 			}	
+			writer.flush();
 			writer.close();
 		}
 		catch (Exception e) {
@@ -271,14 +272,14 @@ public class MapGraph {
 		System.out.print("DONE. \nLoading the map...");
 		HashMap<GeographicPoint,HashSet<RoadSegment>> theRoads = 
 				new HashMap<GeographicPoint,HashSet<RoadSegment>>();
-		MapLoader.loadMap("data/simpletest.map", theMap, theRoads);
+		MapLoader.loadMap("data/ucsd.map", theMap, theRoads);
 		System.out.println("DONE.");
 		
 		//System.out.println("Num nodes: " + theMap.getNumVertices());
 		//System.out.println("Num edges: " + theMap.getNumEdges());
-		//theMap.printEdgePointsToFile("data/ucsd.intersections.map");
-		theMap.printNodes();
-		theMap.printEdges();
+		theMap.printEdgePointsToFile("data/ucsd.intersections.map");
+		//theMap.printNodes();
+		//theMap.printEdges();
 		
 		// Print the road segments
 		//System.out.println("Road segments: ");

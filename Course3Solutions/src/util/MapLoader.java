@@ -248,7 +248,6 @@ public class MapLoader
 		// with more than one road associated with them
 		List<GeographicPoint> intersections = new LinkedList<GeographicPoint>();
 		for (GeographicPoint pt : pointMap.keySet()) {
-			System.out.println("Considering point " + pt);
 			List<LineInfo> roadsOut = pointMap.get(pt);
 			boolean isNode = true;
 			if (roadsOut.size() == 2) {
