@@ -248,7 +248,6 @@ public class MapLoader
 		// with more than one road associated with them
 		List<GeographicPoint> intersections = new LinkedList<GeographicPoint>();
 		for (GeographicPoint pt : pointMap.keySet()) {
-			System.out.println("Considering point " + pt);
 			List<LineInfo> roadsOut = pointMap.get(pt);
 			boolean isNode = true;
 			if (roadsOut.size() == 2) {
@@ -276,13 +275,9 @@ public class MapLoader
             reader = new BufferedReader(new FileReader(filename));
             // Read the lines out of the file and put them in a HashMap by points
             while ((nextLine = reader.readLine()) != null) {
-            	System.out.println("Parsing line " + nextLine);
             	LineInfo line = splitInputString(nextLine);
-            	//System.out.println("Found: " + line.point1 + " " + line.point2 +
-            	//		" " + line.roadName + " " + line.roadType);
             	addToPointMap(pointMap, line, line.point1);
                 addToPointMap(pointMap, line, line.point2);
-                System.out.println(pointMap.size());
             }
             reader.close();
         } catch (IOException e) {
