@@ -163,7 +163,7 @@ public class MapGraph {
 		return node.getNeighbors();
 	}
 	
-	public GeographicPath bfs(GeographicPoint start, GeographicPoint goal)
+	public List<GeographicPoint> bfs(GeographicPoint start, GeographicPoint goal)
 	{
 		// Set up
 		if (start == null || goal == null) 
@@ -179,7 +179,7 @@ public class MapGraph {
 			return null;
 		}
 
-		HashMap<MapNode,MapEdge> parentMap = new HashMap<MapNode,MapEdge>();
+		HashMap<MapNode,MapNode> parentMap = new HashMap<MapNode,MapNode>();
 		Queue<MapNode> toExplore = new LinkedList<MapNode>();
 		HashSet<MapNode> visited = new HashSet<MapNode>();
 		toExplore.add(startNode);
@@ -192,7 +192,7 @@ public class MapGraph {
 				MapNode neighbor = e.getOtherNode(next);
 				if (!visited.contains(neighbor)) {
 					visited.add(neighbor);
-					parentMap.put(neighbor, e);
+					parentMap.put(neighbor, next);
 					toExplore.add(neighbor);
 				}
 			}
@@ -203,31 +203,23 @@ public class MapGraph {
 			return null;
 		}
 		// Reconstruct the parent path
-		GeographicPath path = 
+		List<GeographicPoint> path = 
 				reconstructPath(parentMap, startNode, endNode);
 		
-		
-		// TODO implement this method
 		return path;
 	}
 	
-	private GeographicPath reconstructPath(HashMap<MapNode,MapEdge> parentMap,
-			MapNode start, MapNode goal)
+	private List<GeographicPoint> 
+	reconstructPath(HashMap<MapNode,MapNode> parentMap, 
+					MapNode start, MapNode goal)
 	{
-		GeographicPath path = new GeographicPath();
+		LinkedList<GeographicPoint> path = new LinkedList<GeographicPoint>();
 		MapNode current = start;
-		LinkedList<GeographicPoint> intersections = 
-				new LinkedList<GeographicPoint>();
-		LinkedList<GeographicPoint> allPoints = 
-				new LinkedList<GeographicPoint>();
 		
 		while (!current.equals(goal)) {
-			intersections.addFirst(current.getLocation());
-			MapEdge backEdge = parentMap.get(current);
-			
-			//current = 
+			path.addFirst(current.getLocation());
+			current = parentMap.get(current);
 		}
-		path.addNextIntersection(current.getLocation());
 		return path;
 	}
 	
@@ -251,7 +243,8 @@ public class MapGraph {
 		System.out.print("Making a new map...");
 		MapGraph theMap = new MapGraph();
 		System.out.print("DONE. \nLoading the map...");
-		HashMap theRoads = new HashMap<GeographicPoint,RoadSegment>();
+		HashMap<GeographicPoint,HashSet<RoadSegment>> theRoads = 
+				new HashMap<GeographicPoint,HashSet<RoadSegment>>();
 		MapLoader.loadMap("data/test.map", theMap, theRoads);
 		System.out.println("DONE.");
 		
@@ -260,6 +253,17 @@ public class MapGraph {
 		//theMap.printEdgePointsToFile("data/santa_monica.intersections.map");
 		theMap.printNodes();
 		theMap.printEdges();
+		
+		// Print the road segments
+		System.out.println("Road segments: ");
+		for (GeographicPoint p : theRoads.keySet()) {
+			//System.out.println("Road segment with end a " + p);
+			HashSet<RoadSegment> segments = theRoads.get(p);
+			for (RoadSegment seg : segments) {
+				System.out.println("\t"+ seg);
+			}
+		
+		}
 		
 	}
 	

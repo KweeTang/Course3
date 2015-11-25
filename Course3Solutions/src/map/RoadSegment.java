@@ -88,6 +88,18 @@ public class RoadSegment {
 	{
 		return point1.hashCode() + point2.hashCode();
 	}
+	
+	public String toString()
+	{
+		String toReturn = this.roadName + ", " +this.roadType;
+		toReturn += " [" + point1;
+		for (GeographicPoint p : this.geometryPoints) {
+			toReturn += "; " + p;
+		}
+		toReturn += "; " + point2 + "]";
+		
+		return toReturn;
+	}
 		
 	
 }
