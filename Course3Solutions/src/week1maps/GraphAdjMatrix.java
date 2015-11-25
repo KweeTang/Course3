@@ -29,15 +29,15 @@ public class GraphAdjMatrix extends Graph {
 		int v = getNumVertices();
 		if (v >= adjMatrix.length) {
 			int[][] newAdjMatrix = new int[v*2][v*2];
-			for (int i=0; i<adjMatrix.length; i++) {
-				for (int j=0; j<adjMatrix.length; j++) {
+			for (int i = 0; i < adjMatrix.length; i ++) {
+				for (int j = 0; j < adjMatrix.length; j ++) {
 					newAdjMatrix[i][j] = adjMatrix[i][j];
 				}
 			}
 			adjMatrix = newAdjMatrix;
 		}
-		for (int i=0; i<adjMatrix[v].length; i++) {
-			adjMatrix[v][i]=0;
+		for (int i=0; i < adjMatrix[v].length; i++) {
+			adjMatrix[v][i] = 0;
 		}
 	}
 	
@@ -47,8 +47,8 @@ public class GraphAdjMatrix extends Graph {
 	
 	public List<Integer> getNeighbors(int v) {
 		List<Integer> neighbors = new ArrayList<Integer>();
-		for (int i =0; i<getNumVertices(); i++) {
-			if (adjMatrix[v][i] !=0) {
+		for (int i = 0; i < getNumVertices(); i ++) {
+			if (adjMatrix[v][i] != 0) {
 				neighbors.add(i);
 			}
 		}
@@ -57,7 +57,7 @@ public class GraphAdjMatrix extends Graph {
 	
 	public String adjacencyString() {
 		String s = "Adjacency matrix: ";
-		for (int i=0; i<adjMatrix.length;i++) {
+		for (int i=0; i<adjMatrix.length; i++) {
 			s += "\n\t"+i+": ";
 			for (int j=0; j<adjMatrix[i].length; j++) {
 			s += adjMatrix[i][j]+", ";
@@ -66,6 +66,40 @@ public class GraphAdjMatrix extends Graph {
 		return s;
 	}
 
+	public List<Integer> getDistance2(int v) {
+		List<Integer> distance2 = new ArrayList<Integer>();
+		int numVertices = getNumVertices();
+		int[][] squareMatrix = new int[numVertices][numVertices];
+		for (int i = 0; i < numVertices; i ++) {
+			for (int k = 0; k < numVertices; k ++) {
+				squareMatrix[i][k] = 0;
+				for (int j = 0; j < numVertices; j ++) {
+					squareMatrix[i][k] += adjMatrix[i][j] * adjMatrix[j][k];
+				}
+			}
+		}
+		
+		//Print squared adjacency matrix
+		String s = "Square of adjacency matrix: ";
+		for (int i=0; i<squareMatrix.length; i++) {
+			s += "\n\t"+i+": ";
+			for (int j=0; j<squareMatrix[i].length; j++) {
+			s += squareMatrix[i][j]+", ";
+			}
+		}
+		System.out.println(s);
+		
+		for (int i = 0; i < numVertices; i ++) {
+			if (squareMatrix[v][i] != 0) {
+				distance2.add(i);
+			}
+		}
+		
+		//Print distance 2 vertices
+		System.out.println(distance2);
+		
+		return distance2;
+	}
 
 
 }

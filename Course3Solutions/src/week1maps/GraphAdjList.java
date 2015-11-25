@@ -38,7 +38,7 @@ public class GraphAdjList extends Graph {
 	}
 	
 	public List<Integer> getNeighbors(int v) {
-		return adjListsMap.get(v);
+		return new ArrayList<Integer>(adjListsMap.get(v));
 	}
 
 	
@@ -53,6 +53,18 @@ public class GraphAdjList extends Graph {
 		return s;
 	}
 
+	public List<Integer> getDistance2(int v) {
+		List<Integer> distance2 = new ArrayList<Integer>();
+		for (int w : adjListsMap.get(v)) {
+			for (int u : adjListsMap.get(w)) {
+				if (!distance2.contains(u)) {
+					distance2.add(u);
+				}
+			}
+		}
+		System.out.println(distance2);
+		return distance2;
+	}
 
 
 }
