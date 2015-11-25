@@ -1,10 +1,12 @@
 /**
  * 
  */
-package map;
+package roadgraph;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import geography.GeographicPoint;
 
 /**
  * @author UCSD Intermediate Programming MOOC team
@@ -23,11 +25,12 @@ class MapEdge
 	private MapNode point1;
 	private MapNode point2;
 	
-	/** The points that allow the road segment to have non-straight geometry 
-	 * These points DO NOT include the start and end points.  They are 
-	 * optional.  If they are missing, the road is simply a straight line 
-	 * between start and end.*/
-	private List<GeographicPoint> roadPoints;
+	
+	/** The length of the road segment, in km */
+	private double length;
+	
+	static final double DEFAULT_LENGTH = 0.01;
+	
 	
 	/** Create a new MapEdge object
 	 * 
@@ -38,22 +41,22 @@ class MapEdge
 	 */
 	MapEdge(String roadName, MapNode n1, MapNode n2) 
 	{
-		this(roadName, null, new LinkedList<GeographicPoint>(), n1, n2);
+		this(roadName, "", n1, n2, DEFAULT_LENGTH);
 	}
 	
 	MapEdge(String roadName, String roadType, MapNode n1, MapNode n2) 
 	{
-		this(roadName, roadType, new LinkedList<GeographicPoint>(), n1, n2);
+		this(roadName, roadType, n1, n2, DEFAULT_LENGTH);
 	}
 	
-	MapEdge(String roadName, String roadType, List<GeographicPoint> ptsOnEdge,
-			MapNode n1, MapNode n2) 
+	MapEdge(String roadName, String roadType,
+			MapNode n1, MapNode n2, double length) 
 	{
 		this.roadName = roadName;
 		point1 = n1;
 		point2 = n2;
-		roadPoints = new LinkedList<GeographicPoint>(ptsOnEdge);
 		this.roadType = roadType;
+		this.length = length;
 	}
 	
 	GeographicPoint getPoint1()
@@ -64,6 +67,11 @@ class MapEdge
 	GeographicPoint getPoint2()
 	{
 		return point2.getLocation();
+	}
+	
+	double getLength()
+	{
+		return length;
 	}
 	
 	MapNode getOtherPoint(MapNode point)
@@ -88,17 +96,14 @@ class MapEdge
 			"a point that is not in the edge");
 	}
 	
-	/** Return the list of road points, without the intersections */
-	List<GeographicPoint> getMinorPoints()
-	{
-		return roadPoints;
-	}
+
 	public String toString()
 	{
 		String toReturn = "[EDGE between ";
 		toReturn += "\n\t" + point1.getLocation();
 		toReturn += "\n\t" + point2.getLocation();
-		toReturn += "\nRoad name: " + roadName + " Road type: " + roadType;
+		toReturn += "\nRoad name: " + roadName + " Road type: " + roadType +
+				" Segment length: " + String.format("%.3g", length) + "km";
 		
 		return toReturn;
 	}

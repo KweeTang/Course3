@@ -1,7 +1,7 @@
 /**
  * 
  */
-package map;
+package roadgraph;
 
 import java.io.PrintWriter;
 import java.util.Collection;
@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import geography.GeographicPoint;
+import geography.RoadSegment;
+import util.MapLoader;
+
 /**
  * @author UCSD MOOC development team
  * 
@@ -21,29 +25,39 @@ import java.util.Set;
  */
 public class MapGraph {
 	private HashMap<GeographicPoint,MapNode> pointNodeMap;
-	private HashMap<String,MapNode> streetNodeMap;
 	private HashSet<MapEdge> edges;
 	
 	// Need to be able to look up nodes by lat/lon or by roads 
 	// that they are part of.
 	
+	/** Create a new empty MapGraph 
+	 * 
+	 */
 	public MapGraph()
 	{
-		streetNodeMap = new HashMap<String,MapNode>();
 		pointNodeMap = new HashMap<GeographicPoint,MapNode>();
 		edges = new HashSet<MapEdge>();
 	}
 	
+	/**
+	 * Get the number of vertices (road intersections) in the graph
+	 * @return The number of vertices in the graph.
+	 */
 	public int getNumVertices()
 	{
 		return pointNodeMap.values().size();
 	}
 	
+	/**
+	 * Get the number of road segments in the graph
+	 * @return The number of edges in the graph.
+	 */
 	public int getNumEdges()
 	{
 		return edges.size();
 	}
 	
+	// DEBUGGING.  NOT REQUIRED OF LEARNERS
 	public void printNodes()
 	{
 		System.out.println("****PRINTING NODES ********");
@@ -54,7 +68,8 @@ public class MapGraph {
 			System.out.println(n);
 		}
 	}
-	
+
+	// DEBUGGING.  NOT REQUIRED OF LEARNERS
 	public void printEdges()
 	{
 		System.out.println("******PRINTING EDGES******");
@@ -66,32 +81,40 @@ public class MapGraph {
 		
 	}
 	
-	/** Add a node corresponding to an intersection */
-	public void addNode(Collection<String> roadNames, double latitude, double longitude)
+	/** Add a node corresponding to an intersection 
+	 * 
+	 * @param latitude The latitude of the location
+	 * @param longitude The longitude of the location
+	 * */
+	public void addNode(double latitude, double longitude)
 	{
 		GeographicPoint pt = new GeographicPoint(latitude, longitude);
-		this.addNode(roadNames, pt);
+		this.addNode(pt);
 	}
 	
-	public void addNode(Collection<String> roadNames, GeographicPoint point )
+	/** Add a node corresponding to an intersection at a Geographic Point
+	 * 
+	 * @param location  The location of the intersection
+	 */
+	public void addNode(GeographicPoint location)
 	{
-		
-		MapNode n = pointNodeMap.get(point);
+		MapNode n = pointNodeMap.get(location);
 		if (n == null) {
-			n = new MapNode(point);
-			pointNodeMap.put(point, n);
+			n = new MapNode(location);
+			pointNodeMap.put(location, n);
 		}
-		
-		for (String name : roadNames) {
-			n.addStreet(name);
-			streetNodeMap.put(name, n);
+		else {
+			System.out.println("Warning: Node at location " + location +
+					" already exists in the graph.");
 		}
 		
 	}
 	
 	/** Add an edge representing a segment of a road.
-	 * The corresponding Nodes must have already been added to the graph.
-	 * @param roadName
+	 * Precondition: The corresponding Nodes must have already been 
+	 *     added to the graph.
+	 * @param roadName The name of the road
+	 * @param roadType The type of the road
 	 */
 	public void addEdge(double lat1, double lon1, 
 						double lat2, double lon2, String roadName, String roadType) 
@@ -109,7 +132,7 @@ public class MapGraph {
 		// XXX Should error check and throw exception here if the points 
 		// aren't already in the graph.
 		
-		addEdge(n1, n2, roadName, roadType);
+		addEdge(n1, n2, roadName, roadType, MapEdge.DEFAULT_LENGTH);
 		
 	}
 	
@@ -122,9 +145,19 @@ public class MapGraph {
 		// XXX Should error check and throw exception here if the points 
 		// aren't already in the graph.
 		
-		addEdge(n1, n2, roadName, roadType);
+		addEdge(n1, n2, roadName, roadType, MapEdge.DEFAULT_LENGTH);
 	}
 	
+	public void addEdge(GeographicPoint pt1, GeographicPoint pt2, String roadName,
+			String roadType, double length) {
+		MapNode n1 = pointNodeMap.get(pt1);
+		MapNode n2 = pointNodeMap.get(pt2);
+
+		// XXX Should error check and throw exception here if the points 
+		// aren't already in the graph.
+		
+		addEdge(n1, n2, roadName, roadType, length);
+	}
 	
 	public boolean isNode(GeographicPoint point)
 	{
@@ -134,24 +167,15 @@ public class MapGraph {
 	//XXX will probably need a similar isNode method for the intersection
 
 	// Add an edge when you already know the nodes involved in the edge
-	private void addEdge(MapNode n1, MapNode n2, String roadName, String roadType)
+	private void addEdge(MapNode n1, MapNode n2, String roadName, String roadType,
+			double length)
 	{
 		// We need to be careful to only add edges once because 
 		// we have no check for duplicate edges
-		MapEdge edge = new MapEdge(roadName, roadType, n1, n2);
+		MapEdge edge = new MapEdge(roadName, roadType, n1, n2, length);
 		edges.add(edge);
 	}
 
-	
-	// Add an edge when you already know the nodes involved in the edge
-	private void addEdge(MapNode n1, MapNode n2, List<GeographicPoint>ptsOnEdge,
-			String roadName, String roadType)
-	{
-		// We need to be careful to only add edges once because 
-		// we have no check for duplicate edges
-		MapEdge edge = new MapEdge(roadName, roadType, ptsOnEdge, n1, n2);
-		edges.add(edge);
-	}
 
 	/** Returns the nodes in terms of their geographic locations */
 	public Collection<GeographicPoint> getNodes() {
@@ -163,6 +187,7 @@ public class MapGraph {
 		return node.getNeighbors();
 	}
 	
+	//XXX: Needs refactor and some testing.
 	public List<GeographicPoint> bfs(GeographicPoint start, GeographicPoint goal)
 	{
 		// Set up
@@ -187,9 +212,8 @@ public class MapGraph {
 		while (!toExplore.isEmpty()) {
 			next = toExplore.remove();
 			if (next.equals(endNode)) break;
-			Set<MapEdge> edges = next.getEdges();
-			for (MapEdge e : edges) {
-				MapNode neighbor = e.getOtherNode(next);
+			Set<MapNode> neighbors = getNeighbors(next);
+			for (MapNode neighbor : neighbors) {
 				if (!visited.contains(neighbor)) {
 					visited.add(neighbor);
 					parentMap.put(neighbor, next);
@@ -231,6 +255,7 @@ public class MapGraph {
 			for (MapEdge e : edges) {
 				writer.println(e.getPoint1() + " " + e.getPoint2());
 			}	
+			writer.close();
 		}
 		catch (Exception e) {
 			System.out.println("Exception opening file " + e);
@@ -245,25 +270,25 @@ public class MapGraph {
 		System.out.print("DONE. \nLoading the map...");
 		HashMap<GeographicPoint,HashSet<RoadSegment>> theRoads = 
 				new HashMap<GeographicPoint,HashSet<RoadSegment>>();
-		MapLoader.loadMap("data/test.map", theMap, theRoads);
+		MapLoader.loadMap("data/ucsd.map", theMap, theRoads);
 		System.out.println("DONE.");
 		
 		//System.out.println("Num nodes: " + theMap.getNumVertices());
 		//System.out.println("Num edges: " + theMap.getNumEdges());
-		//theMap.printEdgePointsToFile("data/santa_monica.intersections.map");
+		//theMap.printEdgePointsToFile("data/ucsd.intersections.map");
 		theMap.printNodes();
 		theMap.printEdges();
 		
 		// Print the road segments
-		System.out.println("Road segments: ");
-		for (GeographicPoint p : theRoads.keySet()) {
+		//System.out.println("Road segments: ");
+		//for (GeographicPoint p : theRoads.keySet()) {
 			//System.out.println("Road segment with end a " + p);
-			HashSet<RoadSegment> segments = theRoads.get(p);
-			for (RoadSegment seg : segments) {
-				System.out.println("\t"+ seg);
-			}
+		//	HashSet<RoadSegment> segments = theRoads.get(p);
+		//	for (RoadSegment seg : segments) {
+		//		System.out.println("\t"+ seg);
+		//	}
 		
-		}
+		//}
 		
 	}
 	

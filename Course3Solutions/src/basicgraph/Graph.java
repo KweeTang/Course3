@@ -1,4 +1,4 @@
-package week1maps;
+package basicgraph;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +28,11 @@ public abstract class Graph {
 	
 	public int getNumVertices() {
 		return numVertices;
+	}
+	
+	public boolean hasVertex(int v)
+	{
+		return v < getNumVertices();
 	}
 	
 	public int getNumEdges() {

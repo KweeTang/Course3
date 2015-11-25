@@ -1,4 +1,4 @@
-package map;
+package geography;
 
 import java.util.ArrayList;
 import java.util.Collections;

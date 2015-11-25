@@ -1,10 +1,12 @@
 /**
  * A class to represent a node in the map
  */
-package map;
+package roadgraph;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import geography.GeographicPoint;
 
 /**
  * @author Christine

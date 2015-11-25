@@ -1,7 +1,7 @@
 /**
  * 
  */
-package map;
+package roadgraph;
 
 import java.util.HashMap;
 
@@ -10,6 +10,8 @@ import java.util.HashMap;
  * geometric information in a MapGraph class, with road intersections
  * as vertices and roads as edges.  It stores detailed geometry and 
  * meta-information about roads in objects of type RoadSegment.
+ * 
+ * XXX: Not currently used.
  * 
  * Road segments are indexed by each of their end points
  * 
