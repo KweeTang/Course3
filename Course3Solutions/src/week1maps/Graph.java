@@ -41,18 +41,18 @@ public abstract class Graph {
 	
 	public abstract void implementAddVertex();
 
-	public void addEdge( int v, int w ) {
+	public void addEdge( int v , int w ) {
 		//System.out.println("Adding edge between "+v+" and "+w);
 		numEdges ++;
-		if (v<numVertices && w<numVertices) {
-			implementAddEdge( v, w );			
+		if (v < numVertices && w < numVertices) {
+			implementAddEdge( v , w );			
 		}
 		else {
 			throw new IndexOutOfBoundsException();
 		}
 	}
 	
-	public abstract void implementAddEdge(int v, int w);
+	public abstract void implementAddEdge(int v , int w);
 
 	public abstract List<Integer> getNeighbors(int v); 
 
@@ -73,8 +73,12 @@ public abstract class Graph {
 		graphList.addVertex();
 		graphList.addEdge(0, 0);
 		graphList.addEdge(0, 2);
+		graphList.addEdge(0, 3);
+		graphList.addEdge(2, 3);
 		graphList.addEdge(3, 3);
 		System.out.println(graphList);
+		graphList.getDistance2(0);
+		graphList.getDistance2(3);
 
 		GraphAdjMatrix graphMat = new GraphAdjMatrix();
 		graphMat.addVertex();
@@ -83,7 +87,11 @@ public abstract class Graph {
 		graphMat.addVertex();
 		graphMat.addEdge(0, 0);
 		graphMat.addEdge(0, 2);
+		graphMat.addEdge(0, 3);
+		graphMat.addEdge(2, 3);
 		graphMat.addEdge(3, 3);
 		System.out.println(graphMat);
+		graphMat.getDistance2(0);		
+		graphMat.getDistance2(3);
 	}
 }
