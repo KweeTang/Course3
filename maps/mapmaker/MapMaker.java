@@ -37,9 +37,13 @@ public class MapMaker {
             if (elem.getString("type").equals("way")) {
                 String street = elem.getJsonObject("tags").getString("name", "");
                 String type = elem.getJsonObject("tags").getString("highway", "");
+                String oneway = elem.getJsonObject("tags").getString("oneway", "no");
                 List<JsonNumber> nodelist = elem.getJsonArray("nodes").getValuesAs(JsonNumber.class);
                 for (int i = 0; i < nodelist.size() - 1; i++) {
                     outfile.println("" + nodes.get(nodelist.get(i).intValue()) + nodes.get(nodelist.get(i + 1).intValue()) + "\"" + street + "\" " + type);
+                    if (oneway.equals("no")) {
+                        outfile.println("" + nodes.get(nodelist.get(i + 1).intValue()) + nodes.get(nodelist.get(i).intValue()) + "\"" + street + "\" " + type);
+                    }
                 }
             }
         }
