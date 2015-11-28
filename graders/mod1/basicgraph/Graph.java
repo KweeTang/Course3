@@ -1,4 +1,4 @@
-package week1maps;
+package basicgraph;
 
 import java.util.ArrayList;
 import java.util.HashMap;

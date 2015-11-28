@@ -11,13 +11,17 @@ RUN mkdir /shared/submission
 
 RUN mkdir /grader
 RUN mkdir /grader/mod1
-RUN mkdir /grader/mod1/week1maps
+RUN mkdir /grader/mod1/basicgraph
+RUN mkdir /grader/mod1/util
+RUN mkdir /grader/mod1/data
 RUN mkdir /grader/mod2
 RUN mkdir /grader/mod2/week2examples
 RUN mkdir /grader/mod3/
 
 COPY executeGrader.sh /grader/executeGrader.sh
-COPY mod1/week1maps/* /grader/mod1/week1maps/
+COPY mod1/basicgraph/* /grader/mod1/basicgraph/
+COPY mod1/util/* /grader/mod1/util/
+COPY mod1/data/* /grader/mod1/data/
 COPY mod2/week2examples/* /grader/mod2/week2examples/
 COPY mod3/part1/* /grader/mod3/part1/
 
