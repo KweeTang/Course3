@@ -275,13 +275,13 @@ public class MapLoader
             reader = new BufferedReader(new FileReader(filename));
             // Read the lines out of the file and put them in a HashMap by points
             while ((nextLine = reader.readLine()) != null) {
-            	System.out.println("Parsing line " + nextLine);
+            	//System.out.println("Parsing line " + nextLine);
             	LineInfo line = splitInputString(nextLine);
             	//System.out.println("Found: " + line.point1 + " " + line.point2 +
             	//		" " + line.roadName + " " + line.roadType);
             	addToPointMap(pointMap, line, line.point1);
                 addToPointMap(pointMap, line, line.point2);
-                System.out.println(pointMap.size());
+                //System.out.println(pointMap.size());
             }
             reader.close();
         } catch (IOException e) {

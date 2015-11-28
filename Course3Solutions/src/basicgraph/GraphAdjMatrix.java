@@ -55,12 +55,24 @@ public class GraphAdjMatrix extends Graph {
 		return neighbors;
 	}
 	
+	public List<Integer> getInNeighbors(int v) {
+		List<Integer> inNeighbors = new ArrayList<Integer>();
+		for (int i = 0; i < getNumVertices(); i ++) {
+			if (adjMatrix[i][v] != 0) {
+				inNeighbors.add(i);
+			}
+		}
+		return inNeighbors;
+	}
+	
 	public String adjacencyString() {
-		String s = "Adjacency matrix: ";
-		for (int i=0; i<adjMatrix.length; i++) {
+		int dim = adjMatrix.length;
+		String s = "Adjacency matrix";
+		s += " (size " + dim + "x" + dim + " = " + dim* dim + " integers):";
+		for (int i = 0; i < dim; i ++) {
 			s += "\n\t"+i+": ";
-			for (int j=0; j<adjMatrix[i].length; j++) {
-			s += adjMatrix[i][j]+", ";
+			for (int j = 0; j < adjMatrix[i].length; j++) {
+			s += adjMatrix[i][j] + ", ";
 			}
 		}
 		return s;
@@ -87,7 +99,7 @@ public class GraphAdjMatrix extends Graph {
 			s += squareMatrix[i][j]+", ";
 			}
 		}
-		System.out.println(s);
+		//System.out.println(s);
 		
 		for (int i = 0; i < numVertices; i ++) {
 			if (squareMatrix[v][i] != 0) {
@@ -96,7 +108,7 @@ public class GraphAdjMatrix extends Graph {
 		}
 		
 		//Print distance 2 vertices
-		System.out.println(distance2);
+		System.out.println("Distance 2 from " + v + ": " + distance2);
 		
 		return distance2;
 	}
