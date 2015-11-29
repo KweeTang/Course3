@@ -1,30 +1,23 @@
 /**
- * 
- */
-package roadgraph;
-
-import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-
-import geography.GeographicPoint;
-import geography.RoadSegment;
-import util.MapLoader;
-
-/**
  * @author UCSD MOOC development team and YOU
  * 
  * A class which reprsents a graph of geographic locations
  * Nodes in the graph are intersections between 
  *
  */
+package roadgraph;
+
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import geography.GeographicPoint;
+import geography.RoadSegment;
+import util.MapLoader;
+
+
 public class MapGraph {
-	//TODO: Add your member variables here
+	//TODO: Add your member variables here in WEEK 2
 	
 	
 	/** 
@@ -32,7 +25,7 @@ public class MapGraph {
 	 */
 	public MapGraph()
 	{
-		// TODO: Implement in this constructor
+		// TODO: Implement in this constructor in WEEK 2
 	}
 	
 	/**
@@ -41,7 +34,7 @@ public class MapGraph {
 	 */
 	public int getNumVertices()
 	{
-		//TODO: Implement this method
+		//TODO: Implement this method in WEEK 2
 		return 0;
 	}
 	
@@ -51,7 +44,7 @@ public class MapGraph {
 	 */
 	public int getNumEdges()
 	{
-		//TODO: Implement this method
+		//TODO: Implement this method in WEEK 2
 		return 0;
 	}
 
@@ -66,7 +59,7 @@ public class MapGraph {
 	 */
 	public boolean addNode(GeographicPoint location)
 	{
-		// TODO: Implement this method
+		// TODO: Implement this method in WEEK 2
 		return false;
 	}
 	
@@ -84,28 +77,53 @@ public class MapGraph {
 	public void addEdge(GeographicPoint from, GeographicPoint to, String roadName,
 			String roadType, double length) throws IllegalArgumentException {
 
-		//TODO: Implement this method.
+		//TODO: Implement this method in WEEK 2
 		
 	}
 	
 
-//	/** Returns the nodes in terms of their geographic locations */
-//	public Collection<GeographicPoint> getNodes() {
-//		return pointNodeMap.keySet();
-//	}
-
 	/** Find the path from start to goal using breadth first search
+	 * 
+	 * @param start The starting location
+	 * @param goal The goal location
+	 * @return The list of intersections that form the shortest (unweighted)
+	 *   path from start to goal (including both start and goal).
+	 */
+	public List<GeographicPoint> bfs(GeographicPoint start, GeographicPoint goal)
+	{
+		// TODO: Implement this method in WEEK 2
+		return null;
+	}
+	
+
+	/** Find the path from start to goal using Dijkstra's algorithm
 	 * 
 	 * @param start The starting location
 	 * @param goal The goal location
 	 * @return The list of intersections that form the shortest path from 
 	 *   start to goal (including both start and goal).
 	 */
-	public List<GeographicPoint> bfs(GeographicPoint start, GeographicPoint goal)
+	public List<GeographicPoint> dijkstra(GeographicPoint start, 
+										  GeographicPoint goal)
 	{
-		// TODO: Implement this method
+		// TODO: Implement this method in WEEK 3
 		return null;
 	}
+
+	/** Find the path from start to goal using A-Star search
+	 * 
+	 * @param start The starting location
+	 * @param goal The goal location
+	 * @return The list of intersections that form the shortest path from 
+	 *   start to goal (including both start and goal).
+	 */
+	public List<GeographicPoint> aStarSearch(GeographicPoint start, 
+											 GeographicPoint goal)
+	{
+		// TODO: Implement this method in WEEK 3
+		return null;
+	}
+
 	
 	
 	public static void main(String[] args)
