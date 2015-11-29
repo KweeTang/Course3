@@ -15,7 +15,13 @@ import geography.GeographicPoint;
 import geography.RoadSegment;
 import util.MapLoader;
 
-
+/**
+ * @author UCSD MOOC development team and YOU
+ * 
+ * A class which represents a graph of geographic locations
+ * Nodes in the graph are intersections between 
+ *
+ */
 public class MapGraph {
 	//TODO: Add your member variables here in WEEK 2
 	

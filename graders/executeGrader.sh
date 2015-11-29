@@ -28,7 +28,7 @@ while [ $# -gt 1 ]
 done
 
 if [ "$PARTID" == "$MOD1_ID" ]; then
-  FILENAME="week1maps.GraphGrader"
+  FILENAME="basicgraph.GraphGrader"
   GRADER_DIRECTORY="mod1"
   7z e -ozipfile /shared/submission/mod1.zip > /dev/null
   cd zipfile
@@ -36,9 +36,9 @@ if [ "$PARTID" == "$MOD1_ID" ]; then
     rm -rf __MACOSX > /dev/null
     cd *
   fi
-  cp * /grader/"$GRADER_DIRECTORY"/week1maps/
+  cp * /grader/"$GRADER_DIRECTORY"/basicgraph/
   cd /grader/"$GRADER_DIRECTORY"
-  javac -encoding ISO-8859-1 week1maps/*.java 2>errorfile
+  javac -encoding ISO-8859-1 basicgraph/*.java util/*.java 2>errorfile
 elif [ "$PARTID" == "$MOD2_ID" ]; then
   FILENAME="week2example.bleh"
   GRADER_DIRECTORY="mod2"

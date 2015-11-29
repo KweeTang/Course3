@@ -41,9 +41,20 @@ public class GraphAdjList extends Graph {
 		return new ArrayList<Integer>(adjListsMap.get(v));
 	}
 
+	public List<Integer> getInNeighbors(int v) {
+		List<Integer> inNeighbors = new ArrayList<Integer>();
+		for (int u : adjListsMap.keySet()) {
+			if (adjListsMap.get(u).contains(v)) {
+				inNeighbors.add(u);
+			}
+		}
+		return inNeighbors;
+	}
 	
 	public String adjacencyString() {
-		String s = "Adjacency list: ";
+		String s = "Adjacency list";
+		s += " (size " + getNumVertices() + "+" + getNumEdges() + " integers):";
+
 		for (int v : adjListsMap.keySet()) {
 			s += "\n\t"+v+": ";
 			for (int w : adjListsMap.get(v)) {
@@ -62,7 +73,7 @@ public class GraphAdjList extends Graph {
 				}
 			}
 		}
-		System.out.println(distance2);
+		System.out.println("Distance 2 from " + v + ": " + distance2);
 		return distance2;
 	}
 
