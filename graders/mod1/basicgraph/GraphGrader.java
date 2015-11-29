@@ -71,7 +71,13 @@ public class GraphGrader {
 
     public void judge(List<Integer> result, List<Integer> corr) {
         if (result.size() != corr.size() || !result.containsAll(corr)) {
-            feedback += "FAILED. Expected " + printList(corr) + ", got " + printList(result) + ".";
+            feedback += "FAILED. Expected " + printList(corr) + ", got " + printList(result) + ". ";
+            if (result.size() > corr.size()) {
+                feedback += "Make sure you aren't including vertices of distance 1. ";
+            }
+            if (result.size() < corr.size()) { 
+                feedback += "Make sure you're exploring all possible paths. ";
+            }
         } else {
             feedback += "PASSED.";
             correct++;
