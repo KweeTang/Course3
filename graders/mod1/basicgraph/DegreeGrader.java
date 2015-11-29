@@ -1,18 +1,16 @@
 package basicgraph;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import util.MapLoader;
 
-public class GraphGrader {
+public class DegreeGrader {
     private String feedback;
 
     private int correct;
 
-    private static final int TESTS = 14;
+    private static final int TESTS = 12;
 
     public static String printList(List<Integer> lst) {
         String res = "";
@@ -31,7 +29,7 @@ public class GraphGrader {
     }
 
     public static void main(String[] args) {
-        GraphGrader grader = new GraphGrader();
+        DegreeGrader grader = new DegreeGrader();
         grader.run();
     }
 
@@ -44,52 +42,22 @@ public class GraphGrader {
 
         MapLoader.loadGraph("data/graph" + i + ".txt", lst);
         List<Integer> result = lst.getDistance2(start);
-        judge(result, corr);
- 
-        feedback += appendFeedback(i * 2, "Testing adjacency matrix");
-        MapLoader.loadGraph("data/graph" + i + ".txt", mat);
-        result = mat.getDistance2(start);
-        judge(result, corr);
-    }
-
-    public void runSpecialTest(int i, String file, String desc, int start, List<Integer> corr) {
-        GraphAdjList lst = new GraphAdjList();
-        GraphAdjMatrix mat = new GraphAdjMatrix();
-
-        feedback += "\\n\\n" + desc;
-        feedback += appendFeedback(i * 2 - 1, "Testing adjacency list");
-
-        MapLoader.loadMap("data/" + file, lst);
-        List<Integer> result = lst.getDistance2(start);
-        judge(result, corr);
-
-        feedback += appendFeedback(i * 2, "Testing adjacency matrix");
-        MapLoader.loadMap("data/" + file, mat);
-        result = mat.getDistance2(start);
-        judge(result, corr);
-    }
-
-    public void judge(List<Integer> result, List<Integer> corr) {
         if (result.size() != corr.size() || !result.containsAll(corr)) {
             feedback += "FAILED. Expected " + printList(corr) + ", got " + printList(result) + ".";
         } else {
             feedback += "PASSED.";
             correct++;
         }
-    }
-
-    public ArrayList<Integer> readCorrect(String file) {
-        ArrayList<Integer> ret = new ArrayList<Integer>();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("data/" + file));
-            String next;
-            while ((next = br.readLine()) != null) {
-                ret.add(Integer.parseInt(next));
-            }
-        } catch (Exception e) {
-            feedback += "\\nCould not open answer file! Please submit a bug report.";
+ 
+        feedback += appendFeedback(i * 2, "Testing adjacency matrix");
+        MapLoader.loadGraph("data/graph" + i + ".txt", mat);
+        result = mat.getDistance2(start);
+        if (result.size() != corr.size() || !result.containsAll(corr)) {
+            feedback += "FAILED. Expected " + printList(corr) + ", got " + printList(result) + ".";
+        } else {
+            feedback += "PASSED.";
+            correct++;
         }
-        return ret;
     }
 
     public void run() {
@@ -134,8 +102,6 @@ public class GraphGrader {
             correctAns = new ArrayList<Integer>();
             runTest(6, "Same graph as before (starting at 5)", 5, correctAns);
 
-            correctAns = readCorrect("ucsd_answer");
-            runSpecialTest(7, "ucsd_small_oneway.map", "UCSD MAP: Intersections around UCSD", 4, correctAns);
 
             if (correct == TESTS)
                 feedback = "All tests passed. Great job!" + feedback;
