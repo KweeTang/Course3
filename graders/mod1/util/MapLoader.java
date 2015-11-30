@@ -110,6 +110,7 @@ public class MapLoader
         // Add the nodes to the graph
 		List<GeographicPoint> intersections = findIntersections(pointMap);
 		int index = 0;
+                System.out.println(intersections.size());
 		for (GeographicPoint pt : intersections) {
 			theGraph.addVertex();
 			vertexMap.put(index, pt);
