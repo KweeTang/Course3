@@ -88,7 +88,7 @@ public class MapLoader
 					segments.put(pt,segs);
 				}
 				RoadSegment seg = new RoadSegment(pt, end, pointsOnEdge, 
-						info.roadName, info.roadType);
+						info.roadName, info.roadType, length);
 				segs.add(seg);
 				segs = segments.get(end);
 				if (segs == null) {
@@ -365,7 +365,7 @@ public class MapLoader
 				// and intersection (dead end)
 				if (!(roadsIn.get(0).point1.equals(roadsOut.get(0).point2) &&
 						roadsIn.get(0).point2.equals(roadsOut.get(0).point1))
-						&& roadsIn.get(0).roadName.equals(roadsOut.get(1).roadName)) {
+						&& roadsIn.get(0).roadName.equals(roadsOut.get(0).roadName)) {
 					isNode = false;
 				}
 			}

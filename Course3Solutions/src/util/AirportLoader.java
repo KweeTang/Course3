@@ -15,31 +15,30 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import basicgraph.Graph;
 import geography.GeographicPoint;
-import geography.RoadSegment;
-import roadgraph.MapGraph;
+
 
 /**
- * @author Christine
+ * @author Mia
  *
- * A utility class that reads a file into a MapGraph
+ * A utility class that reads a file of direct flights into a Graph
  */
-public class MapLoader 
+public class AirportLoader 
 {
 	/** Read in a file specifying a map.
 	 * The file contains data as follows:
-	 * lat1 lon1 lat2 lon2 roadName roadType
-	 * This method will collapse the points so that only intersections 
-	 * are represented as nodes in the graph.
+	 * Airline, AirlineID, Source airport, Source airport ID,
+	 * Destination airport, Destination airport ID, Codeshare, Stops, Equipment
+	 * This method will only read in nonstop routes (with Stops == 0)
 	 * @param filename
-	 * @param map
+	 * @param graph
 	 */
-	public static void loadMap(String filename, MapGraph map, 
-				HashMap<GeographicPoint,HashSet<RoadSegment>> segments)
+	public static void loadRoutes(String filename, Graph graph)
 	{
 		
-		Collection<GeographicPoint> nodes = new HashSet<GeographicPoint>();
-        HashMap<GeographicPoint,List<LineInfo>> pointMap = 
+		Collection<String> airports = new HashSet<String>();
+        HashMap<GeographicPoint,List<AirportLineInfo>> pointMap = 
         		buildPointMap(filename);
 		
         // Add the nodes to the graph
@@ -54,9 +53,9 @@ public class MapLoader
 		for (GeographicPoint pt : nodes) {
 			// Trace the node to its next node, building up the points 
 			// on the edge as you go.
-			List<LineInfo> infoList = pointMap.get(pt);
-			HashSet<LineInfo> used = new HashSet<LineInfo>();
-			for (LineInfo info : infoList) {
+			List<AirportLineInfo> infoList = pointMap.get(pt);
+			HashSet<AirportLineInfo> used = new HashSet<AirportLineInfo>();
+			for (AirportLineInfo info : infoList) {
 				if (!used.contains(info)) {
 					List<GeographicPoint> pointsOnEdge = 
 							findPointsOnEdge(pointMap, info, pt, nodes, used);
@@ -99,7 +98,7 @@ public class MapLoader
 	 */
 	public static void loadMap(String filename, basicgraph.Graph theGraph)
 	{
-		HashMap<GeographicPoint,List<LineInfo>> pointMap = 
+		HashMap<GeographicPoint,List<AirportLineInfo>> pointMap = 
         		buildPointMap(filename);
 		
 		HashMap<Integer,GeographicPoint> vertexMap = 
@@ -110,7 +109,6 @@ public class MapLoader
         // Add the nodes to the graph
 		List<GeographicPoint> intersections = findIntersections(pointMap);
 		int index = 0;
-                System.out.println(intersections.size());
 		for (GeographicPoint pt : intersections) {
 			theGraph.addVertex();
 			vertexMap.put(index, pt);
@@ -124,9 +122,9 @@ public class MapLoader
 			// Trace the node to its next node, building up the points 
 			// on the edge as you go.
 			GeographicPoint pt = vertexMap.get(nodeNum);
-			List<LineInfo> infoList = pointMap.get(pt);
-			HashSet<LineInfo> used = new HashSet<LineInfo>();
-			for (LineInfo info : infoList) {
+			List<AirportLineInfo> infoList = pointMap.get(pt);
+			HashSet<AirportLineInfo> used = new HashSet<AirportLineInfo>();
+			for (AirportLineInfo info : infoList) {
 				if (!used.contains(info)) {
 					GeographicPoint end = findEndOfEdge(pointMap, info, pt, 
 							theGraph, used, reverseMap);
@@ -141,7 +139,7 @@ public class MapLoader
 	 * Loads a graph from a file.  The file is specified with each 
 	 * line representing an edge.  Vertices are numbered from 
 	 * 0..1-numVertices.
-	 * The first line of the file containts a single int which is the 
+	 * The first line of the file contains a single int which is the 
 	 * number of vertices in the graph.
 	 * @param filename The file containing the graph
 	 * @param theGraph The graph to be loaded
@@ -188,96 +186,20 @@ public class MapLoader
 		return dist;
 	}
 	
-	private static List<GeographicPoint>
-	findPointsOnEdge(HashMap<GeographicPoint,List<LineInfo>> pointMap,
-		LineInfo info, GeographicPoint pt, Collection<GeographicPoint> nodes, 
-		HashSet<LineInfo> used) 
-	{
-		used.add(info);
-		List<GeographicPoint> toReturn = new LinkedList<GeographicPoint>();
-		GeographicPoint end = info.getOtherPoint(pt);
-		List<LineInfo> nextLines = pointMap.get(end);
-		while (!nodes.contains(end)) {
-			toReturn.add(end);
-			if (nextLines.size() != 2) {
-				System.out.println("Something went wrong building edges");
-			}
-			LineInfo nextInfo = nextLines.get(0);
-			if (used.contains(nextInfo)) {
-				nextInfo = nextLines.get(1);
-			}
-			used.add(nextInfo);
-			end = nextInfo.getOtherPoint(end);
-			nextLines = pointMap.get(end);
-		}
-		toReturn.add(end);
-		
-		return toReturn;
-	}
-
-	private static GeographicPoint
-	findEndOfEdge(HashMap<GeographicPoint,List<LineInfo>> pointMap,
-		LineInfo info, GeographicPoint pt, basicgraph.Graph graph, 
-		HashSet<LineInfo> used, HashMap<GeographicPoint, Integer> reverseMap) 
-	{
-		used.add(info);
-		GeographicPoint end = info.getOtherPoint(pt);
-		List<LineInfo> nextLines = pointMap.get(end);
-		Integer endNum = reverseMap.get(end);
-		while (endNum==null) {
-			if (nextLines.size() != 2) {
-				System.out.println("Something went wrong building edges");
-			}
-			LineInfo nextInfo = nextLines.get(0);
-			if (used.contains(nextInfo)) {
-				nextInfo = nextLines.get(1);
-			}
-			used.add(nextInfo);
-			end = nextInfo.getOtherPoint(end);
-			endNum = reverseMap.get(end);
-			nextLines = pointMap.get(end);
-		}
-		
-		return end;
-	}
 	
-	
-	private static List<GeographicPoint> 
-	findIntersections(HashMap<GeographicPoint,List<LineInfo>> pointMap) {
-		
-		// Now find the intersections.  These will be entries in the point map
-		// with more than one road associated with them
-		List<GeographicPoint> intersections = new LinkedList<GeographicPoint>();
-		for (GeographicPoint pt : pointMap.keySet()) {
-			List<LineInfo> roadsOut = pointMap.get(pt);
-			boolean isNode = true;
-			if (roadsOut.size() == 2) {
-				LineInfo road1 = roadsOut.get(0);
-				LineInfo road2 = roadsOut.get(1);
-				if (road1.sameRoad(road2)) {
-					isNode = false;
-				}
-			}
-			if (isNode) {
-				intersections.add(pt);
-			}
-		}
-		return intersections;
-	}
-	
-	private static HashMap<GeographicPoint,List<LineInfo>> 
+	private static HashMap<GeographicPoint,List<AirportLineInfo>> 
 	buildPointMap(String filename)
 	{
 		BufferedReader reader = null;
-        HashMap<GeographicPoint,List<LineInfo>> pointMap = 
-        		new HashMap<GeographicPoint,List<LineInfo>>();
+        HashMap<GeographicPoint,List<AirportLineInfo>> pointMap = 
+        		new HashMap<GeographicPoint,List<AirportLineInfo>>();
 		try {
             String nextLine;
             reader = new BufferedReader(new FileReader(filename));
             // Read the lines out of the file and put them in a HashMap by points
             while ((nextLine = reader.readLine()) != null) {
             	//System.out.println("Parsing line " + nextLine);
-            	LineInfo line = splitInputString(nextLine);
+            	AirportLineInfo line = splitInputString(nextLine);
             	//System.out.println("Found: " + line.point1 + " " + line.point2 +
             	//		" " + line.roadName + " " + line.roadType);
             	addToPointMap(pointMap, line, line.point1);
@@ -293,18 +215,18 @@ public class MapLoader
 		return pointMap;
 	}
 	
-	private static void addToPointMap(HashMap<GeographicPoint,List<LineInfo>> pointMap,
-			LineInfo line, GeographicPoint pt)
+	private static void addToPointMap(HashMap<GeographicPoint,List<AirportLineInfo>> pointMap,
+			AirportLineInfo line, GeographicPoint pt)
 	{
-		List<LineInfo> pointEntries = pointMap.get(pt);
+		List<AirportLineInfo> pointEntries = pointMap.get(pt);
         if (pointEntries == null) {
-        	pointEntries = new LinkedList<LineInfo>();
+        	pointEntries = new LinkedList<AirportLineInfo>();
         	pointMap.put(pt, pointEntries);
         }
         pointEntries.add(line);
 	}
 	
-	private static LineInfo splitInputString(String input)
+	private static AirportLineInfo splitInputString(String input)
 	{	
 		
 		ArrayList<String> tokens = new ArrayList<String>();
@@ -320,62 +242,33 @@ public class MapLoader
 			}
 		}
 
-    	double lat1 = Double.parseDouble(tokens.get(0));
-        double lon1 = Double.parseDouble(tokens.get(1));
-        double lat2 = Double.parseDouble(tokens.get(2));
-        double lon2 = Double.parseDouble(tokens.get(3));
-        GeographicPoint p1 = new GeographicPoint(lat1, lon1);
-        GeographicPoint p2 = new GeographicPoint(lat2, lon2);
-
-        return new LineInfo(p1, p2, tokens.get(4), tokens.get(5));
+		// route data parsed as
+		// Airline, Airline ID, Source Airport, Source Airport ID,
+		// Destination Airport, Destination Airport ID, Codeshare,
+		// Stops, Equipment
+    	String source = tokens.get(2);
+        String destination = tokens.get(4);
+        int stops = Integer.parseInt(tokens.get(7));
+        return new AirportLineInfo(source, destination, stops);
 		
 	}
 	
 }
 
-class LineInfo
+
+class AirportLineInfo
 {
-	GeographicPoint point1;
-	GeographicPoint point2;
+	String sourceAirport;
+	String destinationAirport;
+	boolean nonstop;
 	
-	String roadName;
-	String roadType;
-	
-	LineInfo(GeographicPoint p1, GeographicPoint p2, String roadName, String roadType) 
+	AirportLineInfo(String sourceAirport, String destinationAirport, int stops) 
 	{
-		point1 = p1;
-		point2 = p2;
-		this.roadName = roadName;
-		this.roadType = roadType;
+		this.sourceAirport = sourceAirport;
+		this.destinationAirport = destinationAirport;
+		this.nonstop = (stops == 0);
 	}
 	
-	public GeographicPoint getOtherPoint(GeographicPoint pt)
-	{
-		if (pt == null) throw new IllegalArgumentException();
-		if (pt.equals(point1)) {
-			return point2;
-		}
-		else if (pt.equals(point2)) {
-			return point1;
-		}
-		else throw new IllegalArgumentException();
-	}
-	
-	public boolean equals(Object o)
-	{
-		if (o == null || !(o instanceof LineInfo))
-		{
-			return false;
-		}
-		LineInfo info = (LineInfo)o;
-		return (info.point1.equals(this.point1) && info.point2.equals(this.point2) ||
-				info.point1.equals(this.point2) && info.point2.equals(this.point1)) &&
-				info.roadType.equals(this.roadType) && info.roadName.equals(this.roadName);
-				
-	}
-	public boolean sameRoad(LineInfo info)
-	{
-		return info.roadName.equals(this.roadName) && info.roadType.equals(this.roadType);
-	}
 	
 }
+
