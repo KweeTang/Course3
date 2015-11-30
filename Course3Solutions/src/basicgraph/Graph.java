@@ -128,6 +128,9 @@ public abstract class Graph {
 	public int degree(int v) {
 		return outdegree(v) + indegree(v);
 	}
+	
+	//Finding nodes at distance-2 away 
+	public abstract List<Integer> getDistance2(int v); 
 
 	public String toString() {
 		String s = "\nGraph with " + numVertices + " vertices and " + numEdges + " edges.\n";
@@ -148,39 +151,81 @@ public abstract class Graph {
 		return degrees.toString();
 	}
 	
+	//Small graph example for testing.
+	private static Graph buildTestGraph1(String type) {
+		Graph test1 = null;
+		if (type.equals("list")) {
+			test1 = new GraphAdjList();
+		}
+		else if (type.equals("matrix")) {
+			test1 = new GraphAdjMatrix();
+		}
+		else {
+			System.out.println("ERROR: unidentified type; returning null");
+			return null;
+		}
+		test1.addVertex();
+		test1.addVertex();
+		test1.addVertex();
+		test1.addVertex();
+		test1.addEdge(0, 0);
+		test1.addEdge(0, 2);
+		test1.addEdge(0, 3);
+		test1.addEdge(2, 3);
+		test1.addEdge(3, 3);
+		return test1;
+	}
+	
+	//Small graph example with multiple edges between some vertices.
+	private static Graph buildTestGraph2(String type) {
+		Graph test2 = null;
+		if (type.equals("list")) {
+			test2 = new GraphAdjList();
+		}
+		else if (type.equals("matrix")) {
+			test2 = new GraphAdjMatrix();
+		}
+		else {
+			System.out.println("ERROR: unidentified type; returning null");
+			return null;
+		}
+		test2.addVertex();
+		test2.addVertex();
+		test2.addVertex();
+		test2.addEdge(0, 1);
+		test2.addEdge(0, 1);
+		test2.addEdge(1, 0);
+		test2.addEdge(1, 2);
+		test2.addEdge(2, 2);
+		return test2;
+	}
+	
 	public static void main (String[] args) {
 
-		GraphAdjList graphList = new GraphAdjList();
-		graphList.addVertex();
-		graphList.addVertex();
-		graphList.addVertex();
-		graphList.addVertex();
-		graphList.addEdge(0, 0);
-		graphList.addEdge(0, 2);
-		graphList.addEdge(0, 3);
-		graphList.addEdge(2, 3);
-		graphList.addEdge(3, 3);
-		System.out.println(graphList);
-		graphList.getDistance2(0);
-		graphList.getDistance2(3);
+		Graph test1List = buildTestGraph1("list");
+		System.out.println(test1List);
+		test1List.getDistance2(0);
+		test1List.getDistance2(3);
 
-		GraphAdjMatrix graphMat = new GraphAdjMatrix();
-		graphMat.addVertex();
-		graphMat.addVertex();
-		graphMat.addVertex();
-		graphMat.addVertex();
-		graphMat.addEdge(0, 0);
-		graphMat.addEdge(0, 2);
-		graphMat.addEdge(0, 3);
-		graphMat.addEdge(2, 3);
-		graphMat.addEdge(3, 3);
-		System.out.println(graphMat);
-		graphMat.getDistance2(0);		
-		graphMat.getDistance2(3);
+		Graph test1Mat = buildTestGraph1("matrix");
+		System.out.println(test1Mat);
+		test1Mat.getDistance2(0);		
+		test1Mat.getDistance2(3);
+
+		Graph test2List = buildTestGraph2("list");
+		System.out.println(test2List);
+		test2List.getDistance2(0);
+		test2List.getDistance2(2);
+
+		Graph test2Mat = buildTestGraph2("matrix");
+		System.out.println(test2Mat);
+		test2Mat.getDistance2(0);		
+		test2Mat.getDistance2(2);
 		
 		GraphAdjList graphFromFile = new GraphAdjList();
 		MapLoader.loadMap("data/test.map", graphFromFile);
 		System.out.println(graphFromFile);
+
 
 	}
 }
