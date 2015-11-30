@@ -273,7 +273,7 @@ public class MapGraph {
 				new HashMap<GeographicPoint,HashSet<RoadSegment>>();
 		//MapLoader.loadMap("data/ucsdtest2.map", theMap, theRoads);
 		
-		MapLoader.loadOneWayMap("data/newbury_verysmall_oneway.map", theMap, theRoads);
+		MapLoader.loadOneWayMap("data/testFromAdam.map", theMap, theRoads);
 		System.out.println("DONE.");
 		
 		System.out.println("Num nodes: " + theMap.getNumVertices());

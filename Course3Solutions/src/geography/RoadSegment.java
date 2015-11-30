@@ -21,15 +21,19 @@ public class RoadSegment {
 	private String roadName;
 	private String roadType;
 	
+	// Length in km
+	private double length;
+	
 	public RoadSegment(GeographicPoint pt1, GeographicPoint pt2, 
 						List<GeographicPoint> geometry, String roadName,
-						String roadType)
+						String roadType, double length)
 	{
 		point1 = pt1;
 		point2 = pt2;
 		geometryPoints = new ArrayList<GeographicPoint>(geometry);
 		this.roadName = roadName;
 		this.roadType = roadType;
+		this.length = length;
 	}
 	
 	
@@ -80,7 +84,7 @@ public class RoadSegment {
 		{
 			ptsEqual = true;
 		}
-		return this.roadName.equals(other.roadName) && ptsEqual;
+		return this.roadName.equals(other.roadName) && ptsEqual && this.length == other.length;
 	}
 	
 	public int hashCode()
