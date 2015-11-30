@@ -13,7 +13,7 @@ public class MapMaker {
         this.bounds = bounds;
     }
 
-    public void parseData() {
+    public boolean parseData(String filename) {
         DataFetcher fetcher = new DataFetcher(bounds);
         JsonObject data = fetcher.getData();
 
@@ -24,13 +24,13 @@ public class MapMaker {
                 nodes.put(elem.getInt("id"), new Location(elem.getJsonNumber("lat").doubleValue(), elem.getJsonNumber("lon").doubleValue()));
             }
         }
-        
+
         PrintWriter outfile;
         try {
-            outfile = new PrintWriter("city.map");
+            outfile = new PrintWriter(filename);
         } catch (Exception e) {
             e.printStackTrace();
-            return;
+            return false;
         }
 
         for (JsonObject elem : elements.getValuesAs(JsonObject.class)) {
@@ -48,6 +48,7 @@ public class MapMaker {
             }
         }
         outfile.close();
+        return true;
     }
 
     public static void main(String[] args) {
@@ -68,7 +69,7 @@ public class MapMaker {
         }
 
         MapMaker map = new MapMaker(bound_arr);
-        map.parseData();
+        //map.parseData();
     }
 }
 

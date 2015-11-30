@@ -41,24 +41,28 @@ public class GraphAdjMatrix extends Graph {
 		}
 	}
 	
+	// Allows for multiple edges between two points.
+	// The entry at row v, column w stores the number of such edges.
 	public void implementAddEdge(int v, int w) {
-		adjMatrix[v][w] = 1;
+		adjMatrix[v][w] += 1;
 	}
 	
+	//Incorporate multiplicity
 	public List<Integer> getNeighbors(int v) {
 		List<Integer> neighbors = new ArrayList<Integer>();
 		for (int i = 0; i < getNumVertices(); i ++) {
-			if (adjMatrix[v][i] != 0) {
+			for (int j=0; j< adjMatrix[v][i]; j ++) {
 				neighbors.add(i);
 			}
 		}
 		return neighbors;
 	}
 	
+	//Incorporate multiplicity
 	public List<Integer> getInNeighbors(int v) {
 		List<Integer> inNeighbors = new ArrayList<Integer>();
 		for (int i = 0; i < getNumVertices(); i ++) {
-			if (adjMatrix[i][v] != 0) {
+			for (int j=0; j< adjMatrix[i][v]; j++) {
 				inNeighbors.add(i);
 			}
 		}
