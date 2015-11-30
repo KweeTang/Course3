@@ -38,7 +38,7 @@ public class AirportLoader
 	{
 		
 		Collection<String> airports = new HashSet<String>();
-        HashMap<GeographicPoint,List<LineInfo>> pointMap = 
+        HashMap<GeographicPoint,List<AirportLineInfo>> pointMap = 
         		buildPointMap(filename);
 		
         // Add the nodes to the graph
@@ -53,9 +53,9 @@ public class AirportLoader
 		for (GeographicPoint pt : nodes) {
 			// Trace the node to its next node, building up the points 
 			// on the edge as you go.
-			List<LineInfo> infoList = pointMap.get(pt);
-			HashSet<LineInfo> used = new HashSet<LineInfo>();
-			for (LineInfo info : infoList) {
+			List<AirportLineInfo> infoList = pointMap.get(pt);
+			HashSet<AirportLineInfo> used = new HashSet<AirportLineInfo>();
+			for (AirportLineInfo info : infoList) {
 				if (!used.contains(info)) {
 					List<GeographicPoint> pointsOnEdge = 
 							findPointsOnEdge(pointMap, info, pt, nodes, used);
@@ -98,7 +98,7 @@ public class AirportLoader
 	 */
 	public static void loadMap(String filename, basicgraph.Graph theGraph)
 	{
-		HashMap<GeographicPoint,List<LineInfo>> pointMap = 
+		HashMap<GeographicPoint,List<AirportLineInfo>> pointMap = 
         		buildPointMap(filename);
 		
 		HashMap<Integer,GeographicPoint> vertexMap = 
@@ -122,9 +122,9 @@ public class AirportLoader
 			// Trace the node to its next node, building up the points 
 			// on the edge as you go.
 			GeographicPoint pt = vertexMap.get(nodeNum);
-			List<LineInfo> infoList = pointMap.get(pt);
-			HashSet<LineInfo> used = new HashSet<LineInfo>();
-			for (LineInfo info : infoList) {
+			List<AirportLineInfo> infoList = pointMap.get(pt);
+			HashSet<AirportLineInfo> used = new HashSet<AirportLineInfo>();
+			for (AirportLineInfo info : infoList) {
 				if (!used.contains(info)) {
 					GeographicPoint end = findEndOfEdge(pointMap, info, pt, 
 							theGraph, used, reverseMap);
@@ -187,19 +187,19 @@ public class AirportLoader
 	}
 	
 	
-	private static HashMap<String,List<LineInfo>> 
+	private static HashMap<GeographicPoint,List<AirportLineInfo>> 
 	buildPointMap(String filename)
 	{
 		BufferedReader reader = null;
-        HashMap<String,List<LineInfo>> pointMap = 
-        		new HashMap<GeographicPoint,List<LineInfo>>();
+        HashMap<GeographicPoint,List<AirportLineInfo>> pointMap = 
+        		new HashMap<GeographicPoint,List<AirportLineInfo>>();
 		try {
             String nextLine;
             reader = new BufferedReader(new FileReader(filename));
             // Read the lines out of the file and put them in a HashMap by points
             while ((nextLine = reader.readLine()) != null) {
             	//System.out.println("Parsing line " + nextLine);
-            	LineInfo line = splitInputString(nextLine);
+            	AirportLineInfo line = splitInputString(nextLine);
             	//System.out.println("Found: " + line.point1 + " " + line.point2 +
             	//		" " + line.roadName + " " + line.roadType);
             	addToPointMap(pointMap, line, line.point1);
@@ -215,18 +215,18 @@ public class AirportLoader
 		return pointMap;
 	}
 	
-	private static void addToPointMap(HashMap<GeographicPoint,List<LineInfo>> pointMap,
-			LineInfo line, GeographicPoint pt)
+	private static void addToPointMap(HashMap<GeographicPoint,List<AirportLineInfo>> pointMap,
+			AirportLineInfo line, GeographicPoint pt)
 	{
-		List<LineInfo> pointEntries = pointMap.get(pt);
+		List<AirportLineInfo> pointEntries = pointMap.get(pt);
         if (pointEntries == null) {
-        	pointEntries = new LinkedList<LineInfo>();
+        	pointEntries = new LinkedList<AirportLineInfo>();
         	pointMap.put(pt, pointEntries);
         }
         pointEntries.add(line);
 	}
 	
-	private static LineInfo splitInputString(String input)
+	private static AirportLineInfo splitInputString(String input)
 	{	
 		
 		ArrayList<String> tokens = new ArrayList<String>();
@@ -249,20 +249,20 @@ public class AirportLoader
     	String source = tokens.get(2);
         String destination = tokens.get(4);
         int stops = Integer.parseInt(tokens.get(7));
-        return new LineInfo(source, destination, stops);
+        return new AirportLineInfo(source, destination, stops);
 		
 	}
 	
 }
 
 
-class LineInfo
+class AirportLineInfo
 {
 	String sourceAirport;
 	String destinationAirport;
 	boolean nonstop;
 	
-	LineInfo(String sourceAirport, String destinationAirport, int stops) 
+	AirportLineInfo(String sourceAirport, String destinationAirport, int stops) 
 	{
 		this.sourceAirport = sourceAirport;
 		this.destinationAirport = destinationAirport;
