@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import util.MapLoader;
 
@@ -23,13 +24,20 @@ public abstract class Graph {
 
 	private int numVertices;
 	private int numEdges;
-
+	//optional association of String labels to vertices 
+	private Map<Integer,String> vertexLabels;
+	
 	/**
 	 * Create a new empty Graph
 	 */
 	public Graph() {
 		numVertices = 0;
 		numEdges = 0;
+		vertexLabels = null;
+	}
+	
+	public void initializeLabels() {
+		vertexLabels = new HashMap<Integer,String>();
 	}
 	
 	/**
@@ -52,6 +60,48 @@ public abstract class Graph {
 	}
 	
 	/**
+	 * Test whether some vertex in the graph is labeled 
+	 * with a given String label
+	 * @param The String label being checked
+	 * @return True if there's a vertex in the graph with this label; false otherwise.
+	 */
+	public boolean hasVertex(String s)
+	{
+		return vertexLabels.containsValue(s);
+	}
+	
+	/**
+	 * Add label to an unlabeled vertex in the graph.
+	 * @param The index of the vertex to be labeled.
+	 * @param The label to be assigned to this vertex.
+	 */
+	public void addLabel(int v, String s) {
+		if (v < getNumVertices() && !vertexLabels.containsKey(v)) 
+		{
+			vertexLabels.put(v, s);
+		}
+		else {
+			System.out.println("ERROR: tried to label a vertex that is out of range or already labeled");
+		}
+	}
+	
+	public String getLabel(int v) {
+		if (vertexLabels.containsKey(v)) {
+			return vertexLabels.get(v);
+		}
+		else return null;
+	}
+
+	public int getIndex(String s) {
+		for (Map.Entry<Integer,String> entry : vertexLabels.entrySet()) {
+			if (entry.getValue().equals(s))
+				return entry.getKey();
+		}
+		System.out.println("ERROR: No vertex with this label");
+		return -1;
+	}
+	
+	/**
 	 * Report size of edge set
 	 * @return The number of edges in the graph.
 	 */	
@@ -64,10 +114,12 @@ public abstract class Graph {
 	 * have as its index the next available integer.
 	 * Precondition: contiguous integers are used to 
 	 * index vertices.
+	 * @return index of newly added vertex
 	 */
-	public void addVertex() {
+	public int addVertex() {
 		implementAddVertex();
 		numVertices ++;
+		return (numVertices-1);
 	}
 	
 	/**
@@ -128,11 +180,14 @@ public abstract class Graph {
 	public int degree(int v) {
 		return outdegree(v) + indegree(v);
 	}
+	
+	//Finding nodes at distance-2 away 
+	public abstract List<Integer> getDistance2(int v); 
 
 	public String toString() {
 		String s = "\nGraph with " + numVertices + " vertices and " + numEdges + " edges.\n";
 		s += "Degree sequence: " + degreeSequence() + ".\n";
-		s += adjacencyString();
+		if (numVertices <= 20) s += adjacencyString();
 		return s;
 	}
 
@@ -145,42 +200,89 @@ public abstract class Graph {
 			degrees.add(degree(i));
 		}
 		Collections.sort(degrees);
+		
 		return degrees.toString();
 	}
 	
+	//Small graph example for testing.
+	private static Graph buildTestGraph1(String type) {
+		Graph test1 = null;
+		if (type.equals("list")) {
+			test1 = new GraphAdjList();
+		}
+		else if (type.equals("matrix")) {
+			test1 = new GraphAdjMatrix();
+		}
+		else {
+			System.out.println("ERROR: unidentified type; returning null");
+			return null;
+		}
+		test1.addVertex();
+		test1.addVertex();
+		test1.addVertex();
+		test1.addVertex();
+		test1.addEdge(0, 0);
+		test1.addEdge(0, 2);
+		test1.addEdge(0, 3);
+		test1.addEdge(2, 3);
+		test1.addEdge(3, 3);
+		return test1;
+	}
+	
+	//Small graph example with multiple edges between some vertices.
+	private static Graph buildTestGraph2(String type) {
+		Graph test2 = null;
+		if (type.equals("list")) {
+			test2 = new GraphAdjList();
+		}
+		else if (type.equals("matrix")) {
+			test2 = new GraphAdjMatrix();
+		}
+		else {
+			System.out.println("ERROR: unidentified type; returning null");
+			return null;
+		}
+		test2.addVertex();
+		test2.addVertex();
+		test2.addVertex();
+		test2.addEdge(0, 1);
+		test2.addEdge(0, 1);
+		test2.addEdge(1, 0);
+		test2.addEdge(1, 2);
+		test2.addEdge(2, 2);
+		return test2;
+	}
+	
 	public static void main (String[] args) {
+/*
+		Graph test1List = buildTestGraph1("list");
+		System.out.println(test1List);
+		test1List.getDistance2(0);
+		test1List.getDistance2(3);
 
-		GraphAdjList graphList = new GraphAdjList();
-		graphList.addVertex();
-		graphList.addVertex();
-		graphList.addVertex();
-		graphList.addVertex();
-		graphList.addEdge(0, 0);
-		graphList.addEdge(0, 2);
-		graphList.addEdge(0, 3);
-		graphList.addEdge(2, 3);
-		graphList.addEdge(3, 3);
-		System.out.println(graphList);
-		graphList.getDistance2(0);
-		graphList.getDistance2(3);
+		Graph test1Mat = buildTestGraph1("matrix");
+		System.out.println(test1Mat);
+		test1Mat.getDistance2(0);		
+		test1Mat.getDistance2(3);
 
-		GraphAdjMatrix graphMat = new GraphAdjMatrix();
-		graphMat.addVertex();
-		graphMat.addVertex();
-		graphMat.addVertex();
-		graphMat.addVertex();
-		graphMat.addEdge(0, 0);
-		graphMat.addEdge(0, 2);
-		graphMat.addEdge(0, 3);
-		graphMat.addEdge(2, 3);
-		graphMat.addEdge(3, 3);
-		System.out.println(graphMat);
-		graphMat.getDistance2(0);		
-		graphMat.getDistance2(3);
-		
+		Graph test2List = buildTestGraph2("list");
+		System.out.println(test2List);
+		test2List.getDistance2(0);
+		test2List.getDistance2(2);
+
+		Graph test2Mat = buildTestGraph2("matrix");
+		System.out.println(test2Mat);
+		test2Mat.getDistance2(0);		
+		test2Mat.getDistance2(2);
+*/		
 		GraphAdjList graphFromFile = new GraphAdjList();
-		MapLoader.loadMap("data/test.map", graphFromFile);
+		MapLoader.loadMap("data/ucsd.map", graphFromFile);
 		System.out.println(graphFromFile);
+
+		GraphAdjList airportGraph = new GraphAdjList();
+		MapLoader.loadRoutes("data/routesUA.dat", airportGraph);
+		System.out.println(airportGraph);
+		
 
 	}
 }

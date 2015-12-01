@@ -73,7 +73,7 @@ public class DegreeGrader {
         feedback += "\\n\\n" + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list");
 
-        MapLoader.loadMap("data/" + file, lst);
+        MapLoader.loadOneWayMap("data/" + file, lst);
 
         String result = lst.degreeSequence();
         //judge(result, corr);
@@ -132,7 +132,7 @@ public class DegreeGrader {
 
             runTest(6, "Same graph as before (starting at 5)", 5);
 
-            runSpecialTest(7, "newbury_verysmall_oneway.map", "UCSD MAP: Intersections around UCSD", 4);
+            runSpecialTest(7, "ucsd.map", "UCSD MAP: Intersections around UCSD", 4);
 
             if (correct == TESTS)
                 feedback = "All tests passed. Great job!" + feedback;
