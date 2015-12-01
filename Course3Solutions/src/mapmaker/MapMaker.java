@@ -40,9 +40,15 @@ public class MapMaker {
                 String oneway = elem.getJsonObject("tags").getString("oneway", "no");
                 List<JsonNumber> nodelist = elem.getJsonArray("nodes").getValuesAs(JsonNumber.class);
                 for (int i = 0; i < nodelist.size() - 1; i++) {
-                    outfile.println("" + nodes.get(nodelist.get(i).intValue()) + nodes.get(nodelist.get(i + 1).intValue()) + "\"" + street + "\" " + type);
+                    Location start = nodes.get(nodelist.get(i).intValue());
+                    Location end = nodes.get(nodelist.get(i + 1).intValue());
+                    if (start.outsideBounds(bounds) || end.outsideBounds(bounds)) {
+                        continue;
+                    }
+
+                    outfile.println("" + start + end + "\"" + street + "\" " + type);
                     if (oneway.equals("no")) {
-                        outfile.println("" + nodes.get(nodelist.get(i + 1).intValue()) + nodes.get(nodelist.get(i).intValue()) + "\"" + street + "\" " + type);
+                        outfile.println("" + end + start + "\"" + street + "\" " + type);
                     }
                 }
             }
@@ -69,7 +75,7 @@ public class MapMaker {
         }
 
         MapMaker map = new MapMaker(bound_arr);
-        //map.parseData();
+        map.parseData("ucsd.map");
     }
 }
 
@@ -85,4 +91,12 @@ class Location {
     public String toString() {
         return "" + lat + " " + lon + " ";
     }
+
+    /**
+     * @param bounds [south, west, north, east]
+     */
+    public boolean outsideBounds(float[] bounds) {
+        return (lat < bounds[0] || lat > bounds[2] || lon < bounds[1] || lon > bounds[3]);
+    }
+        
 }
