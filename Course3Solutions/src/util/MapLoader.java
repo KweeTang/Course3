@@ -563,8 +563,8 @@ public class MapLoader
             	if (Integer.parseInt(flightInfo[7])==0) {
             		source = flightInfo[2];
             		destination = flightInfo[4];
-                	System.out.print("Line:" + lineCount);
-                	System.out.println(". Source: "+ source + ", destination: "+destination);
+                	//System.out.print("Line:" + lineCount);
+                	//System.out.println(". Source: "+ source + ", destination: "+destination);
             		//Add edge for this flight, if both source & destination are already vertices.
             		//If one of these airports is missing, add vertex for it and then place edge.
             		if (!graph.hasVertex(source)) {

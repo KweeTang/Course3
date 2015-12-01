@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import util.MapLoader;
 
@@ -199,6 +200,7 @@ public abstract class Graph {
 			degrees.add(degree(i));
 		}
 		Collections.sort(degrees);
+		
 		return degrees.toString();
 	}
 	
@@ -272,15 +274,15 @@ public abstract class Graph {
 		System.out.println(test2Mat);
 		test2Mat.getDistance2(0);		
 		test2Mat.getDistance2(2);
-		
+*/		
 		GraphAdjList graphFromFile = new GraphAdjList();
-		MapLoader.loadMap("data/test.map", graphFromFile);
+		MapLoader.loadMap("data/ucsd.map", graphFromFile);
 		System.out.println(graphFromFile);
-*/
+
 		GraphAdjList airportGraph = new GraphAdjList();
+		MapLoader.loadRoutes("data/routesUA.dat", airportGraph);
 		System.out.println(airportGraph);
-		MapLoader.loadRoutes("data/routesMaster.dat", airportGraph);
-		System.out.println(airportGraph);
+		
 
 	}
 }
