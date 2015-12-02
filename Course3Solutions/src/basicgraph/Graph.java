@@ -12,7 +12,8 @@ import util.MapLoader;
 
 /** An abstract class that implements a directed graph. 
  * The graph may have self-loops, parallel edges. 
- * Vertices are labeled by integers 0 .. n-1. 
+ * Vertices are labeled by integers 0 .. n-1
+ * and may also have String labels.
  * The edges of the graph are not labeled.
  * Representation of edges is left abstract.
  * 
@@ -302,6 +303,10 @@ public abstract class Graph {
 		System.out.println("\tBOS: " + airportGraph.degree(airportGraph.getIndex("BOS")));
 		System.out.println("\tSAN: " + airportGraph.degree(airportGraph.getIndex("SAN")));
 		System.out.println("****");
+		
+		System.out.println("Testing distance-two methods on sample graphs...");
+		System.out.println("Goal: implement method using two approaches.");
+
 		
 		Graph test1List = buildTestGraph1("list");
 		System.out.println(test1List);
