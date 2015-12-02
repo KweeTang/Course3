@@ -8,7 +8,7 @@ public class GraphTester {
 	public static void main(String[] args)
 	{
 		GraphAdjList listGraph = new GraphAdjList();
-		MapLoader.loadOneWayMap("data/simpletestOneWay.map", listGraph);
+		MapLoader.loadOneWayMap("data/ucsd.map", listGraph);
 		System.out.println(listGraph.getNumVertices() + " " + listGraph.getNumEdges());
 		System.out.println(listGraph.degreeSequence());
 		
