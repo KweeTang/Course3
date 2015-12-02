@@ -142,10 +142,18 @@ public abstract class Graph {
 	// For learners to implement
 	public String degreeSequence() {
 		List<Integer> degrees = new ArrayList<Integer>();
+		int deg;
 		for (int i = 0; i < numVertices; i ++) {
-			degrees.add(degree(i));
+			deg = degree(i);
+			degrees.add(deg);
+			//Print labels of degree 1 vertices
+			//if (deg == 1) {
+			//	System.out.println("Vertex " + i + ", " + getLabel(i) + ": " + deg);
+			//}
+
 		}
 		Collections.sort(degrees);
+		
 		
 		return degrees.toString();
 	}

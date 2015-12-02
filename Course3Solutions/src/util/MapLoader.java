@@ -556,8 +556,8 @@ public class MapLoader
             reader = new BufferedReader(new FileReader(filename));
             while ((nextLine = reader.readLine()) != null) {
             	String[] flightInfo = nextLine.split(",");
-            	//Only count nonstop flights
-            	if (Integer.parseInt(flightInfo[7])==0) {
+//           	//Only count nonstop flights
+//            	if (Integer.parseInt(flightInfo[7])==0) {
             		source = flightInfo[2];
             		destination = flightInfo[4];
                 	//System.out.print("Line:" + lineCount);
@@ -581,7 +581,7 @@ public class MapLoader
             		graph.addEdge(sourceIndex, destinationIndex);
             	}
             	lineCount ++;
-            }
+//           }
     		reader.close();
 		} catch (IOException e) {
             System.err.println("Problem loading route file: " + filename);
