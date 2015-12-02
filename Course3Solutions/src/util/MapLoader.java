@@ -15,9 +15,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import basicgraph.Graph;
 import geography.GeographicPoint;
 import geography.RoadSegment;
 import roadgraph.MapGraph;
+import week2example.Maze;
 
 /**
  * @author Christine
@@ -235,7 +237,7 @@ public class MapLoader
 	 * Loads a graph from a file.  The file is specified with each 
 	 * line representing an edge.  Vertices are numbered from 
 	 * 0..1-numVertices.
-	 * The first line of the file containts a single int which is the 
+	 * The first line of the file contains a single int which is the 
 	 * number of vertices in the graph.
 	 * @param filename The file containing the graph
 	 * @param theGraph The graph to be loaded
@@ -528,6 +530,72 @@ public class MapLoader
 		
 	}
 	
+	
+	/** Read in a file specifying route maps between airports.
+	 * The file contains data as follows:
+	 * Airline, AirlineID, Source airport, Source airport ID,
+	 * Destination airport, Destination airport ID, Codeshare, Stops, Equipment
+	 * This method will only read in nonstop routes (with Stops == 0)
+	 * Vertices are airports (labeled with Strings)
+	 * Edges represent nonstop routes
+	 * @param filename
+	 * @param graph
+	 */
+	public static void loadRoutes(String filename, Graph graph)
+	{
+		String source;
+		String destination;
+		int sourceIndex;
+		int destinationIndex;
+		
+		int lineCount = 0; //for debugging
+		
+		//Initialize vertex label HashMap in graph
+		graph.initializeLabels();
+		
+		//Read in flights from file
+		BufferedReader reader = null;
+		try {
+            String nextLine;
+            reader = new BufferedReader(new FileReader(filename));
+            while ((nextLine = reader.readLine()) != null) {
+            	String[] flightInfo = nextLine.split(",");
+            	//Only count nonstop flights
+            	if (Integer.parseInt(flightInfo[7])==0) {
+            		source = flightInfo[2];
+            		destination = flightInfo[4];
+                	//System.out.print("Line:" + lineCount);
+                	//System.out.println(". Source: "+ source + ", destination: "+destination);
+            		//Add edge for this flight, if both source & destination are already vertices.
+            		//If one of these airports is missing, add vertex for it and then place edge.
+            		if (!graph.hasVertex(source)) {
+            			sourceIndex = graph.addVertex();
+            			graph.addLabel(sourceIndex, source);
+            		}
+            		else {
+            			sourceIndex = graph.getIndex(source);
+            		}
+            		if (!graph.hasVertex(destination)) {
+            			destinationIndex = graph.addVertex();
+            			graph.addLabel(destinationIndex, destination);
+            		}
+            		else {
+            			destinationIndex = graph.getIndex(destination);
+            		}
+            		graph.addEdge(sourceIndex, destinationIndex);
+            	}
+            	lineCount ++;
+            }
+    		reader.close();
+		} catch (IOException e) {
+            System.err.println("Problem loading route file: " + filename);
+            e.printStackTrace();
+        }
+
+	}
+	
+
+	
 }
 
 class LineInfo
@@ -591,5 +659,6 @@ class LineInfo
 		return this.point1 + " " + this.point2 + " " + this.roadName + " " + this.roadType;
 		
 	}
+	
 	
 }

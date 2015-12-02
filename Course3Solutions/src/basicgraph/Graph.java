@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import util.MapLoader;
 
@@ -23,13 +24,20 @@ public abstract class Graph {
 
 	private int numVertices;
 	private int numEdges;
-
+	//optional association of String labels to vertices 
+	private Map<Integer,String> vertexLabels;
+	
 	/**
 	 * Create a new empty Graph
 	 */
 	public Graph() {
 		numVertices = 0;
 		numEdges = 0;
+		vertexLabels = null;
+	}
+	
+	public void initializeLabels() {
+		vertexLabels = new HashMap<Integer,String>();
 	}
 	
 	/**
@@ -52,6 +60,48 @@ public abstract class Graph {
 	}
 	
 	/**
+	 * Test whether some vertex in the graph is labeled 
+	 * with a given String label
+	 * @param The String label being checked
+	 * @return True if there's a vertex in the graph with this label; false otherwise.
+	 */
+	public boolean hasVertex(String s)
+	{
+		return vertexLabels.containsValue(s);
+	}
+	
+	/**
+	 * Add label to an unlabeled vertex in the graph.
+	 * @param The index of the vertex to be labeled.
+	 * @param The label to be assigned to this vertex.
+	 */
+	public void addLabel(int v, String s) {
+		if (v < getNumVertices() && !vertexLabels.containsKey(v)) 
+		{
+			vertexLabels.put(v, s);
+		}
+		else {
+			System.out.println("ERROR: tried to label a vertex that is out of range or already labeled");
+		}
+	}
+	
+	public String getLabel(int v) {
+		if (vertexLabels.containsKey(v)) {
+			return vertexLabels.get(v);
+		}
+		else return null;
+	}
+
+	public int getIndex(String s) {
+		for (Map.Entry<Integer,String> entry : vertexLabels.entrySet()) {
+			if (entry.getValue().equals(s))
+				return entry.getKey();
+		}
+		System.out.println("ERROR: No vertex with this label");
+		return -1;
+	}
+	
+	/**
 	 * Report size of edge set
 	 * @return The number of edges in the graph.
 	 */	
@@ -64,10 +114,12 @@ public abstract class Graph {
 	 * have as its index the next available integer.
 	 * Precondition: contiguous integers are used to 
 	 * index vertices.
+	 * @return index of newly added vertex
 	 */
-	public void addVertex() {
+	public int addVertex() {
 		implementAddVertex();
 		numVertices ++;
+		return (numVertices-1);
 	}
 	
 	/**
@@ -135,7 +187,7 @@ public abstract class Graph {
 	public String toString() {
 		String s = "\nGraph with " + numVertices + " vertices and " + numEdges + " edges.\n";
 		s += "Degree sequence: " + degreeSequence() + ".\n";
-		s += adjacencyString();
+		if (numVertices <= 20) s += adjacencyString();
 		return s;
 	}
 
@@ -148,6 +200,7 @@ public abstract class Graph {
 			degrees.add(degree(i));
 		}
 		Collections.sort(degrees);
+		
 		return degrees.toString();
 	}
 	
@@ -201,7 +254,7 @@ public abstract class Graph {
 	}
 	
 	public static void main (String[] args) {
-
+/*
 		Graph test1List = buildTestGraph1("list");
 		System.out.println(test1List);
 		test1List.getDistance2(0);
@@ -221,11 +274,15 @@ public abstract class Graph {
 		System.out.println(test2Mat);
 		test2Mat.getDistance2(0);		
 		test2Mat.getDistance2(2);
-		
+*/		
 		GraphAdjList graphFromFile = new GraphAdjList();
-		MapLoader.loadMap("data/test.map", graphFromFile);
+		MapLoader.loadMap("data/ucsd.map", graphFromFile);
 		System.out.println(graphFromFile);
 
+		GraphAdjList airportGraph = new GraphAdjList();
+		MapLoader.loadRoutes("data/routesUA.dat", airportGraph);
+		System.out.println(airportGraph);
+		
 
 	}
 }

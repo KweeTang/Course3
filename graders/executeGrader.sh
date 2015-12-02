@@ -2,7 +2,8 @@
 
 cd /grader
 
-MOD1_ID="temp"
+MOD1_PART1_ID="temp"
+MOD1_PART2_ID="temp1"
 MOD2_ID="temp2"
 MOD3_ID="temp3"
 
@@ -27,8 +28,11 @@ while [ $# -gt 1 ]
   shift
 done
 
-if [ "$PARTID" == "$MOD1_ID" ]; then
-  FILENAME="basicgraph.GraphGrader"
+if [ "$PARTID" == "$MOD1_PART1_ID"] || [ "$PARTID" == "$MOD1_PART2_ID" ]; then
+  if [ "$PARTID" == "$MOD1_PART1_ID" ]; then
+    FILENAME="basicgraph.DegreeGrader"
+  else
+    FILENAME="basicgraph.GraphGrader"
   GRADER_DIRECTORY="mod1"
   7z e -ozipfile /shared/submission/mod1.zip > /dev/null
   cd zipfile

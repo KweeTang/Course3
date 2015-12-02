@@ -1,5 +1,7 @@
 package basicgraph;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +12,7 @@ public class DegreeGrader {
 
     private int correct;
 
-    private static final int TESTS = 12;
+    private static final int TESTS = 14;
 
     public static String printList(List<Integer> lst) {
         String res = "";
@@ -33,30 +35,74 @@ public class DegreeGrader {
         grader.run();
     }
 
-    public void runTest(int i, String desc, int start, List<Integer> corr) {
+    public void runTest(int i, String desc, int start) {
         GraphAdjList lst = new GraphAdjList();
         GraphAdjMatrix mat = new GraphAdjMatrix();
+
+        String file = "data/graph" + i + ".txt";
+        String corr = readCorrect(file + ".degrees");
         
         feedback += "\\n\\nGRAPH: " + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list"); 
 
-        MapLoader.loadGraph("data/graph" + i + ".txt", lst);
-        List<Integer> result = lst.getDistance2(start);
-        if (result.size() != corr.size() || !result.containsAll(corr)) {
-            feedback += "FAILED. Expected " + printList(corr) + ", got " + printList(result) + ".";
+        MapLoader.loadGraph(file, lst);
+/*
+        try {
+            PrintWriter tempout = new PrintWriter(file + ".degrees");
+            String result = lst.degreeSequence();
+            tempout.println(result);
+            tempout.close();
+        } catch (Exception e) {
+        }
+*/            
+        String result = lst.degreeSequence();
+        judge(result, corr);
+ 
+        feedback += appendFeedback(i * 2, "Testing adjacency matrix");
+        MapLoader.loadGraph(file, mat);
+        result = mat.degreeSequence();
+        judge(result, corr);
+    }
+
+    public void runSpecialTest(int i, String file, String desc, int start) {
+        GraphAdjList lst = new GraphAdjList();
+        GraphAdjMatrix mat = new GraphAdjMatrix();
+
+        //String corr = readCorrect(file + ".degrees");
+
+        feedback += "\\n\\n" + desc;
+        feedback += appendFeedback(i * 2 - 1, "Testing adjacency list");
+
+        MapLoader.loadOneWayMap("data/" + file, lst);
+
+        String result = lst.degreeSequence();
+        //judge(result, corr);
+
+        System.out.println(lst.adjacencyString());
+        feedback += appendFeedback(i * 2, "Testing adjacency matrix");
+        MapLoader.loadMap("data/" + file, mat);
+        result = mat.degreeSequence();
+        //judge(result, corr);
+        System.out.println(mat.adjacencyString());
+
+    }
+
+    public void judge(String result, String corr) {
+        if (result.length() != corr.length() || !result.equals(corr)) {
+            feedback += "FAILED. Expected " + corr + ", got " + result + ". ";
         } else {
             feedback += "PASSED.";
             correct++;
         }
- 
-        feedback += appendFeedback(i * 2, "Testing adjacency matrix");
-        MapLoader.loadGraph("data/graph" + i + ".txt", mat);
-        result = mat.getDistance2(start);
-        if (result.size() != corr.size() || !result.containsAll(corr)) {
-            feedback += "FAILED. Expected " + printList(corr) + ", got " + printList(result) + ".";
-        } else {
-            feedback += "PASSED.";
-            correct++;
+    }
+
+    public String readCorrect(String file) {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            return br.readLine();
+        } catch (Exception e) {
+            feedback += "\\nCould not open answer file! Please submit a bug report.";
+            return "";
         }
     }
 
@@ -72,36 +118,21 @@ public class DegreeGrader {
         }
 
         correct = 0;
-        ArrayList<Integer> correctAns;
 
         try {
-            correctAns = new ArrayList<Integer>();
-            correctAns.add(7);
-            runTest(1, "Straight line (0->1->2->3->...)", 5, correctAns);
+            runTest(1, "Straight line (0->1->2->3->...)", 5);
 
-            correctAns = new ArrayList<Integer>();
-            correctAns.add(4);
-            correctAns.add(6);
-            correctAns.add(8);
-            runTest(2, "Undirected straight line (0<->1<->2<->3<->...)", 6, correctAns);
+            runTest(2, "Undirected straight line (0<->1<->2<->3<->...)", 6);
 
-            correctAns = new ArrayList<Integer>();
-            correctAns.add(0);
-            runTest(3, "Star graph - 0 is connected in both directions to all nodes except itself (starting at 0)", 0, correctAns);
+            runTest(3, "Star graph - 0 is connected in both directions to all nodes except itself (starting at 0)", 0);
 
-            correctAns = new ArrayList<Integer>();
-            for (int i = 1; i < 10; i++)
-                correctAns.add(i);
-            runTest(4, "Star graph (starting at 5)", 5, correctAns);
+            runTest(4, "Star graph (starting at 5)", 5);
             
-            correctAns = new ArrayList<Integer>();
-            for (int i = 6; i < 11; i++)
-                correctAns.add(i);
-            runTest(5, "Star graph - Each 'arm' consists of two undirected edges leading away from 0 (starting at 0)", 0, correctAns);
+            runTest(5, "Star graph - Each 'arm' consists of two undirected edges leading away from 0 (starting at 0)", 0);
 
-            correctAns = new ArrayList<Integer>();
-            runTest(6, "Same graph as before (starting at 5)", 5, correctAns);
+            runTest(6, "Same graph as before (starting at 5)", 5);
 
+            runSpecialTest(7, "ucsd.map", "UCSD MAP: Intersections around UCSD", 4);
 
             if (correct == TESTS)
                 feedback = "All tests passed. Great job!" + feedback;
