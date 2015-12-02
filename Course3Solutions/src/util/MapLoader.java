@@ -51,7 +51,6 @@ public class MapLoader
 		for (GeographicPoint pt : intersections) {
 			map.addNode(pt);
 			nodes.add(pt);
-			System.out.println(pt);
 		}
 		
 		addEdgesAndSegments(nodes, pointMap, map, segments);
@@ -113,11 +112,9 @@ public class MapLoader
 		
         // Add the nodes to the graph
 		List<GeographicPoint> intersections = findIntersections(pointMap);
-		System.out.println("Done finding intersections:");
 		for (GeographicPoint pt : intersections) {
 			map.addNode(pt);
 			nodes.add(pt);
-			System.out.println(pt);
 		}
 		
 		
@@ -153,7 +150,6 @@ public class MapLoader
 			// Trace the node to its next node, building up the points 
 			// on the edge as you go.
 			GeographicPoint pt = vertexMap.get(nodeNum);
-			System.out.println("Finding edges out of " + nodeNum);
 			List<LinkedList<LineInfo>> inAndOut = pointMap.get(pt);
 			List<LineInfo> infoList = inAndOut.get(0);
 			for (LineInfo info : infoList) {
