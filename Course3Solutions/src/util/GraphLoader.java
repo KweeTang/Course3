@@ -236,7 +236,7 @@ public class GraphLoader
 			// Trace the node to its next node, building up the points 
 			// on the edge as you go.
 			GeographicPoint pt = vertexMap.get(nodeNum);
-			System.out.println("Finding edges out of " + nodeNum);
+			//System.out.println("Finding edges out of " + nodeNum);
 			List<LinkedList<LineInfo>> inAndOut = pointMap.get(pt);
 			List<LineInfo> infoList = inAndOut.get(0);
 			for (LineInfo info : infoList) {
@@ -654,8 +654,8 @@ public class GraphLoader
             reader = new BufferedReader(new FileReader(filename));
             while ((nextLine = reader.readLine()) != null) {
             	String[] flightInfo = nextLine.split(",");
-            	//Only count nonstop flights
-            	if (Integer.parseInt(flightInfo[7])==0) {
+//           	//Only count nonstop flights
+//            	if (Integer.parseInt(flightInfo[7])==0) {
             		source = flightInfo[2];
             		destination = flightInfo[4];
                 	//System.out.print("Line:" + lineCount);
@@ -679,7 +679,7 @@ public class GraphLoader
             		graph.addEdge(sourceIndex, destinationIndex);
             	}
             	lineCount ++;
-            }
+//           }
     		reader.close();
 		} catch (IOException e) {
             System.err.println("Problem loading route file: " + filename);

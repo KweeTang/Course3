@@ -18,12 +18,12 @@ public class GraphTester {
 		GraphLoader.testLineInfo(pt1, pt2, "Main");
 		
 		
-		/*
+		
 		GraphAdjMatrix matGraph = new GraphAdjMatrix();
 		MapLoader.loadMap("data/ucsdtest.map", matGraph);
 		System.out.println(matGraph.getNumVertices() + " " + matGraph.getNumEdges());
 		System.out.println(matGraph.degreeSequence());
-		*/
+		
 		
 	}
 	
