@@ -14,7 +14,7 @@ import java.util.Set;
 
 import geography.GeographicPoint;
 import geography.RoadSegment;
-import util.MapLoader;
+import util.GraphLoader;
 
 /**
  * @author UCSD MOOC development team
@@ -220,7 +220,6 @@ public class MapGraph {
 					toExplore.add(neighbor);
 				}
 			}
-		
 		}
 		if (!next.equals(endNode)) {
 			System.out.println("No path found from " +start+ " to " + goal);
@@ -238,9 +237,9 @@ public class MapGraph {
 					MapNode start, MapNode goal)
 	{
 		LinkedList<GeographicPoint> path = new LinkedList<GeographicPoint>();
-		MapNode current = start;
+		MapNode current = goal;
 		
-		while (!current.equals(goal)) {
+		while (!current.equals(start)) {
 			path.addFirst(current.getLocation());
 			current = parentMap.get(current);
 		}
@@ -273,7 +272,7 @@ public class MapGraph {
 				new HashMap<GeographicPoint,HashSet<RoadSegment>>();
 		//MapLoader.loadMap("data/ucsdtest2.map", theMap, theRoads);
 		
-		MapLoader.loadOneWayMap("data/testFromAdam.map", theMap, theRoads);
+		GraphLoader.loadOneWayMap("data/testFromAdam.map", theMap, theRoads);
 		System.out.println("DONE.");
 		
 		System.out.println("Num nodes: " + theMap.getNumVertices());

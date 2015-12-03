@@ -9,15 +9,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import util.MapLoader;
+import util.GraphLoader;
 import geography.*;
 
-public class SearchGrader {
-    private String feedback;
+public class SearchGrader implements Runnable {
+    public String feedback;
 
-    private int correct;
+    public int correct;
 
-    private static final int TESTS = 14;
+    private static final int TESTS = 12;
+
+    public PrintWriter out;
 
     public static String printList(List<Integer> lst) {
         String res = "";
@@ -37,17 +39,31 @@ public class SearchGrader {
 
     public static void main(String[] args) {
         SearchGrader grader = new SearchGrader();
-        grader.run();
+        Thread thread = new Thread(grader);
+        thread.start();
+        long endTime = System.currentTimeMillis() + 10000;
+        boolean infinite = false;
+        while(thread.isAlive()) {
+            if (System.currentTimeMillis() > endTime) {
+                thread.stop();
+                infinite = true;
+                break;
+            }
+        }
+        if (infinite) {
+            grader.out.println(makeJson((double)grader.correct / TESTS, grader.feedback + "\\nYour program entered an infinite loop."));
+            grader.out.close();
+        }
     }
 
     public void runTest(int i, String file, String desc, GeographicPoint start, GeographicPoint end) {
         MapGraph graph = new MapGraph();
-        HashMap<GeographicPoint, HashSet<RoadSegment>> segments = new HashMap<GeographicPoint, HashSet<RoadSegment>>();
 
         feedback += "\\n\\n" + desc;
 
-        MapLoader.loadOneWayMap("data/" + file, graph, segments);
+        GraphLoader.loadOneWayMap("data/" + file, graph);
         CorrectAnswer corr = new CorrectAnswer("data/" + file + ".answer");
+        //printCorrect("data/" + file + ".answer", graph, start, end);
 
         judge(i, graph, corr, start, end);
     }
@@ -72,7 +88,12 @@ public class SearchGrader {
         feedback += appendFeedback(i * 3, "Testing BFS");
         List<GeographicPoint> bfs = result.bfs(start, end);
         if (bfs == null) {
-            feedback += "FAILED. Your implementation returned null.";
+            if (corr.path == null) {
+                feedback += "PASSED.";
+                correct++;
+            } else {
+                feedback += "FAILED. Your implementation returned null; expected \\n" + printBFSList(corr.path) + ".";
+            }
         } else if (bfs.size() != corr.path.size() || !corr.path.containsAll(bfs)) {
             feedback += "FAILED. Expected: \\n" + printBFSList(corr.path) + "Got: \\n" + printBFSList(bfs);
             if (bfs.size() != corr.path.size()) {
@@ -96,20 +117,24 @@ public class SearchGrader {
 
     public void printCorrect(String file, MapGraph graph, GeographicPoint start, GeographicPoint end) {
         try {
-            PrintWriter out = new PrintWriter(file);
-            out.println(graph.getNumVertices());
-            out.println(graph.getNumEdges());
+            PrintWriter outfile = new PrintWriter(file);
+            outfile.println(graph.getNumVertices());
+            outfile.println(graph.getNumEdges());
             List<GeographicPoint> bfs = graph.bfs(start, end);
-            for (GeographicPoint point : bfs) {
-                out.println(point.getX() + " " + point.getY());
+            if (bfs != null) {
+                for (GeographicPoint point : bfs) {
+                    outfile.println(point.getX() + " " + point.getY());
+                }
             }
+            outfile.close();
         } catch (Exception e) {
+            e.printStackTrace();
             feedback += "\\nCould not open answer file! Please submit a bug report.";
         }
     }
 
+    @Override
     public void run() {
-        PrintWriter out;
         feedback = "";
 
         try {
@@ -122,19 +147,13 @@ public class SearchGrader {
         correct = 0;
 
         try {
-            runTest(1, "Straight line (0->1->2->3->...)", 5);
+            runTest(1, "map1.txt", "Straight line (0->1->2->3->...)", new GeographicPoint(0, 0), new GeographicPoint(6, 6));
 
-            runTest(2, "Undirected straight line (0<->1<->2<->3<->...)", 6);
+            runTest(2, "map2.txt", "Undirected straight line (0<->1<->2<->3<->...)", new GeographicPoint(6, 6), new GeographicPoint(0, 0));
 
-            runTest(3, "Star graph - 0 is connected in both directions to all nodes except itself (starting at 0)", 0);
+            runTest(3, "map3.txt", "Star graph - 0 is connected in both directions to all nodes except itself (starting at 0)", new GeographicPoint(0, 0), new GeographicPoint(1, 2));
 
-            runTest(4, "Star graph (starting at 5)", 5);
-            
-            runTest(5, "Star graph - Each 'arm' consists of two undirected edges leading away from 0 (starting at 0)", 0);
-
-            runTest(6, "Same graph as before (starting at 5)", 5);
-
-            runSpecialTest(7, "ucsd.map", "UCSD MAP: Intersections around UCSD", 4);
+            runTest(4, "ucsd.map", "UCSD MAP: Intersections around UCSD", new GeographicPoint(32.8756538, -117.2435715), new GeographicPoint(32.8742087, -117.2381344));
 
             if (correct == TESTS)
                 feedback = "All tests passed. Great job!" + feedback;
@@ -159,7 +178,10 @@ class CorrectAnswer {
             Scanner s = new Scanner(new File(file));
             vertices = s.nextInt();
             edges = s.nextInt();
-            int i = 0;
+            path = null;
+            if (s.hasNextDouble()) {
+                path = new ArrayList<GeographicPoint>();
+            }
             while (s.hasNextDouble()) {
                 double x = s.nextDouble();
                 double y = s.nextDouble();

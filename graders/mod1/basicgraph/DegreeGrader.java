@@ -5,14 +5,14 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import util.MapLoader;
+import util.GraphLoader;
 
 public class DegreeGrader {
     private String feedback;
 
     private int correct;
 
-    private static final int TESTS = 14;
+    private static final int TESTS = 12;
 
     public static String printList(List<Integer> lst) {
         String res = "";
@@ -35,7 +35,7 @@ public class DegreeGrader {
         grader.run();
     }
 
-    public void runTest(int i, String desc, int start) {
+    public void runTest(int i, String desc) {
         GraphAdjList lst = new GraphAdjList();
         GraphAdjMatrix mat = new GraphAdjMatrix();
 
@@ -45,7 +45,7 @@ public class DegreeGrader {
         feedback += "\\n\\nGRAPH: " + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list"); 
 
-        MapLoader.loadGraph(file, lst);
+        GraphLoader.loadGraph(file, lst);
 /*
         try {
             PrintWriter tempout = new PrintWriter(file + ".degrees");
@@ -59,32 +59,35 @@ public class DegreeGrader {
         judge(result, corr);
  
         feedback += appendFeedback(i * 2, "Testing adjacency matrix");
-        MapLoader.loadGraph(file, mat);
+        GraphLoader.loadGraph(file, mat);
         result = mat.degreeSequence();
         judge(result, corr);
     }
 
-    public void runSpecialTest(int i, String file, String desc, int start) {
+    public void runSpecialTest(int i, String file, String desc, String type) {
         GraphAdjList lst = new GraphAdjList();
         GraphAdjMatrix mat = new GraphAdjMatrix();
 
-        //String corr = readCorrect(file + ".degrees");
+        file = "data/" + file;
+        String corr = readCorrect(file + ".degrees");
 
         feedback += "\\n\\n" + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list");
 
-        MapLoader.loadOneWayMap("data/" + file, lst);
+        if (type.equals("road")) {
+            GraphLoader.loadOneWayMap(file, lst);
+            GraphLoader.loadOneWayMap(file, mat);
+        } else if (type.equals("air")) {
+            GraphLoader.loadRoutes(file, lst);
+            GraphLoader.loadRoutes(file, mat);
+        }
 
         String result = lst.degreeSequence();
-        //judge(result, corr);
+        judge(result, corr);
 
-        System.out.println(lst.adjacencyString());
         feedback += appendFeedback(i * 2, "Testing adjacency matrix");
-        MapLoader.loadMap("data/" + file, mat);
         result = mat.degreeSequence();
-        //judge(result, corr);
-        System.out.println(mat.adjacencyString());
-
+        judge(result, corr);
     }
 
     public void judge(String result, String corr) {
@@ -120,19 +123,17 @@ public class DegreeGrader {
         correct = 0;
 
         try {
-            runTest(1, "Straight line (0->1->2->3->...)", 5);
+            runTest(1, "Straight line (0->1->2->3->...)");
 
-            runTest(2, "Undirected straight line (0<->1<->2<->3<->...)", 6);
+            runTest(2, "Undirected straight line (0<->1<->2<->3<->...)");
 
-            runTest(3, "Star graph - 0 is connected in both directions to all nodes except itself (starting at 0)", 0);
+            runTest(3, "Star graph - 0 is connected in both directions to all nodes except itself (starting at 0)");
 
-            runTest(4, "Star graph (starting at 5)", 5);
+            runTest(4, "Star graph - Each 'arm' consists of two undirected edges leading away from 0 (starting at 0)");
+
+            runSpecialTest(5, "ucsd.map", "UCSD MAP: Intersections around UCSD", "road");
             
-            runTest(5, "Star graph - Each 'arm' consists of two undirected edges leading away from 0 (starting at 0)", 0);
-
-            runTest(6, "Same graph as before (starting at 5)", 5);
-
-            runSpecialTest(7, "ucsd.map", "UCSD MAP: Intersections around UCSD", 4);
+            runSpecialTest(6, "routesUA.dat", "AIRLINE MAP: Routes of airplanes around the world", "air");
 
             if (correct == TESTS)
                 feedback = "All tests passed. Great job!" + feedback;

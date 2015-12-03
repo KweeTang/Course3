@@ -5,14 +5,14 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import util.MapLoader;
+import util.GraphLoader;
 
 public class GraphGrader {
     private String feedback;
 
     private int correct;
 
-    private static final int TESTS = 14;
+    private static final int TESTS = 16;
 
     public static String printList(List<Integer> lst) {
         String res = "";
@@ -42,29 +42,35 @@ public class GraphGrader {
         feedback += "\\n\\nGRAPH: " + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list"); 
 
-        MapLoader.loadGraph("data/graph" + i + ".txt", lst);
+        GraphLoader.loadGraph("data/graph" + i + ".txt", lst);
         List<Integer> result = lst.getDistance2(start);
         judge(result, corr);
  
         feedback += appendFeedback(i * 2, "Testing adjacency matrix");
-        MapLoader.loadGraph("data/graph" + i + ".txt", mat);
+        GraphLoader.loadGraph("data/graph" + i + ".txt", mat);
         result = mat.getDistance2(start);
         judge(result, corr);
     }
 
-    public void runSpecialTest(int i, String file, String desc, int start, List<Integer> corr) {
+    public void runSpecialTest(int i, String file, String desc, int start, List<Integer> corr, String type) {
         GraphAdjList lst = new GraphAdjList();
         GraphAdjMatrix mat = new GraphAdjMatrix();
 
         feedback += "\\n\\n" + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list");
 
-        MapLoader.loadMap("data/" + file, lst);
+        if (type.equals("road")) {
+            GraphLoader.loadOneWayMap("data/" + file, lst);
+            GraphLoader.loadOneWayMap("data/" + file, mat);
+        } else if (type.equals("air")) {
+            GraphLoader.loadRoutes("data/" + file, lst);
+            GraphLoader.loadRoutes("data/" + file, mat);
+        }
+
         List<Integer> result = lst.getDistance2(start);
         judge(result, corr);
 
         feedback += appendFeedback(i * 2, "Testing adjacency matrix");
-        MapLoader.loadMap("data/" + file, mat);
         result = mat.getDistance2(start);
         judge(result, corr);
     }
@@ -140,8 +146,11 @@ public class GraphGrader {
             correctAns = new ArrayList<Integer>();
             runTest(6, "Same graph as before (starting at 5)", 5, correctAns);
 
-            correctAns = readCorrect("ucsd_answer");
-            runSpecialTest(7, "ucsd_small_oneway.map", "UCSD MAP: Intersections around UCSD", 4, correctAns);
+            correctAns = readCorrect("ucsd.map.twoaway");
+            runSpecialTest(7, "ucsd.map", "UCSD MAP: Intersections around UCSD", 3, correctAns, "road");
+
+            correctAns = readCorrect("routesUA.dat.twoaway");
+            runSpecialTest(8, "routesUA.dat", "AIRLINE MAP: Airplane routes around the world", 6, correctAns, "air");
 
             if (correct == TESTS)
                 feedback = "All tests passed. Great job!" + feedback;

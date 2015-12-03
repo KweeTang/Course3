@@ -211,7 +211,6 @@ public class MapGraph {
 		MapNode next = null;
 		while (!toExplore.isEmpty()) {
 			next = toExplore.remove();
-			// System.out.println("Examining: " + next);
 			if (next.equals(endNode)) break;
 			Set<MapNode> neighbors = getNeighbors(next);
 			for (MapNode neighbor : neighbors) {
@@ -221,7 +220,6 @@ public class MapGraph {
 					toExplore.add(neighbor);
 				}
 			}
-		
 		}
 		if (!next.equals(endNode)) {
 			System.out.println("No path found from " +start+ " to " + goal);
@@ -239,16 +237,13 @@ public class MapGraph {
 					MapNode start, MapNode goal)
 	{
 		LinkedList<GeographicPoint> path = new LinkedList<GeographicPoint>();
-		// Leo - seems like a bug, reversing logic...
-		//MapNode current = start;  
+		// Leo - bug had us starting with start and ending at goal
 		MapNode current = goal;
 		
 		while (!current.equals(start)) {
-			//System.out.println("RP current =" + current);
 			path.addFirst(current.getLocation());
 			current = parentMap.get(current);
 		}
-		path.addFirst(start.getLocation());
 		return path;
 	}
 	
@@ -301,3 +296,4 @@ public class MapGraph {
 	}
 	
 }
+
