@@ -14,7 +14,7 @@ import java.util.Set;
 
 import geography.GeographicPoint;
 import geography.RoadSegment;
-import util.MapLoader;
+import util.GraphLoader;
 
 /**
  * @author UCSD MOOC development team
@@ -273,7 +273,7 @@ public class MapGraph {
 				new HashMap<GeographicPoint,HashSet<RoadSegment>>();
 		//MapLoader.loadMap("data/ucsdtest2.map", theMap, theRoads);
 		
-		MapLoader.loadOneWayMap("data/testFromAdam.map", theMap, theRoads);
+		GraphLoader.loadOneWayMap("data/testFromAdam.map", theMap, theRoads);
 		System.out.println("DONE.");
 		
 		System.out.println("Num nodes: " + theMap.getNumVertices());

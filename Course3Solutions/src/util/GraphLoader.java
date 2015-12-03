@@ -22,19 +22,27 @@ import roadgraph.MapGraph;
 import week2example.Maze;
 
 /**
- * @author Christine
+ * @author UCSD Intermediate Programming MOOC team
  *
- * A utility class that reads a file into a MapGraph
+ * A utility class that reads various kinds of files into different 
+ * graph structures.
  */
-public class MapLoader 
+public class GraphLoader 
 {
-	/** Read in a file specifying a map.
+	/**XXX WILL NOT BE IN STARTER CODE.
+	 * 
+	 *  Read in a file specifying a map.
+	 *
 	 * The file contains data as follows:
 	 * lat1 lon1 lat2 lon2 roadName roadType
 	 * This method will collapse the points so that only intersections 
 	 * are represented as nodes in the graph.
-	 * @param filename
-	 * @param map
+	 * @param filename The file containing the road data, in the format 
+	 *   described.
+	 * @param map The graph to load the map into
+	 * @param segments The collection of RoadSegments that define the 
+	 *   shape of a road.  These segments are maintained separately from 
+	 *   the graph as they are only used to display paths.
 	 */
 	public static void loadMap(String filename, MapGraph map, 
 				HashMap<GeographicPoint,HashSet<RoadSegment>> segments)
@@ -57,52 +65,56 @@ public class MapLoader
 		
 	}
 	
-	private static void addEdgesAndSegments(Collection<GeographicPoint> nodes, 
-			HashMap<GeographicPoint,List<LinkedList<LineInfo>>> pointMap,
-			MapGraph map, 
-			HashMap<GeographicPoint,HashSet<RoadSegment>> segments)
+	
+
+	/**
+	 * XXX: Will be in starter code with the name loadRoadMap
+	 * 
+	 *  Read in a file specifying a map.
+	 *
+	 * The file contains data lines as follows:
+	 * lat1 lon1 lat2 lon2 roadName roadType
+	 * 
+	 * where each line is a segment of a road
+	 * These road segments are assumed to be ONE WAY.
+	 * 
+	 * This method will collapse the points so that only intersections 
+	 * are represented as nodes in the graph.
+	 * 
+	 * @param filename The file containing the road data, in the format 
+	 *   described.
+	 * @param map The graph to load the map into.  The graph is
+	 *   assumed to be directed.
+	 * @param segments The collection of RoadSegments that define the 
+	 *   shape of a road.  These segments are maintained separately from 
+	 *   the graph as they are only used to display paths.
+	 */
+	public static void loadOneWayMap(String filename, roadgraph.MapGraph map)
 	{
-	
-		// Now we need to add the edges
-		// This is the tricky part
-		for (GeographicPoint pt : nodes) {
-			// Trace the node to its next node, building up the points 
-			// on the edge as you go.
-			List<LinkedList<LineInfo>> inAndOut = pointMap.get(pt);
-			LinkedList<LineInfo> outgoing = inAndOut.get(0);
-			for (LineInfo info : outgoing) {
-				HashSet<GeographicPoint> used = new HashSet<GeographicPoint>();
-				used.add(pt);
-				
-				List<GeographicPoint> pointsOnEdge = 
-						findPointsOnEdge(pointMap, info, nodes);
-				GeographicPoint end = pointsOnEdge.remove(pointsOnEdge.size()-1);
-				double length = getRoadLength(pt, end, pointsOnEdge);
-				map.addEdge(pt, end, info.roadName, info.roadType, length);
-
-				// Now create road Segments for each edge
-				HashSet<RoadSegment> segs = segments.get(pt);
-				if (segs == null) {
-					segs = new HashSet<RoadSegment>();
-					segments.put(pt,segs);
-				}
-				RoadSegment seg = new RoadSegment(pt, end, pointsOnEdge, 
-						info.roadName, info.roadType, length);
-				segs.add(seg);
-				segs = segments.get(end);
-				if (segs == null) {
-					segs = new HashSet<RoadSegment>();
-					segments.put(end,segs);
-				}
-				segs.add(seg);
-
-			}
-		}
+		loadOneWayMap(filename, map, null);
 	}
-			
-
 
 	
+	
+	/**
+	 * XXX: Will be in starter code with the name loadRoadMap
+	 * 
+	 *  Read in a file specifying a map.
+	 *
+	 * The file contains data lines as follows:
+	 * lat1 lon1 lat2 lon2 roadName roadType
+	 * 
+	 * where each line is a segment of a road
+	 * These road segments are assumed to be ONE WAY.
+	 * 
+	 * This method will collapse the points so that only intersections 
+	 * are represented as nodes in the graph.
+	 * 
+	 * @param filename The file containing the road data, in the format 
+	 *   described.
+	 * @param map The graph to load the map into.  The graph is
+	 *   assumed to be directed.
+	 */
 	public static void loadOneWayMap(String filename, roadgraph.MapGraph map,  
 			HashMap<GeographicPoint,HashSet<RoadSegment>> segments)
 	{
@@ -121,6 +133,26 @@ public class MapLoader
 		addEdgesAndSegments(nodes, pointMap, map, segments);
 	}
 
+	
+	/**
+	 * XXX: Will be in starter code with the name loadRoadMap
+	 * 
+	 *  Read in a file specifying a map.
+	 *
+	 * The file contains data lines as follows:
+	 * lat1 lon1 lat2 lon2 roadName roadType
+	 * 
+	 * where each line is a segment of a road
+	 * These road segments are assumed to be ONE WAY.
+	 * 
+	 * This method will collapse the points so that only intersections 
+	 * are represented as nodes in the graph.
+	 * 
+	 * @param filename The file containing the road data, in the format 
+	 *   described.
+	 * @param theGraph The graph to load the map into.  The graph is
+	 *   assumed to be directed.
+	 */
 	public static void loadOneWayMap(String filename, basicgraph.Graph theGraph)
 	{
 		HashMap<GeographicPoint,List<LinkedList<LineInfo>>> pointMap = 
@@ -163,7 +195,9 @@ public class MapLoader
 		}
 	}
 	
-	/** Load a file into a basicgraph Graph object.
+	/** 
+	 * XXX Will not be in the starter code.
+	 * Load a file into a basicgraph Graph object.
 	 * 
 	 * The file contains data as follows:
 	 * lat1 lon1 lat2 lon2 roadName roadType
@@ -214,6 +248,12 @@ public class MapLoader
 		}
 	}		
 
+	/**
+	 * XXX WILL NOT BE IN THE STARTER CODE.
+	 * @param pt1
+	 * @param pt2
+	 * @param roadName
+	 */
 	public static void testLineInfo(GeographicPoint pt1, 
 			GeographicPoint pt2, String roadName)
 	{
@@ -233,8 +273,16 @@ public class MapLoader
 	 * Loads a graph from a file.  The file is specified with each 
 	 * line representing an edge.  Vertices are numbered from 
 	 * 0..1-numVertices.
+	 * 
 	 * The first line of the file contains a single int which is the 
 	 * number of vertices in the graph.
+	 * e.g. 
+	 * 5
+	 * 1 3
+	 * 3 2
+	 * 3 5
+	 * 5 4
+	 * 
 	 * @param filename The file containing the graph
 	 * @param theGraph The graph to be loaded
 	 */
@@ -266,6 +314,56 @@ public class MapLoader
             e.printStackTrace();
         }
 	}
+	
+	// Once you have built the pointMap and added the Nodes, 
+	// add the edges and build the road segments if the segments
+	// map is not null.
+	private static void addEdgesAndSegments(Collection<GeographicPoint> nodes, 
+			HashMap<GeographicPoint,List<LinkedList<LineInfo>>> pointMap,
+			MapGraph map, 
+			HashMap<GeographicPoint,HashSet<RoadSegment>> segments)
+	{
+	
+		// Now we need to add the edges
+		// This is the tricky part
+		for (GeographicPoint pt : nodes) {
+			// Trace the node to its next node, building up the points 
+			// on the edge as you go.
+			List<LinkedList<LineInfo>> inAndOut = pointMap.get(pt);
+			LinkedList<LineInfo> outgoing = inAndOut.get(0);
+			for (LineInfo info : outgoing) {
+				HashSet<GeographicPoint> used = new HashSet<GeographicPoint>();
+				used.add(pt);
+				
+				List<GeographicPoint> pointsOnEdge = 
+						findPointsOnEdge(pointMap, info, nodes);
+				GeographicPoint end = pointsOnEdge.remove(pointsOnEdge.size()-1);
+				double length = getRoadLength(pt, end, pointsOnEdge);
+				map.addEdge(pt, end, info.roadName, info.roadType, length);
+
+				// If the segments variable is not null, then we 
+				// save the road geometry
+				if (segments != null) {
+					// Now create road Segments for each edge
+					HashSet<RoadSegment> segs = segments.get(pt);
+					if (segs == null) {
+						segs = new HashSet<RoadSegment>();
+						segments.put(pt,segs);
+					}
+					RoadSegment seg = new RoadSegment(pt, end, pointsOnEdge, 
+							info.roadName, info.roadType, length);
+					segs.add(seg);
+					segs = segments.get(end);
+					if (segs == null) {
+						segs = new HashSet<RoadSegment>();
+						segments.put(end,segs);
+					}
+					segs.add(seg);
+				}
+			}
+		}
+	}
+			
 	
 	private static double getRoadLength(GeographicPoint start, GeographicPoint end,
 			List<GeographicPoint> path)

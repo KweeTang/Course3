@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import util.MapLoader;
+import util.GraphLoader;
 
 /** An abstract class that implements a directed graph. 
  * The graph may have self-loops, parallel edges. 
@@ -276,11 +276,11 @@ public abstract class Graph {
 		test2Mat.getDistance2(2);
 */		
 		GraphAdjList graphFromFile = new GraphAdjList();
-		MapLoader.loadMap("data/ucsd.map", graphFromFile);
+		GraphLoader.loadMap("data/ucsd.map", graphFromFile);
 		System.out.println(graphFromFile);
 
 		GraphAdjList airportGraph = new GraphAdjList();
-		MapLoader.loadRoutes("data/routesUA.dat", airportGraph);
+		GraphLoader.loadRoutes("data/routesUA.dat", airportGraph);
 		System.out.println(airportGraph);
 		
 
