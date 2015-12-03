@@ -220,7 +220,6 @@ public class MapGraph {
 					toExplore.add(neighbor);
 				}
 			}
-		
 		}
 		if (!next.equals(endNode)) {
 			System.out.println("No path found from " +start+ " to " + goal);
@@ -238,9 +237,9 @@ public class MapGraph {
 					MapNode start, MapNode goal)
 	{
 		LinkedList<GeographicPoint> path = new LinkedList<GeographicPoint>();
-		MapNode current = start;
+		MapNode current = goal;
 		
-		while (!current.equals(goal)) {
+		while (!current.equals(start)) {
 			path.addFirst(current.getLocation());
 			current = parentMap.get(current);
 		}
