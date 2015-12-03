@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import geography.GeographicPoint;
 import geography.RoadSegment;
-import util.MapLoader;
+import util.GraphLoader;
 
 /**
  * @author UCSD MOOC development team and YOU
@@ -137,9 +137,7 @@ public class MapGraph {
 		System.out.print("Making a new map...");
 		MapGraph theMap = new MapGraph();
 		System.out.print("DONE. \nLoading the map...");
-		HashMap<GeographicPoint,HashSet<RoadSegment>> theRoads = 
-				new HashMap<GeographicPoint,HashSet<RoadSegment>>();
-		MapLoader.loadMap("data/simpletest.map", theMap, theRoads);
+		GraphLoader.loadRoadMap("data/simpletest.map", theMap);
 		System.out.println("DONE.");
 		
 		// You can use this for testing.  Feel free to change the name
