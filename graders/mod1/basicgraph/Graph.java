@@ -8,11 +8,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import util.MapLoader;
+import util.GraphLoader;
 
 /** An abstract class that implements a directed graph. 
  * The graph may have self-loops, parallel edges. 
- * Vertices are labeled by integers 0 .. n-1. 
+ * Vertices are labeled by integers 0 .. n-1
+ * and may also have String labels.
  * The edges of the graph are not labeled.
  * Representation of edges is left abstract.
  * 
@@ -35,10 +36,7 @@ public abstract class Graph {
 		numEdges = 0;
 		vertexLabels = null;
 	}
-	
-	public void initializeLabels() {
-		vertexLabels = new HashMap<Integer,String>();
-	}
+
 	
 	/**
 	 * Report size of vertex set
@@ -48,58 +46,6 @@ public abstract class Graph {
 		return numVertices;
 	}
 	
-	/**
-	 * Test whether some vertex in the graph is labeled 
-	 * with a given index.
-	 * @param The index being checked
-	 * @return True if there's a vertex in the graph with this index; false otherwise.
-	 */
-	public boolean hasVertex(int v)
-	{
-		return v < getNumVertices();
-	}
-	
-	/**
-	 * Test whether some vertex in the graph is labeled 
-	 * with a given String label
-	 * @param The String label being checked
-	 * @return True if there's a vertex in the graph with this label; false otherwise.
-	 */
-	public boolean hasVertex(String s)
-	{
-		return vertexLabels.containsValue(s);
-	}
-	
-	/**
-	 * Add label to an unlabeled vertex in the graph.
-	 * @param The index of the vertex to be labeled.
-	 * @param The label to be assigned to this vertex.
-	 */
-	public void addLabel(int v, String s) {
-		if (v < getNumVertices() && !vertexLabels.containsKey(v)) 
-		{
-			vertexLabels.put(v, s);
-		}
-		else {
-			System.out.println("ERROR: tried to label a vertex that is out of range or already labeled");
-		}
-	}
-	
-	public String getLabel(int v) {
-		if (vertexLabels.containsKey(v)) {
-			return vertexLabels.get(v);
-		}
-		else return null;
-	}
-
-	public int getIndex(String s) {
-		for (Map.Entry<Integer,String> entry : vertexLabels.entrySet()) {
-			if (entry.getValue().equals(s))
-				return entry.getKey();
-		}
-		System.out.println("ERROR: No vertex with this label");
-		return -1;
-	}
 	
 	/**
 	 * Report size of edge set
@@ -196,12 +142,95 @@ public abstract class Graph {
 	// For learners to implement
 	public String degreeSequence() {
 		List<Integer> degrees = new ArrayList<Integer>();
+		int deg;
 		for (int i = 0; i < numVertices; i ++) {
-			degrees.add(degree(i));
+			deg = degree(i);
+			degrees.add(deg);
+			//Print labels of degree 1 vertices
+			//if (deg == 1) {
+			//	System.out.println("Vertex " + i + ", " + getLabel(i) + ": " + deg);
+			//}
+
 		}
 		Collections.sort(degrees);
 		
+		
 		return degrees.toString();
+	}
+	
+	
+	// The next methods implement labeled vertices.
+	// Basic graphs may or may not have labeled vertices.
+	
+	/**
+	 * Create a new map of vertex indices to string labels
+	 * (Optional: only if using labeled vertices.)
+	 */
+	public void initializeLabels() {
+		vertexLabels = new HashMap<Integer,String>();
+	}	
+	/**
+	 * Test whether some vertex in the graph is labeled 
+	 * with a given index.
+	 * @param The index being checked
+	 * @return True if there's a vertex in the graph with this index; false otherwise.
+	 */
+	public boolean hasVertex(int v)
+	{
+		return v < getNumVertices();
+	}
+	
+	/**
+	 * Test whether some vertex in the graph is labeled 
+	 * with a given String label
+	 * @param The String label being checked
+	 * @return True if there's a vertex in the graph with this label; false otherwise.
+	 */
+	public boolean hasVertex(String s)
+	{
+		return vertexLabels.containsValue(s);
+	}
+	
+	/**
+	 * Add label to an unlabeled vertex in the graph.
+	 * @param The index of the vertex to be labeled.
+	 * @param The label to be assigned to this vertex.
+	 */
+	public void addLabel(int v, String s) {
+		if (v < getNumVertices() && !vertexLabels.containsKey(v)) 
+		{
+			vertexLabels.put(v, s);
+		}
+		else {
+			System.out.println("ERROR: tried to label a vertex that is out of range or already labeled");
+		}
+	}
+	
+	/**
+	 * Report label of vertex with given index
+	 * @param The integer index of the vertex
+	 * @return The String label of this vertex 
+	 */
+	public String getLabel(int v) {
+		if (vertexLabels.containsKey(v)) {
+			return vertexLabels.get(v);
+		}
+		else return null;
+	}
+
+	/**
+	 * Report index of vertex with given label.
+	 * (Assume distinct labels for vertices.)
+	 * @param The String label of the vertex
+	 * @return The integer index of this vertex 
+	 */
+	public int getIndex(String s) {
+		for (Map.Entry<Integer,String> entry : vertexLabels.entrySet()) {
+			if (entry.getValue().equals(s))
+				return entry.getKey();
+		}
+		System.out.println("ERROR: No vertex with this label");
+		return -1;
 	}
 	
 	//Small graph example for testing.
@@ -254,7 +283,39 @@ public abstract class Graph {
 	}
 	
 	public static void main (String[] args) {
-/*
+		System.out.println("Loading graphs based on real data...");
+		System.out.println("Goal: use degree sequence to analyse graphs.");
+		
+		System.out.println("****");
+		System.out.println("Roads / intersections:");
+		GraphAdjList graphFromFile = new GraphAdjList();
+		GraphLoader.loadMap("data/ucsd.map", graphFromFile);
+		System.out.println(graphFromFile);
+		
+		System.out.println("Observe all degrees are <= 12.");
+		System.out.println("****");
+
+		System.out.println("\n****");
+		System.out.println("Flight data:");
+		GraphAdjList airportGraph = new GraphAdjList();
+		GraphLoader.loadRoutes("data/routesUA.dat", airportGraph);
+		System.out.println(airportGraph);
+		System.out.println("Observe most degrees are small (1-30), eight are over 100.");
+		System.out.println("What are heavy-weight vertices? Check hubs of UA:");
+		System.out.println("\tORD: " + airportGraph.degree(airportGraph.getIndex("ORD")));
+		System.out.println("\tIAD: " + airportGraph.degree(airportGraph.getIndex("IAD")));
+		System.out.println("\tEWR: " + airportGraph.degree(airportGraph.getIndex("EWR")));
+		System.out.println("\tDEN: " + airportGraph.degree(airportGraph.getIndex("DEN")));
+		System.out.println("\tIAH: " + airportGraph.degree(airportGraph.getIndex("IAH")));
+		System.out.println("\tCLE: " + airportGraph.degree(airportGraph.getIndex("CLE")));
+		System.out.println("\tBOS: " + airportGraph.degree(airportGraph.getIndex("BOS")));
+		System.out.println("\tSAN: " + airportGraph.degree(airportGraph.getIndex("SAN")));
+		System.out.println("****");
+		
+		System.out.println("Testing distance-two methods on sample graphs...");
+		System.out.println("Goal: implement method using two approaches.");
+
+		
 		Graph test1List = buildTestGraph1("list");
 		System.out.println(test1List);
 		test1List.getDistance2(0);
@@ -274,15 +335,15 @@ public abstract class Graph {
 		System.out.println(test2Mat);
 		test2Mat.getDistance2(0);		
 		test2Mat.getDistance2(2);
-*/		
+/*		
 		GraphAdjList graphFromFile = new GraphAdjList();
-		MapLoader.loadMap("data/ucsd.map", graphFromFile);
+		GraphLoader.loadMap("data/ucsd.map", graphFromFile);
 		System.out.println(graphFromFile);
 
 		GraphAdjList airportGraph = new GraphAdjList();
-		MapLoader.loadRoutes("data/routesUA.dat", airportGraph);
+		GraphLoader.loadRoutes("data/routesUA.dat", airportGraph);
 		System.out.println(airportGraph);
-		
+	*/	
 
 	}
 }

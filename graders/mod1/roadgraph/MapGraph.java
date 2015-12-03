@@ -14,7 +14,7 @@ import java.util.Set;
 
 import geography.GeographicPoint;
 import geography.RoadSegment;
-import util.MapLoader;
+import util.GraphLoader;
 
 /**
  * @author UCSD MOOC development team
@@ -170,8 +170,7 @@ public class MapGraph {
 	private void addEdge(MapNode n1, MapNode n2, String roadName, String roadType,
 			double length)
 	{
-		// We need to be careful to only add edges once because 
-		// we have no check for duplicate edges
+
 		MapEdge edge = new MapEdge(roadName, roadType, n1, n2, length);
 		edges.add(edge);
 		n1.addEdge(edge);
@@ -221,7 +220,6 @@ public class MapGraph {
 					toExplore.add(neighbor);
 				}
 			}
-		
 		}
 		if (!next.equals(endNode)) {
 			System.out.println("No path found from " +start+ " to " + goal);
@@ -239,9 +237,9 @@ public class MapGraph {
 					MapNode start, MapNode goal)
 	{
 		LinkedList<GeographicPoint> path = new LinkedList<GeographicPoint>();
-		MapNode current = start;
+		MapNode current = goal;
 		
-		while (!current.equals(goal)) {
+		while (!current.equals(start)) {
 			path.addFirst(current.getLocation());
 			current = parentMap.get(current);
 		}
@@ -272,12 +270,14 @@ public class MapGraph {
 		System.out.print("DONE. \nLoading the map...");
 		HashMap<GeographicPoint,HashSet<RoadSegment>> theRoads = 
 				new HashMap<GeographicPoint,HashSet<RoadSegment>>();
-		MapLoader.loadMap("data/ucsd.map", theMap, theRoads);
+		//MapLoader.loadMap("data/ucsdtest2.map", theMap, theRoads);
+		
+		GraphLoader.loadOneWayMap("data/testFromAdam.map", theMap, theRoads);
 		System.out.println("DONE.");
 		
-		//System.out.println("Num nodes: " + theMap.getNumVertices());
-		//System.out.println("Num edges: " + theMap.getNumEdges());
-		theMap.printEdgePointsToFile("data/ucsd.intersections.map");
+		System.out.println("Num nodes: " + theMap.getNumVertices());
+		System.out.println("Num edges: " + theMap.getNumEdges());
+		//theMap.printEdgePointsToFile("data/ucsd.intersections.map");
 		//theMap.printNodes();
 		//theMap.printEdges();
 		
