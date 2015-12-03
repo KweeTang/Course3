@@ -25,7 +25,7 @@ import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 import mapmaker.MapMaker;
 import netscape.javascript.JSObject;
-import util.MapLoader;
+import util.GraphLoader;
 
 // class for map and general application services (file IO, etc.)
 public class GeneralService {
@@ -92,7 +92,7 @@ public class GeneralService {
     	graph = new roadgraph.MapGraph();
     	roads = new HashMap<GeographicPoint,HashSet<RoadSegment>>();
 
-    	MapLoader.loadOneWayMap(filename, graph, roads);
+    	GraphLoader.loadOneWayMap(filename, graph, roads);
 
 
     	Iterator<GeographicPoint>it = graph.getNodes().iterator();
