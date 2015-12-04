@@ -244,6 +244,8 @@ public class MapGraph {
 			path.addFirst(current.getLocation());
 			current = parentMap.get(current);
 		}
+		// Leo - need to add the start node
+		path.addFirst(start.getLocation());
 		return path;
 	}
 	
