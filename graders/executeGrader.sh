@@ -1,10 +1,9 @@
 #! /bin/bash
-
 cd /grader
 
-MOD1_PART1_ID="temp"
-MOD1_PART2_ID="temp1"
-MOD2_ID="temp2"
+MOD1_PART1_ID="EmeoQ"
+MOD1_PART2_ID="SnOzZ"
+MOD2_ID="KzMMz"
 MOD3_ID="temp3"
 
 
@@ -28,11 +27,12 @@ while [ $# -gt 1 ]
   shift
 done
 
-if [ "$PARTID" == "$MOD1_PART1_ID"] || [ "$PARTID" == "$MOD1_PART2_ID" ]; then
+if [ "$PARTID" == "$MOD1_PART1_ID" ] || [ "$PARTID" == "$MOD1_PART2_ID" ]; then
   if [ "$PARTID" == "$MOD1_PART1_ID" ]; then
     FILENAME="basicgraph.DegreeGrader"
   else
     FILENAME="basicgraph.GraphGrader"
+  fi
   GRADER_DIRECTORY="mod1"
   7z e -ozipfile /shared/submission/mod1.zip > /dev/null
   cd zipfile
@@ -42,19 +42,19 @@ if [ "$PARTID" == "$MOD1_PART1_ID"] || [ "$PARTID" == "$MOD1_PART2_ID" ]; then
   fi
   cp * /grader/"$GRADER_DIRECTORY"/basicgraph/
   cd /grader/"$GRADER_DIRECTORY"
-  javac -encoding ISO-8859-1 basicgraph/*.java util/*.java 2>errorfile
+  javac -encoding ISO-8859-1 basicgraph/*.java 2>errorfile
 elif [ "$PARTID" == "$MOD2_ID" ]; then
-  FILENAME="week2example.bleh"
+  FILENAME="roadgraph.SearchGrader"
   GRADER_DIRECTORY="mod2"
   7z e -ozipfile /shared/submission/mod2.zip > /dev/null
   cd zipfile
-  if [ ! -f "EfficientDocument.java" ]; then
+  if [ ! -f "MapGraph.java" ]; then
     rm -rf __MACOSX > /dev/null
     cd *
   fi
-  cp * /grader/"$GRADER_DIRECTORY"/document/ 
+  cp * /grader/"$GRADER_DIRECTORY"/roadgraph/ 
   cd /grader/"$GRADER_DIRECTORY"
-  javac -encoding ISO-8859-1 -sourcepath document document/*.java 2>errorfile
+  javac -encoding ISO-8859-1 roadgraph/*.java 2>errorfile
 elif [ "$PARTID" == "$MOD3_ID" ]; then
   etc
 else
