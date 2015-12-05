@@ -99,6 +99,11 @@ public class RouteService {
 		return true;
 	}
 
+    public boolean displayRoute(geography.GeographicPoint start, geography.GeographicPoint end) {
+
+        return true;
+    }
+
 	public boolean displayRoute(String filename) {
 		List<LatLong> path = parseRouteFromFile(filename);
 		return displayRoute(path);

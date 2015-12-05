@@ -4,12 +4,15 @@
 package application;
 
 import javafx.application.Application;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Cell;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
@@ -66,7 +69,13 @@ public class MapApp extends Application
         TextField tf = new TextField();
         ComboBox<DataSet> cb = new ComboBox<DataSet>();
         setupFetchTab(fetchTab, fetchButton, displayButton, tf, cb);
-        setupRouteTab(routeTab);
+
+
+
+        Button routeButton = new Button("Get Route");
+        CLabel<geography.GeographicPoint> startLabel = new CLabel<geography.GeographicPoint>("Empty.", null);
+        CLabel<geography.GeographicPoint> endLabel = new CLabel<geography.GeographicPoint>("Empty.", null);
+        setupRouteTab(routeTab,startLabel, endLabel, routeButton);
 
 		TabPane tp = new TabPane(routeTab, fetchTab);
         tp.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
@@ -74,13 +83,13 @@ public class MapApp extends Application
 
 //		rightPanel.getChildren().add(panelV);
 //		panelV.getChildren().add(button);
-        // initialize Services and controlelrs after map is loaded
+        // initialize Services and controllers after map is loaded
         mapComponent.addMapReadyListener(() -> {
             ClientService cs = new ClientService();
-            GeneralService gs = new GeneralService(mapComponent, this);
+            GeneralService gs = new GeneralService(mapComponent, this, null);
             RouteService rs = new RouteService(mapComponent);
             System.out.println("in map ready : " + this.getClass());
-    		RouteController routeController = new RouteController(rs, this, button);
+    		RouteController routeController = new RouteController(rs, routeButton, startLabel, endLabel);
             ClientMapController userController = new ClientMapController(gs, this);
             FetchController fetchController = new FetchController(gs, tf, fetchButton, cb, displayButton);
         });
@@ -160,10 +169,28 @@ public class MapApp extends Application
      * @param routeTab
      * @param box
      */
-    private void setupRouteTab(Tab routeTab) {
-        VBox v = new VBox();
-        HBox h = new HBox();
+    private void setupRouteTab(Tab routeTab, Label startLabel, Label endLabel, Button button){
 
+        HBox h = new HBox();
+    	// v is inner container
+        VBox v = new VBox();
+        h.getChildren().add(v);
+
+        HBox selectControls = new HBox();
+        VBox selectLeft = new VBox();
+
+
+        selectLeft.getChildren().add(new Label("Start Node : "));
+        selectLeft.getChildren().add(startLabel);
+        selectLeft.getChildren().add(new Label("Destination Node : "));
+        selectLeft.getChildren().add(endLabel);
+
+        selectControls.getChildren().add(selectLeft);
+
+        v.getChildren().add(selectControls);
+        v.getChildren().add(button);
+
+        routeTab.setContent(h);
 
 
     }

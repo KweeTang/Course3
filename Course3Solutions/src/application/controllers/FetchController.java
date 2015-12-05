@@ -23,6 +23,7 @@ import javafx.util.Callback;
 import mapmaker.MapMaker;
 
 public class FetchController {
+    private static final int ROW_COUNT = 5;
     GeneralService generalService;
     private Node container;
     private Button fetchButton;
@@ -37,19 +38,20 @@ public class FetchController {
 	// TODO CENTER ON ROUTE, GET BOUND OF AREA, THINK OF UI
 
     // do i need reference to App?
-    public FetchController(GeneralService generalService, TextField writeFile, Button fetchButton, ComboBox cb, Button displayButton) {
+    public FetchController(GeneralService generalService, TextField writeFile, Button fetchButton, ComboBox<DataSet> cb, Button displayButton) {
         this.generalService = generalService;
         this.fetchButton = fetchButton;
         this.displayButton = displayButton;
         this.writeFile = writeFile;
         dataChoices = cb;
-        setupComboCells(dataChoices);
+        setupComboCells();
         setupFetchButton();
         setupDisplayButton();
     }
 
-    private void setupComboCells(ComboBox<DataSet> cb) {
-    	cb.setCellFactory(new Callback<ListView<DataSet>, ListCell<DataSet>>() {
+    private void setupComboCells() {
+    	//dataChoices.setVisibleRowCount(ROW_COUNT);
+    	dataChoices.setCellFactory(new Callback<ListView<DataSet>, ListCell<DataSet>>() {
         	@Override public ListCell<DataSet> call(ListView<DataSet> p) {
         		return new ListCell<DataSet>() {
         			{
@@ -73,6 +75,19 @@ public class FetchController {
 
         	}
     	});
+
+        dataChoices.setButtonCell(new ListCell<DataSet>() {
+        	@Override
+        	protected void updateItem(DataSet t, boolean bln) {
+        		super.updateItem(t,  bln);
+        		if(t!=null) {
+        			setText(t.getFileName());
+        		}
+        		else {
+        			setText("Choose...");
+        		}
+        	}
+        });
     }
 
     private void setupFetchButton() {
@@ -80,7 +95,7 @@ public class FetchController {
     		String fName = writeFile.getText();
     		if(generalService.goodDataFileName(fName)) {
                 System.out.println("file name is good");
-    			generalService.runFetchTask(fName, dataChoices);
+    			generalService.runFetchTask(fName, dataChoices, fetchButton);
 
     		}
     		else {
@@ -100,27 +115,27 @@ public class FetchController {
     private void setupDisplayButton() {
     	displayButton.setOnAction( e -> {
             System.out.println("In setup display button");
-            //DataSet dataSet = dataChoices.getValue();
+            DataSet dataSet = dataChoices.getValue();
 
             // was any dataset selected?
-            /*if(dataSet == null) {
+            if(dataSet == null) {
     		    Alert alert = new Alert(AlertType.INFORMATION);
     			alert.setTitle("ZZZ");
     			alert.setHeaderText("IZZZZ" );
     			alert.setContentText("ZZZZZ");
     			alert.showAndWait();
-            }*/
-            //else if(!dataSet.isDisplayed()) {
-//        		generalService.displayIntersections(dataSet.getFileName());
-        		generalService.displayIntersections("test.map");
-            //}
-            /*else {
+            }
+            else if(!dataSet.isDisplayed()) {
+        		generalService.displayIntersections(dataSet.getFileName());
+//        		generalService.displayIntersections("test.");
+            }
+            else {
     		    Alert alert = new Alert(AlertType.INFORMATION);
     			alert.setTitle("Display Info");
     			alert.setHeaderText("Intersections Already Displayed" );
     			alert.setContentText("Data set : " + dataSet.getFileName() + " has already been loaded.");
     			alert.showAndWait();
-            }*/
+            }
     	});
     }
 
