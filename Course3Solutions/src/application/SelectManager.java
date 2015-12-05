@@ -4,9 +4,12 @@ import geography.GeographicPoint;
 public class SelectManager {
 	private GeographicPoint start;
 	private GeographicPoint destination;
+    private GeographicPoint point;
+
 
 
     public SelectManager() {
+        point = null;
     	start = null;
     	destination = null;
     }
@@ -27,6 +30,14 @@ public class SelectManager {
 	public void setStart(GeographicPoint point) {
 		start = point;
 	}
+
+    public void set(GeographicPoint point) {
+    	this.point = point;
+    }
+
+    public GeographicPoint getPoint() { return point; }
+
+
 
 
 }

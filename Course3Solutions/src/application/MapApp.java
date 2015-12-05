@@ -45,6 +45,13 @@ public class MapApp extends Application
     protected Stage primaryStage;
 
 
+    // Write data sets to file and always put in dataset folder
+    // have file with all names of files
+    // have limit on number (15?) have queue
+    // for least recently used to decide which goes off if you load one with
+    // max datasets loaded
+
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
@@ -75,7 +82,13 @@ public class MapApp extends Application
         Button routeButton = new Button("Get Route");
         CLabel<geography.GeographicPoint> startLabel = new CLabel<geography.GeographicPoint>("Empty.", null);
         CLabel<geography.GeographicPoint> endLabel = new CLabel<geography.GeographicPoint>("Empty.", null);
-        setupRouteTab(routeTab,startLabel, endLabel, routeButton);
+        Button startButton = new Button("Start");
+        Button destinationButton = new Button("Dest");
+
+        // where is SelectManager
+        SelectManager manager = new SelectManager();
+        CLabel<geography.GeographicPoint> pointLabel = new CLabel<geography.GeographicPoint>("No point Selected.", null);
+        setupRouteTab(routeTab,startLabel, endLabel, pointLabel, routeButton, startButton, destinationButton);
 
 		TabPane tp = new TabPane(routeTab, fetchTab);
         tp.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
@@ -86,10 +99,11 @@ public class MapApp extends Application
         // initialize Services and controllers after map is loaded
         mapComponent.addMapReadyListener(() -> {
             ClientService cs = new ClientService();
-            GeneralService gs = new GeneralService(mapComponent, this, null);
+            GeneralService gs = new GeneralService(mapComponent, this, manager);
             RouteService rs = new RouteService(mapComponent);
             System.out.println("in map ready : " + this.getClass());
-    		RouteController routeController = new RouteController(rs, routeButton, startLabel, endLabel);
+    		RouteController routeController = new RouteController(rs, routeButton, startButton, destinationButton,
+    															  startLabel, endLabel, manager);
             ClientMapController userController = new ClientMapController(gs, this);
             FetchController fetchController = new FetchController(gs, tf, fetchButton, cb, displayButton);
         });
@@ -169,7 +183,8 @@ public class MapApp extends Application
      * @param routeTab
      * @param box
      */
-    private void setupRouteTab(Tab routeTab, Label startLabel, Label endLabel, Button button){
+    private void setupRouteTab(Tab routeTab, Label startLabel, Label endLabel, Label pointLabel,
+    						   Button button, Button startButton, Button destButton) {
 
         HBox h = new HBox();
     	// v is inner container
@@ -178,6 +193,7 @@ public class MapApp extends Application
 
         HBox selectControls = new HBox();
         VBox selectLeft = new VBox();
+        VBox selectRight = new VBox();
 
 
         selectLeft.getChildren().add(new Label("Start Node : "));
@@ -185,10 +201,21 @@ public class MapApp extends Application
         selectLeft.getChildren().add(new Label("Destination Node : "));
         selectLeft.getChildren().add(endLabel);
 
+        selectRight.getChildren().add(startButton);
+        selectRight.getChildren().add(destButton);
+
         selectControls.getChildren().add(selectLeft);
+        selectControls.getChildren().add(selectRight);
+        VBox markerBox = new VBox();
+        Label markerLabel = new Label("Selected Marker");
+
+
+        markerBox.getChildren().add(markerLabel);
+        markerBox.getChildren().add(pointLabel);
 
         v.getChildren().add(selectControls);
         v.getChildren().add(button);
+        v.getChildren().add(markerBox);
 
         routeTab.setContent(h);
 

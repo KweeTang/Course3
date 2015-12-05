@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import application.MapApp;
+import application.SelectManager;
 import application.CLabel;
 import application.services.GeneralService;
 import application.services.RouteService;
@@ -38,10 +39,13 @@ public class RouteController {
     private GeneralService generalService;
     private RouteService routeService;
     private Button displayButton;
+    private Button startButton;
+    private Button destinationButton;
     private String filename = "myroute.route";
     private CLabel<geography.GeographicPoint> startLabel;
     private CLabel<geography.GeographicPoint> endLabel;
     private Slider optionsSlider;
+    private SelectManager selectManager;
 
 
 
@@ -49,14 +53,19 @@ public class RouteController {
 	// display one route at a time
 	private Polyline routeLine;
 
-	public RouteController(RouteService routeService, Button displayButton,
-			CLabel<geography.GeographicPoint> startLabel, CLabel<geography.GeographicPoint> endLabel) {
+	public RouteController(RouteService routeService, Button displayButton, Button startButton, Button destinationButton,
+			CLabel<geography.GeographicPoint> startLabel, CLabel<geography.GeographicPoint> endLabel, SelectManager manager) {
         this.routeService = routeService;
 		this.displayButton = displayButton;
+		this.startButton = startButton;
+		this.destinationButton = destinationButton;
+
 		this.startLabel = startLabel;
 		this.endLabel = endLabel;
+        this.selectManager = manager;
 
         setupDisplayButton();
+        setupRouteButtons();
         setupLabels();
         //routeService.displayRoute("data/sampleroute.map");
 	}
@@ -72,6 +81,15 @@ public class RouteController {
             }
 		});
 	}
+
+    private void setupRouteButtons() {
+    	startButton.setOnAction(e -> {
+    	});
+
+        destinationButton.setOnAction( e-> {
+
+        });
+    }
 
 
     private void setupLabels() {

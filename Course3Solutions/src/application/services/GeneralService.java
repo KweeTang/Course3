@@ -35,7 +35,7 @@ import util.GraphLoader;
 public class GeneralService {
 	private static boolean singleton = false;
 	private int currentState;
-	private SelectManager manager;
+	private SelectManager selectManager;
 	private GoogleMap map;
 	private GoogleMapView mapComponent;
     private MapApp mainApp;
@@ -53,7 +53,7 @@ public class GeneralService {
     public GeneralService(GoogleMapView mapComponent, MapApp mainApp, SelectManager manager) {
     	this.mapComponent = mapComponent;
     	this.map = mapComponent.getMap();
-    	this.manager = manager;
+    	this.selectManager = manager;
     	filenames = new ArrayList<String>();
         this.mainApp = mainApp;
 
@@ -131,16 +131,9 @@ public class GeneralService {
             });
 
             map.addUIEventHandler(marker, UIEventType.click, (JSObject o) -> {
-                switch(currentState) {
-                	case RouteController.START :
-                    	manager.setStart(point);
-                    	break;
-                	case RouteController.DESTINATION :
-                    	manager.setDestination(point);
-                    	break;
-                }
-
+            	selectManager.set(point);
             });
+
 
         }
         map.fitBounds(bounds);
