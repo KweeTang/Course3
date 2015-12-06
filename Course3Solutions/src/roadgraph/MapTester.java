@@ -25,7 +25,8 @@ public class MapTester {
 		System.out.println("Num nodes: " + theMap.getNumVertices());
 		System.out.println("Num edges: " + theMap.getNumEdges());
 		
-		List<GeographicPoint> route = theMap.bfs(new GeographicPoint(1.0,1.0), new GeographicPoint(8.0,-1.0));
+		//List<GeographicPoint> route = theMap.dijkstra(new GeographicPoint(1.0,1.0), new GeographicPoint(8.0,-1.0));
+		List<GeographicPoint> route = theMap.aStarSearch(new GeographicPoint(1.0,1.0), new GeographicPoint(8.0,-1.0));
         System.out.println(route);
 	}
 

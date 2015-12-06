@@ -7,8 +7,10 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
@@ -231,6 +233,8 @@ public class MapGraph {
 		
 		return path;
 	}
+
+	
 	
 	private List<GeographicPoint> 
 	reconstructPath(HashMap<MapNode,MapNode> parentMap, 
@@ -248,6 +252,151 @@ public class MapGraph {
 		path.addFirst(start.getLocation());
 		return path;
 	}
+	
+	/** Find the path from start to goal using Dijkstra's algorithm
+	 * 
+	 * @param start The starting location
+	 * @param goal The goal location
+	 * @return The list of intersections that form the shortest path from 
+	 *   start to goal (including both start and goal).
+	 */
+	public List<GeographicPoint> dijkstra(GeographicPoint start, 
+										  GeographicPoint goal)
+	{
+		// Set up
+		if (start == null || goal == null) 
+			throw new NullPointerException("Cannot find route from or to null node");
+		MapNode startNode = pointNodeMap.get(start);
+		MapNode endNode = pointNodeMap.get(goal);
+		if (startNode == null) {
+			System.err.println("Start node " + start + " does not exist");
+			return null;
+		}
+		if (endNode == null) {
+			System.err.println("End node " + goal + " does not exist");
+			return null;
+		}
+
+		HashMap<MapNode,MapNode> parentMap = new HashMap<MapNode,MapNode>();
+		PriorityQueue<MapNode> toExplore = new PriorityQueue<MapNode>();
+		HashSet<MapNode> visited = new HashSet<MapNode>();
+		// initialize distance for all nodes
+		for (MapNode n : pointNodeMap.values()) {
+			n.setDistance(Double.POSITIVE_INFINITY);
+		}
+		startNode.setDistance(0);
+		
+		toExplore.add(startNode);
+		MapNode next = null;
+		while (!toExplore.isEmpty()) {
+			next = toExplore.remove();
+			System.out.println("DIJKSTRA visiting" + next);
+			if (next.equals(endNode)) break;
+			if(!visited.contains(next)) {
+				visited.add(next);
+				Set<MapEdge> edges = next.getEdges();
+				for (MapEdge edge : edges) {
+					MapNode neighbor = edge.getPoint2Node();
+					if (!visited.contains(neighbor)) {
+						
+						double currDist = edge.getLength()+next.getDistance();
+						if(currDist < neighbor.getDistance()){
+							// debug 
+							// System.out.println("Distance: " + currDist + "Node\n"+neighbor);
+							parentMap.put(neighbor, next);
+							neighbor.setDistance(currDist);
+							toExplore.add(neighbor);
+						}
+					}
+				}
+			}
+		}
+		if (!next.equals(endNode)) {
+			System.out.println("No path found from " +start+ " to " + goal);
+			return null;
+		}
+		// Reconstruct the parent path
+		List<GeographicPoint> path = 
+				reconstructPath(parentMap, startNode, endNode);
+		
+		return path;
+	}
+
+	/** Find the path from start to goal using A-Star search
+	 * 
+	 * @param start The starting location
+	 * @param goal The goal location
+	 * @return The list of intersections that form the shortest path from 
+	 *   start to goal (including both start and goal).
+	 */
+	public List<GeographicPoint> aStarSearch(GeographicPoint start, 
+											 GeographicPoint goal)
+	{
+		// Set up
+		if (start == null || goal == null) 
+			throw new NullPointerException("Cannot find route from or to null node");
+		MapNode startNode = pointNodeMap.get(start);
+		MapNode endNode = pointNodeMap.get(goal);
+		if (startNode == null) {
+			System.err.println("Start node " + start + " does not exist");
+			return null;
+		}
+		if (endNode == null) {
+			System.err.println("End node " + goal + " does not exist");
+			return null;
+		}
+
+		HashMap<MapNode,MapNode> parentMap = new HashMap<MapNode,MapNode>();
+		PriorityQueue<MapNode> toExplore = new PriorityQueue<MapNode>();
+		HashSet<MapNode> visited = new HashSet<MapNode>();
+		// initialize distance for all nodes
+		for (MapNode n : pointNodeMap.values()) {
+			n.setDistance(Double.POSITIVE_INFINITY);
+			n.setActualDistance(Double.POSITIVE_INFINITY);
+		}
+		startNode.setDistance(0);
+		startNode.setActualDistance(0);
+		
+		toExplore.add(startNode);
+		MapNode next = null;
+		while (!toExplore.isEmpty()) {
+			next = toExplore.remove();
+			System.out.println("A* visiting" + next);
+			if (next.equals(endNode)) break;
+			if(!visited.contains(next)) {
+				visited.add(next);
+				Set<MapEdge> edges = next.getEdges();
+				for (MapEdge edge : edges) {
+					MapNode neighbor = edge.getPoint2Node();
+					if (!visited.contains(neighbor)) {
+						
+						double currDist = edge.getLength()+next.getActualDistance();
+						// core of A* is just to add to currDist the cost of getting to
+						// the destination
+						double predDist = currDist+ (neighbor.getLocation()).distance(endNode.getLocation()); 
+						if(predDist < neighbor.getDistance()){
+							// debug
+							//System.out.println("Pred Distance: " + predDist + "Node\n"+neighbor);
+							parentMap.put(neighbor, next);
+							neighbor.setActualDistance(currDist);
+							neighbor.setDistance(predDist);
+							toExplore.add(neighbor);
+						}
+					}
+				}
+			}
+		}
+		if (!next.equals(endNode)) {
+			System.out.println("No path found from " +start+ " to " + goal);
+			return null;
+		}
+		// Reconstruct the parent path
+		List<GeographicPoint> path = 
+				reconstructPath(parentMap, startNode, endNode);
+		
+		return path;
+	}
+	
 	
 	public void printEdgePointsToFile(String filename)
 	{

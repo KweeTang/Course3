@@ -59,6 +59,10 @@ class MapEdge
 		this.length = length;
 	}
 	
+	MapNode getPoint2Node() {
+	   return point2;
+	}
+	
 	GeographicPoint getPoint1()
 	{
 		return point1.getLocation();
