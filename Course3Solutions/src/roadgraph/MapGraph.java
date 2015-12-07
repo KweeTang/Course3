@@ -194,11 +194,31 @@ public class MapGraph {
 	}
 	
 	// get a set of neighbor nodes from a mapnode
-	private Set<MapNode> getNeighbors(MapNode node)
-	{
+	private Set<MapNode> getNeighbors(MapNode node) {
 		return node.getNeighbors();
 	}
 	
+	/*
+	public double lengthOfPath(List<GeographicPoint> path) {
+		if(path== null || path.size()==0)
+			return 0.0;
+
+		GeographicPoint currPoint;
+		GeographicPoint nextPoint;
+		MapNode currNode;
+		MapNode nextNode;
+		for(int i = 0; i< path.size()-1; i++) {
+			currPoint = path.get(i);
+			nextPoint = path.get(i+1);
+			currNode = pointNodeMap.get(currPoint); 
+			Set<MapEdge> edges = currPoint.getEdges();
+			
+			neighbors.
+		}
+		
+		return 0.0;
+	}
+	*/
 	/** Find the path from start to goal using Breadth First Search 
 	 * 
 	 * @param start The starting location
