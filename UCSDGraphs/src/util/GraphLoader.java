@@ -160,7 +160,7 @@ public class GraphLoader
 	 * @param graph
 	 */
 	//XXX Commented out until the basicgraph package in starter code is updated
-/*	public static void loadRoutes(String filename, Graph graph)
+	public static void loadRoutes(String filename, Graph graph)
 	{
 		String source;
 		String destination;
@@ -211,7 +211,7 @@ public class GraphLoader
 
 	}
 		
-*/
+
 	
 
 	
@@ -256,7 +256,7 @@ public class GraphLoader
             }
             reader.close();
         } catch (IOException e) {
-            System.err.println("Problem loading dictionary file: " + filename);
+            System.err.println("Problem loading graph file: " + filename);
             e.printStackTrace();
         }
 	}
