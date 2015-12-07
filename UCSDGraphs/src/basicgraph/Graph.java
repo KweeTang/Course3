@@ -80,7 +80,7 @@ public abstract class Graph {
 	 * @param v Index of the end point of the edge to be added. 
 	 */
 	public void addEdge(int v , int w) {
-		//System.out.println("Adding edge between "+v+" and "+w);
+		//System.out.println("Adding edge between " + v + " and " + w);
 		numEdges ++;
 		if (v < numVertices && w < numVertices) {
 			implementAddEdge(v , w);			
@@ -94,7 +94,7 @@ public abstract class Graph {
 	 * Abstract method implementing adding a new
 	 * edge to the representation of the graph.
 	 */
-	public abstract void implementAddEdge(int v , int w);
+	public abstract void implementAddEdge(int v, int w);
 	
 	/**
 	 * Get all (out-)neighbors of a given vertex.
@@ -113,12 +113,12 @@ public abstract class Graph {
 	public abstract List<Integer> getInNeighbors(int v);
 	
 	
-	// For learners to implement
+	// For learners to implement in Part 1
 	public String degreeSequence() {
 		return null;
 	}
 	
-	//For learners to implement
+	//For learners to implement in Part 2
 	public abstract List<Integer> getDistance2(int v); 
 
 	public String toString() {
@@ -209,5 +209,32 @@ public abstract class Graph {
 	
 	public static void main (String[] args) {
 
+		// For testing Part 1 functionality
+		System.out.println("Loading graphs based on real data...");
+		System.out.println("Goal: use degree sequence to analyse graphs.");
+		
+		System.out.println("****");
+		System.out.println("Roads / intersections:");
+		GraphAdjList graphFromFile = new GraphAdjList();
+		GraphLoader.loadGraph("data/ucsd.map", graphFromFile);
+		System.out.println(graphFromFile);
+		
+		System.out.println("Observe all degrees are <= 12.");
+		System.out.println("****");
+
+		System.out.println("\n****");
+		System.out.println("Flight data:");
+		GraphAdjList airportGraph = new GraphAdjList();
+		GraphLoader.loadRoutes("data/routesUA.dat", airportGraph);
+		System.out.println(airportGraph);
+		System.out.println("Observe most degrees are small (1-30), eight are over 100.");
+		System.out.println("****");
+		
+		//For testing Part 2 functionality
+		System.out.println("Testing distance-two methods on sample graphs...");
+		System.out.println("Goal: implement method using two approaches.");
+
+
+		
 	}
 }

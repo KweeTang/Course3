@@ -266,7 +266,6 @@ public class GraphLoader
 
 	}
 		
-
 	
 	/**
 	 * Loads a graph from a file.  The file is specified with each 
@@ -309,7 +308,7 @@ public class GraphLoader
             }
             reader.close();
         } catch (IOException e) {
-            System.err.println("Problem loading dictionary file: " + filename);
+            System.err.println("Problem loading graph file: " + filename);
             e.printStackTrace();
         }
 	}

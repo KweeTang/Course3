@@ -335,15 +335,8 @@ public abstract class Graph {
 		System.out.println(test2Mat);
 		test2Mat.getDistance2(0);		
 		test2Mat.getDistance2(2);
-/*		
-		GraphAdjList graphFromFile = new GraphAdjList();
-		GraphLoader.loadMap("data/ucsd.map", graphFromFile);
-		System.out.println(graphFromFile);
 
-		GraphAdjList airportGraph = new GraphAdjList();
-		GraphLoader.loadRoutes("data/routesUA.dat", airportGraph);
-		System.out.println(airportGraph);
-	*/	
+		
 
 	}
 }
