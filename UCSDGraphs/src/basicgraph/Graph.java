@@ -80,7 +80,6 @@ public abstract class Graph {
 	 * @param v Index of the end point of the edge to be added. 
 	 */
 	public void addEdge(int v , int w) {
-		//System.out.println("Adding edge between " + v + " and " + w);
 		numEdges ++;
 		if (v < numVertices && w < numVertices) {
 			implementAddEdge(v , w);			
@@ -113,14 +112,31 @@ public abstract class Graph {
 	public abstract List<Integer> getInNeighbors(int v);
 	
 	
-	// For learners to implement in Part 1
-	public String degreeSequence() {
+
+	/** 
+	 * The degree sequence of a graph is a sorted (organized in numerical order 
+	 * from smallest to largest, possibly with repetitions) list of the degrees 
+	 * of the vertices in the graph.
+	 * 
+	 * @return The degree sequence of this graph.
+	 */
+	public List<Integer> degreeSequence() {
+		// XXX: Implement in part 1 of week 1
 		return null;
 	}
 	
-	//For learners to implement in Part 2
+	/**
+	 * Get all the vertices that are 2 away from the vertex in question.
+	 * @param v The starting vertex
+	 * @return A list of the vertices that can be reached in exactly two hops (by 
+	 * following two edges) from vertex v.
+	 * XXX: Implement in part 2 of week 1 for each subclass of Graph
+	 */
 	public abstract List<Integer> getDistance2(int v); 
 
+	/** Return a String representation of the graph
+	 * @return A string representation of the graph
+	 */
 	public String toString() {
 		String s = "\nGraph with " + numVertices + " vertices and " + numEdges + " edges.\n";
 		s += "Degree sequence: " + degreeSequence() + ".\n";
@@ -128,6 +144,10 @@ public abstract class Graph {
 		return s;
 	}
 
+	/**
+	 * Generate string representation of adjacency list
+	 * @return the String
+	 */
 	public abstract String adjacencyString();
 
 	
@@ -208,15 +228,21 @@ public abstract class Graph {
 
 	
 	public static void main (String[] args) {
+		GraphLoader.createIntersectionsFile("data/newbury_small.map", "data/intersections/newbury_small.intersections.map");
+		GraphLoader.createIntersectionsFile("data/newbury_verysmall.map", "data/intersections/newbury_verysmall.intersections.map");
+		GraphLoader.createIntersectionsFile("data/ucsd.map", "data/intersections/ucsd.intersections.map");
+		
 
-		// For testing Part 1 functionality
+		// For testing of Part 1 functionality
+		// Add your tests here to make sure your degreeSequence method is returning
+		// the correct list, after examining the graphs.
 		System.out.println("Loading graphs based on real data...");
 		System.out.println("Goal: use degree sequence to analyse graphs.");
 		
 		System.out.println("****");
 		System.out.println("Roads / intersections:");
 		GraphAdjList graphFromFile = new GraphAdjList();
-		GraphLoader.loadGraph("data/ucsd.map", graphFromFile);
+		GraphLoader.loadRoadMap("data/ucsd.map", graphFromFile);
 		System.out.println(graphFromFile);
 		
 		System.out.println("Observe all degrees are <= 12.");
@@ -231,6 +257,7 @@ public abstract class Graph {
 		System.out.println("****");
 		
 		//For testing Part 2 functionality
+		// Test your distace 2 code here.
 		System.out.println("Testing distance-two methods on sample graphs...");
 		System.out.println("Goal: implement method using two approaches.");
 

@@ -87,7 +87,7 @@ public class GraphAdjList extends Graph {
 		return inNeighbors;
 	}
 	 
-	//For learners to implement
+
 	/** 
 	 * Implement the abstract method for finding all 
 	 * vertices reachable by two hops from v.
@@ -96,7 +96,8 @@ public class GraphAdjList extends Graph {
 	 * @return List<Integer> a list of indices of vertices.  
 	 */		
 	 public List<Integer> getDistance2(int v) {
-		return null;
+		 // XXX: Implement this method in week 1
+		 return null;
 	}
 	
 	/**
