@@ -11,7 +11,7 @@ import geography.GeographicPoint;
 /**
  * @author UCSD Intermediate Programming MOOC team
  *
- * An undirected edge in a map graph.
+ * A directed edge in a map graph from Node start to Node end
  */
 class MapEdge 
 {
@@ -22,8 +22,8 @@ class MapEdge
 	private String roadType;
 	
 	/** The two endpoints of the edge */
-	private MapNode point1;
-	private MapNode point2;
+	private MapNode start;
+	private MapNode end;
 	
 	
 	/** The length of the road segment, in km */
@@ -53,24 +53,24 @@ class MapEdge
 			MapNode n1, MapNode n2, double length) 
 	{
 		this.roadName = roadName;
-		point1 = n1;
-		point2 = n2;
+		start = n1;
+		end = n2;
 		this.roadType = roadType;
 		this.length = length;
 	}
 	
 	MapNode getPoint2Node() {
-	   return point2;
+	   return end;
 	}
 	
-	GeographicPoint getPoint1()
+	GeographicPoint getStartPoint()
 	{
-		return point1.getLocation();
+		return start.getLocation();
 	}
 	
-	GeographicPoint getPoint2()
+	GeographicPoint getEndPoint()
 	{
-		return point2.getLocation();
+		return end.getLocation();
 	}
 	
 	double getLength()
@@ -80,11 +80,11 @@ class MapEdge
 	
 	MapNode getOtherPoint(MapNode point)
 	{
-		if (point.equals(point1)) {
-			return point2;
+		if (point.equals(start)) {
+			return end;
 		}
-		else if (point.equals(point2)) {
-			return point1;
+		else if (point.equals(end)) {
+			return start;
 		}
 		throw new IllegalArgumentException(point + " is not an endpoint for this edge");
 			
@@ -97,10 +97,10 @@ class MapEdge
 	
 	MapNode getOtherNode(MapNode node)
 	{
-		if (node.equals(point1)) 
-			return point2;
-		else if (node.equals(point2))
-			return point1;
+		if (node.equals(start)) 
+			return end;
+		else if (node.equals(end))
+			return start;
 		throw new IllegalArgumentException("Looking for " +
 			"a point that is not in the edge");
 	}
@@ -109,8 +109,8 @@ class MapEdge
 	public String toString()
 	{
 		String toReturn = "[EDGE between ";
-		toReturn += "\n\t" + point1.getLocation();
-		toReturn += "\n\t" + point2.getLocation();
+		toReturn += "\n\t" + start.getLocation();
+		toReturn += "\n\t" + end.getLocation();
 		toReturn += "\nRoad name: " + roadName + " Road type: " + roadType +
 				" Segment length: " + String.format("%.3g", length) + "km";
 		
