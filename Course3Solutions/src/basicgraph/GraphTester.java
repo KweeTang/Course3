@@ -20,7 +20,7 @@ public class GraphTester {
 		
 		
 		GraphAdjMatrix matGraph = new GraphAdjMatrix();
-		GraphLoader.loadMap("data/ucsdOriginal.map", matGraph);
+		GraphLoader.loadMapOld("data/ucsdOriginal.map", matGraph);
 		System.out.println(matGraph.getNumVertices() + " " + matGraph.getNumEdges());
 		System.out.println(matGraph.degreeSequence());
 		

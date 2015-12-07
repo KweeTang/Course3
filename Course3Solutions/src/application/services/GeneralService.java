@@ -100,7 +100,7 @@ public class GeneralService {
     	graph = new roadgraph.MapGraph();
     	roads = new HashMap<GeographicPoint,HashSet<RoadSegment>>();
 
-    	GraphLoader.loadOneWayMap(filename, graph, roads);
+    	GraphLoader.loadRoadMap(filename, graph, roads);
 
 
     	Iterator<GeographicPoint>it = graph.getNodes().iterator();

@@ -466,7 +466,7 @@ public class MapGraph {
 		MapGraph theMap = new MapGraph();
 		System.out.print("DONE. \nLoading the map...");
 		
-		GraphLoader.loadOneWayMap("data/simpletest.map", theMap);
+		GraphLoader.loadRoadMap("data/simpletest.map", theMap);
 		System.out.println("DONE.");
 		
 		System.out.println("Num nodes: " + theMap.getNumVertices());

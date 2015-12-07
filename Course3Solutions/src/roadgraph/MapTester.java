@@ -18,7 +18,7 @@ public class MapTester {
 		HashMap<GeographicPoint,HashSet<RoadSegment>> theRoads = 
 				new HashMap<GeographicPoint,HashSet<RoadSegment>>();
 		
-		GraphLoader.loadMap("data/simpletest.map", theMap, theRoads);
+		GraphLoader.loadMapOld("data/simpletest.map", theMap, theRoads);
 			
 		System.out.println("DONE.");
 		
@@ -28,7 +28,8 @@ public class MapTester {
 		List<GeographicPoint> route = theMap.bfs(new GeographicPoint(1.0,1.0), new GeographicPoint(8.0,-1.0));
 		//List<GeographicPoint> route = theMap.dijkstra(new GeographicPoint(1.0,1.0), new GeographicPoint(8.0,-1.0));
 		//List<GeographicPoint> route = theMap.aStarSearch(new GeographicPoint(1.0,1.0), new GeographicPoint(8.0,-1.0));
-        System.out.println(route);
+        GraphLoader.createIntersectionsFile("data/simpletestOneWay.map", "data/simpletest.intersections.map");
+		System.out.println(route);
 	}
 
 }

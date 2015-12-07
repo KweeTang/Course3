@@ -9,6 +9,7 @@ package util;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,9 +26,67 @@ import roadgraph.MapGraph;
 
 
 public class GraphLoader 
-{	
+{
+	
+	/** 
+	 * 	 * The file contains data lines as follows:
+	 * lat1 lon1 lat2 lon2 roadName roadType
+	 * 
+	 * where each line is a segment of a road
+	 * These road segments are assumed to be ONE WAY.
+	 * 
+	 * This method will collapse the points so that only intersections 
+	 * are represented as nodes in the graph.
+	 * 
+	 * @param roadDataFile The file containing the road data, in the format 
+	 *   described.
+	 * @param intersectionsFile The output file containing the intersections.
+	 */
+	public static void createIntersectionsFile(String roadDataFile, String intersectionsFile)
+	{
+		Collection<GeographicPoint> nodes = new HashSet<GeographicPoint>();
+        HashMap<GeographicPoint,List<LinkedList<RoadLineInfo>>> pointMap = 
+        		buildPointMapOneWay(roadDataFile);
+		
+        // Print the intersections to the file
+		List<GeographicPoint> intersections = findIntersections(pointMap);
+		for (GeographicPoint pt : intersections) {
+			nodes.add(pt);
+		}
+
+		try {
+			PrintWriter writer = new PrintWriter(intersectionsFile, "UTF-8");
+
+			// Now we need to add the edges
+			// This is the tricky part
+			for (GeographicPoint pt : nodes) {
+				// Trace the node to its next node, building up the points 
+				// on the edge as you go.
+				List<LinkedList<RoadLineInfo>> inAndOut = pointMap.get(pt);
+				LinkedList<RoadLineInfo> outgoing = inAndOut.get(0);
+				for (RoadLineInfo info : outgoing) {
+					HashSet<GeographicPoint> used = new HashSet<GeographicPoint>();
+					used.add(pt);
+				
+					List<GeographicPoint> pointsOnEdge = 
+							findPointsOnEdge(pointMap, info, nodes);
+					GeographicPoint end = pointsOnEdge.remove(pointsOnEdge.size()-1);
+					writer.println(pt + " " + end);
+				}
+				
+			}
+			writer.flush();
+			writer.close();
+		}
+		catch (Exception e) {
+			System.out.println("Exception opening intersections file " + e);
+		}
+	
+	}
+	
 
 	/**
+	 * 
 	 *  Read in a file specifying a map.
 	 *
 	 * The file contains data lines as follows:
@@ -54,7 +113,7 @@ public class GraphLoader
 
 	
 	
-	/**
+	/**	  
 	 *  Read in a file specifying a map.
 	 *
 	 * The file contains data lines as follows:
@@ -65,9 +124,6 @@ public class GraphLoader
 	 * 
 	 * This method will collapse the points so that only intersections 
 	 * are represented as nodes in the graph.
-	 * 
-	 * This method is used internally in the GUI application.  
-	 * Learners in the coursera course should not need to directly call this method.
 	 * 
 	 * @param filename The file containing the road data, in the format 
 	 *   described.
@@ -147,8 +203,8 @@ public class GraphLoader
 				theGraph.addEdge(nodeNum, endNum);
 			}
 		}
-	}	
-
+	}
+	
 	/** Read in a file specifying route maps between airports.
 	 * The file contains data as follows:
 	 * Airline, AirlineID, Source airport, Source airport ID,
@@ -159,8 +215,7 @@ public class GraphLoader
 	 * @param filename
 	 * @param graph
 	 */
-	//XXX Commented out until the basicgraph package in starter code is updated
-/*	public static void loadRoutes(String filename, Graph graph)
+	public static void loadRoutes(String filename, Graph graph)
 	{
 		String source;
 		String destination;
@@ -211,8 +266,6 @@ public class GraphLoader
 
 	}
 		
-*/
-	
 
 	
 	/**
@@ -260,6 +313,8 @@ public class GraphLoader
             e.printStackTrace();
         }
 	}
+	
+
 	
 	// Once you have built the pointMap and added the Nodes, 
 	// add the edges and build the road segments if the segments
@@ -311,6 +366,8 @@ public class GraphLoader
 	}
 			
 	
+	// Calculate the length of this road segment taking into account all of the 
+	// intermediate geographic points.
 	private static double getRoadLength(GeographicPoint start, GeographicPoint end,
 			List<GeographicPoint> path)
 	{
@@ -342,7 +399,7 @@ public class GraphLoader
 				}
 			}
 			else if (nextLines.size() != 1) {
-				System.err.println("Something went wrong building edges");
+				System.out.println("Something went wrong building edges");
 			}
 			pt = end;
 			end = nextInfo.point2;
@@ -354,6 +411,8 @@ public class GraphLoader
 		return toReturn;
 	}
 
+	// Find the other end of the road segment.  Trace through the pointMap 
+	// starting from the first point in this info until you get to the second.
 	private static GeographicPoint
 	findEndOfEdge(HashMap<GeographicPoint,List<LinkedList<RoadLineInfo>>> pointMap,
 		RoadLineInfo info, basicgraph.Graph graph, 
@@ -373,7 +432,7 @@ public class GraphLoader
 				}
 			}
 			else if (nextLines.size() != 1) {
-				System.err.println("Something went wrong building edges");
+				System.out.println("Something went wrong building edges");
 			}
 			pt = end;
 			end = nextInfo.point2;
@@ -473,14 +532,15 @@ public class GraphLoader
             }
             reader.close();
         } catch (IOException e) {
-            System.err.println("Problem loading roads file: " + filename);
+            System.err.println("Problem loading dictionary file: " + filename);
             e.printStackTrace();
         }
 		
 		return pointMap;
 	}
-	
 
+
+	// Add the next line read from the file to the points map.
 	private static void 
 	addToPointsMapOneWay(RoadLineInfo line,
 						HashMap<GeographicPoint,List<LinkedList<RoadLineInfo>>> map)
@@ -603,6 +663,8 @@ class RoadLineInfo
 		return this.point1.equals(other.point2) && this.point2.equals(other.point1) &&
 				this.roadName.equals(other.roadName) && this.roadType.equals(other.roadType);
 	}
+	
+	/** Return the string representation of this LineInfo. */
 	public String toString()
 	{
 		return this.point1 + " " + this.point2 + " " + this.roadName + " " + this.roadType;
