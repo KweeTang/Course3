@@ -340,7 +340,7 @@ public class MapGraph {
 				visited.add(next);
 				Set<MapEdge> edges = next.getEdges();
 				for (MapEdge edge : edges) {
-					MapNode neighbor = edge.getPoint2Node();
+					MapNode neighbor = edge.getEndNode();
 					if (!visited.contains(neighbor)) {
 						
 						double currDist = edge.getLength()+next.getDistance();
@@ -411,7 +411,7 @@ public class MapGraph {
 				visited.add(next);
 				Set<MapEdge> edges = next.getEdges();
 				for (MapEdge edge : edges) {
-					MapNode neighbor = edge.getPoint2Node();
+					MapNode neighbor = edge.getEndNode();
 					if (!visited.contains(neighbor)) {
 						
 						double currDist = edge.getLength()+next.getActualDistance();
