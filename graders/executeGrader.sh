@@ -4,7 +4,8 @@ cd /grader
 MOD1_PART1_ID="EmeoQ"
 MOD1_PART2_ID="SnOzZ"
 MOD2_ID="KzMMz"
-MOD3_ID="temp3"
+MOD3_PART1_ID="PzTAu"
+MOD3_PART2_ID="16MuO"
 
 
 while [ $# -gt 1 ]
@@ -55,8 +56,23 @@ elif [ "$PARTID" == "$MOD2_ID" ]; then
   cp * /grader/"$GRADER_DIRECTORY"/roadgraph/ 
   cd /grader/"$GRADER_DIRECTORY"
   javac -encoding ISO-8859-1 roadgraph/*.java 2>errorfile
-elif [ "$PARTID" == "$MOD3_ID" ]; then
-  etc
+elif [ "$PARTID" == "$MOD3_PART1_ID" ] || [ "$PARTID" == "$MOD3_PART2_ID" ]; then
+  if [ "$PARTID" == "$MOD3_PART1_ID" ]; then
+    FILENAME="roadgraph.DijkstraGrader"
+  else
+    FILENAME="roadgraph.AStarGrader"
+  fi
+  GRADER_DIRECTORY="mod3"
+  7z e -ozipfile /shared/submission/mod3.zip > /dev/null
+  cd zipfile
+  if [ ! -f "MapGraph.java" ]; then
+    rm -rf __MACOSX > /dev/null
+    cd *
+  fi
+  cp * /grader/"$GRADER_DIRECTORY"/roadgraph/
+  cd /grader/"$GRADER_DIRECTORY"
+  javac -encoding ISO-8859-1 roadgraph/*.java 2>errorfile
+
 else
   echo "{ \"fractionalScore\": 0.0, \"feedback\":\"No partID matched: "$PARTID"\" }"
   exit 1

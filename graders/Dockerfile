@@ -23,6 +23,11 @@ RUN mkdir /grader/mod2/data
 RUN mkdir /grader/mod2/geography
 RUN mkdir /grader/mod2/roadgraph
 RUN mkdir /grader/mod3/
+RUN mkdir /grader/mod3/basicgraph
+RUN mkdir /grader/mod3/util
+RUN mkdir /grader/mod3/data
+RUN mkdir /grader/mod3/geography
+RUN mkdir /grader/mod3/roadgraph
 
 COPY executeGrader.sh /grader/executeGrader.sh
 COPY mod1/basicgraph/* /grader/mod1/basicgraph/
@@ -35,7 +40,12 @@ COPY mod2/util/* /grader/mod2/util/
 COPY mod2/data/* /grader/mod2/data/
 COPY mod2/geography/* /grader/mod2/geography/
 COPY mod2/roadgraph/* /grader/mod2/roadgraph/
-COPY mod3/part1/* /grader/mod3/part1/
+COPY mod3/basicgraph/* /grader/mod3/basicgraph/
+COPY mod3/util/* /grader/mod3/util/
+COPY mod3/data/* /grader/mod3/data/
+COPY mod3/geography/* /grader/mod3/geography/
+COPY mod3/roadgraph/* /grader/mod3/roadgraph/
+
 
 COPY compile_error.py /grader/compile_error.py
 
