@@ -60,8 +60,8 @@ public class GraphGrader {
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list");
 
         if (type.equals("road")) {
-            GraphLoader.loadOneWayMap("data/" + file, lst);
-            GraphLoader.loadOneWayMap("data/" + file, mat);
+            GraphLoader.loadRoadMap("data/" + file, lst);
+            GraphLoader.loadRoadMap("data/" + file, mat);
         } else if (type.equals("air")) {
             GraphLoader.loadRoutes("data/" + file, lst);
             GraphLoader.loadRoutes("data/" + file, mat);

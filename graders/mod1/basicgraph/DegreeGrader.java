@@ -1,10 +1,12 @@
 package basicgraph;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import util.GraphLoader;
 
 public class DegreeGrader {
@@ -17,9 +19,12 @@ public class DegreeGrader {
     public static String printList(List<Integer> lst) {
         String res = "";
         for (int i : lst) {
-            res += i + "-";
+            res += i + " ";
         }
-        return res.substring(0, res.length() - 1);
+        if (res.length() > 0)
+            return res.substring(0, res.length() - 1);
+        else
+            return res;
     }
 
     public static String makeJson(double score, String feedback) {
@@ -40,7 +45,7 @@ public class DegreeGrader {
         GraphAdjMatrix mat = new GraphAdjMatrix();
 
         String file = "data/graph" + i + ".txt";
-        String corr = readCorrect(file + ".degrees");
+        List<Integer> corr = readCorrect(file + ".degrees");
         
         feedback += "\\n\\nGRAPH: " + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list"); 
@@ -49,19 +54,20 @@ public class DegreeGrader {
 /*
         try {
             PrintWriter tempout = new PrintWriter(file + ".degrees");
-            String result = lst.degreeSequence();
-            tempout.println(result);
+            List<Integer> result = lst.degreeSequence();
+            tempout.println(printList(result));
             tempout.close();
         } catch (Exception e) {
         }
-*/            
-        String result = lst.degreeSequence();
+*/
+        List<Integer> result = lst.degreeSequence();
         judge(result, corr);
  
         feedback += appendFeedback(i * 2, "Testing adjacency matrix");
         GraphLoader.loadGraph(file, mat);
         result = mat.degreeSequence();
         judge(result, corr);
+
     }
 
     public void runSpecialTest(int i, String file, String desc, String type) {
@@ -69,44 +75,56 @@ public class DegreeGrader {
         GraphAdjMatrix mat = new GraphAdjMatrix();
 
         file = "data/" + file;
-        String corr = readCorrect(file + ".degrees");
-
+        List<Integer> corr = readCorrect(file + ".degrees");
+        
         feedback += "\\n\\n" + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list");
 
         if (type.equals("road")) {
-            GraphLoader.loadOneWayMap(file, lst);
-            GraphLoader.loadOneWayMap(file, mat);
+            GraphLoader.loadRoadMap(file, lst);
+            GraphLoader.loadRoadMap(file, mat);
         } else if (type.equals("air")) {
             GraphLoader.loadRoutes(file, lst);
             GraphLoader.loadRoutes(file, mat);
         }
-
-        String result = lst.degreeSequence();
+/*   
+        try {
+            PrintWriter tempout = new PrintWriter(file + ".degrees");
+            List<Integer> result = lst.degreeSequence();
+            tempout.println(printList(result));
+            tempout.close();
+        } catch (Exception e) {
+        }
+*/
+        List<Integer> result = lst.degreeSequence();
         judge(result, corr);
 
         feedback += appendFeedback(i * 2, "Testing adjacency matrix");
         result = mat.degreeSequence();
         judge(result, corr);
+
     }
 
-    public void judge(String result, String corr) {
-        if (result.length() != corr.length() || !result.equals(corr)) {
-            feedback += "FAILED. Expected " + corr + ", got " + result + ". ";
+    public void judge(List<Integer> result, List<Integer> corr) {
+        if (result.size() != corr.size() || !result.containsAll(corr)) {
+            feedback += "FAILED. Expected " + printList(corr) + ", got " + printList(result) + ". ";
         } else {
             feedback += "PASSED.";
             correct++;
         }
     }
 
-    public String readCorrect(String file) {
+    public List<Integer> readCorrect(String file) {
+        List<Integer> ret = new ArrayList<Integer>();
         try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            return br.readLine();
+            Scanner s = new Scanner(new File(file));
+            while(s.hasNextInt()) { 
+                ret.add(s.nextInt());
+            }
         } catch (Exception e) {
             feedback += "\\nCould not open answer file! Please submit a bug report.";
-            return "";
         }
+        return ret;
     }
 
     public void run() {

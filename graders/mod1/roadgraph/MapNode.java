@@ -9,10 +9,13 @@ import java.util.Set;
 import geography.GeographicPoint;
 
 /**
- * @author Christine
+ * @author UCSD MOOC development team
+ * 
+ * Class representing a vertex (or node) in our MapGraph
  *
  */
-class MapNode 
+// WEEK 3 SOLUTIONS implements Comparable
+class MapNode implements Comparable
 {
 	/** The list of edges out of this node */
 	private HashSet<MapEdge> edges;
@@ -20,10 +23,22 @@ class MapNode
 	/** the latitude and longitude of this node */
 	private GeographicPoint location;
 	
+	// WEEK 3 SOLUTIONS
+	
+	/** the predicted distance of this node (used in Week 3 algorithms) */
+	private double distance;
+	
+	/** the actual distance of this node from start (used in Week 3 algorithms) */
+	private double actualDistance;
+	
+	// END WEEK 3 SOLUTIONS
+	
 	MapNode(GeographicPoint loc)
 	{
 		location = loc;
 		edges = new HashSet<MapEdge>();
+		distance = 0.0;
+		actualDistance = 0.0;
 	}
 		
 	void addEdge(MapEdge edge)
@@ -41,6 +56,7 @@ class MapNode
 		return neighbors;
 	}
 	
+	/** get the location of a node */
 	GeographicPoint getLocation()
 	{
 		return location;
@@ -55,7 +71,6 @@ class MapNode
 	/** Returns whether two nodes are equal.
 	 * Nodes are considered equal if their locations are the same, 
 	 * even if their street list is different.
-	 * XXX: Maybe change this?
 	 */
 	public boolean equals(Object o)
 	{
@@ -67,7 +82,7 @@ class MapNode
 	}
 	
 	/** Because we compare nodes using their location, we also 
-	 * use their location for HashCode
+	 * may use their location for HashCode.
 	 * @return The HashCode for this node, which is the HashCode for the 
 	 * underlying point
 	 */
@@ -76,6 +91,9 @@ class MapNode
 		return location.hashCode();
 	}
 	
+	/** ToString to print out a MapNode method
+	 *  @return the string representation of a MapNode
+	 */
 	public String toString()
 	{
 		String toReturn = "[NODE at location (" + location + ")";
@@ -86,7 +104,8 @@ class MapNode
 		toReturn += "]";
 		return toReturn;
 	}
-	
+
+	// For debugging, output roadNames as a String.
 	public String roadNamesAsString()
 	{
 		String toReturn = "(";
@@ -96,6 +115,35 @@ class MapNode
 		toReturn += ")";
 		return toReturn;
 	}
+
+	//  WEEK 3 SOLUTIONS 
 	
+	// get node distance (predicted)
+	public double getDistance() {
+		return this.distance;
+	}
 	
+	// set node distance (predicted)
+	public void setDistance(double distance) {
+	    this.distance = distance;
+	}
+
+	// get node distance (actual)
+	public double getActualDistance() {
+		return this.actualDistance;
+	}
+	
+	// set node distance (actual)	
+	public void setActualDistance(double actualDistance) {
+	    this.actualDistance = actualDistance;
+	}
+	
+    // Code to implement Comparable
+	public int compareTo(Object o) {
+		// convert to map node, may throw exception
+		MapNode m = (MapNode)o; 
+		return ((Double)this.getDistance()).compareTo((Double) m.getDistance());
+	}
+
+	// END WEEK 3 SOLUTIONS
 }
