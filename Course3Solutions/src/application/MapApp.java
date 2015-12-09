@@ -85,9 +85,13 @@ public class MapApp extends Application
         Button startButton = new Button("Start");
         Button destinationButton = new Button("Dest");
 
-        // where is SelectManager
+        // maybe give reference to pointLabel
         SelectManager manager = new SelectManager();
+
         CLabel<geography.GeographicPoint> pointLabel = new CLabel<geography.GeographicPoint>("No point Selected.", null);
+        manager.setPointLabel(pointLabel);
+        manager.setStartLabel(startLabel);
+        manager.setDestinationLabel(endLabel);
         setupRouteTab(routeTab,startLabel, endLabel, pointLabel, routeButton, startButton, destinationButton);
 
 		TabPane tp = new TabPane(routeTab, fetchTab);
@@ -103,7 +107,7 @@ public class MapApp extends Application
             RouteService rs = new RouteService(mapComponent);
             System.out.println("in map ready : " + this.getClass());
     		RouteController routeController = new RouteController(rs, routeButton, startButton, destinationButton,
-    															  startLabel, endLabel, manager);
+    															  startLabel, endLabel, pointLabel, manager);
             ClientMapController userController = new ClientMapController(gs, this);
             FetchController fetchController = new FetchController(gs, tf, fetchButton, cb, displayButton);
         });

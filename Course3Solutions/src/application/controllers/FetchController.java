@@ -127,7 +127,6 @@ public class FetchController {
             }
             else if(!dataSet.isDisplayed()) {
         		generalService.displayIntersections(dataSet.getFileName());
-//        		generalService.displayIntersections("test.");
             }
             else {
     		    Alert alert = new Alert(AlertType.INFORMATION);
@@ -136,6 +135,9 @@ public class FetchController {
     			alert.setContentText("Data set : " + dataSet.getFileName() + " has already been loaded.");
     			alert.showAndWait();
             }
+
+            // TO TEST : only using test.map for intersections
+        	//generalService.displayIntersections("test.map");
     	});
     }
 

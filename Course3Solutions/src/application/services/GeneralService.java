@@ -99,6 +99,8 @@ public class GeneralService {
     	LatLongBounds bounds = new LatLongBounds();
     	graph = new roadgraph.MapGraph();
     	roads = new HashMap<GeographicPoint,HashSet<RoadSegment>>();
+    	RouteService.setGraph(graph);
+    	RouteService.setSegments(roads);
 
     	GraphLoader.loadRoadMap(filename, graph, roads);
 
@@ -131,7 +133,8 @@ public class GeneralService {
             });
 
             map.addUIEventHandler(marker, UIEventType.click, (JSObject o) -> {
-            	selectManager.set(point);
+                System.out.println("Clicked Marker : " + point.toString());
+            	selectManager.setPoint(point);
             });
 
 

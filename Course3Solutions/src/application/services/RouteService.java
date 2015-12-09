@@ -4,8 +4,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Iterator;
 
+import geography.GeographicPoint;
+import geography.RoadSegment;
 import gmapsfx.GoogleMapView;
 import gmapsfx.javascript.object.GoogleMap;
 import gmapsfx.javascript.object.LatLong;
@@ -16,6 +21,11 @@ import gmapsfx.shapes.Polyline;
 public class RouteService {
 	private GoogleMap map;
 	private GoogleMapView mapComponent;
+
+    // static variable
+	private static roadgraph.MapGraph graph;
+    private static HashMap<GeographicPoint,HashSet<RoadSegment>>  roads;
+
     private Polyline routeLine;
 
 	public RouteService(GoogleMapView mapComponent) {
@@ -99,9 +109,70 @@ public class RouteService {
 		return true;
 	}
 
-    public boolean displayRoute(geography.GeographicPoint start, geography.GeographicPoint end) {
+    public static void setGraph(roadgraph.MapGraph graph) { RouteService.graph = graph; }
+    public static void setSegments(HashMap<geography.GeographicPoint, HashSet<geography.RoadSegment>> roads) { RouteService.roads = roads; }
 
-        return true;
+    public boolean displayRoute(geography.GeographicPoint start, geography.GeographicPoint end) {
+    	List<geography.GeographicPoint> path = graph.dijkstra(start, end);
+        if(path == null) {
+            System.out.println("In displayRoute : PATH NOT FOUND");
+        	return false;
+        }
+    	List<LatLong> mapPath = constructMapPath(path);
+        /*List<LatLong> mapPath = new ArrayList<LatLong>();
+        for(geography.GeographicPoint point : path) {
+            mapPath.add(new LatLong(point.getX(), point.getY()));
+        }*/
+        return displayRoute(mapPath);
+    }
+
+    private List<LatLong> constructMapPath(List<geography.GeographicPoint> path) {
+    	List<LatLong> retVal = new ArrayList<LatLong>();
+        List<geography.GeographicPoint> segmentList = null;
+    	geography.GeographicPoint curr;
+    	geography.GeographicPoint next;
+
+    	geography.RoadSegment chosenSegment = null;;
+
+        for(int i = 0; i < path.size() - 1; i++) {
+            double minLength = Double.MAX_VALUE;
+        	curr = path.get(i);
+        	next = path.get(i+1);
+
+        	if(roads.containsKey(curr)) {
+        		HashSet<geography.RoadSegment> segments = roads.get(curr);
+        		Iterator<geography.RoadSegment> it = segments.iterator();
+
+        		// get segments which are
+            	geography.RoadSegment currSegment;
+                while(it.hasNext()) {
+                    System.out.println("new segment");
+                	currSegment = it.next();
+                	if(currSegment.getOtherPoint(curr).equals(next)) {
+                        System.out.println("1st check passed : other point correct");
+                		if(currSegment.getLength() < minLength) {
+                            System.out.println("2nd check passed : length less");
+                			chosenSegment = currSegment;
+                		}
+                	}
+                }
+
+                if(chosenSegment != null) {
+                	System.out.println("YAYYY! chosenSegment was found");
+                    segmentList = chosenSegment.getPoints(curr, next);
+                    for(geography.GeographicPoint point : segmentList) {
+                        retVal.add(new LatLong(point.getX(), point.getY()));
+                    }
+                }
+                else {
+                	System.out.println("ERROR in constructMapPath : chosenSegment was null");
+                }
+        		// find
+
+        	}
+        }
+
+    	return retVal;
     }
 
 	public boolean displayRoute(String filename) {

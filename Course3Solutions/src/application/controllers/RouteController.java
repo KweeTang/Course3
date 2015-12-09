@@ -44,6 +44,7 @@ public class RouteController {
     private String filename = "myroute.route";
     private CLabel<geography.GeographicPoint> startLabel;
     private CLabel<geography.GeographicPoint> endLabel;
+    private CLabel<geography.GeographicPoint> pointLabel;
     private Slider optionsSlider;
     private SelectManager selectManager;
 
@@ -54,7 +55,8 @@ public class RouteController {
 	private Polyline routeLine;
 
 	public RouteController(RouteService routeService, Button displayButton, Button startButton, Button destinationButton,
-			CLabel<geography.GeographicPoint> startLabel, CLabel<geography.GeographicPoint> endLabel, SelectManager manager) {
+                		   CLabel<geography.GeographicPoint> startLabel, CLabel<geography.GeographicPoint> endLabel,
+                		   CLabel<geography.GeographicPoint> pointLabel, SelectManager manager) {
         this.routeService = routeService;
 		this.displayButton = displayButton;
 		this.startButton = startButton;
@@ -62,6 +64,7 @@ public class RouteController {
 
 		this.startLabel = startLabel;
 		this.endLabel = endLabel;
+        this.pointLabel = pointLabel;
         this.selectManager = manager;
 
         setupDisplayButton();
@@ -84,15 +87,18 @@ public class RouteController {
 
     private void setupRouteButtons() {
     	startButton.setOnAction(e -> {
+            System.out.println(pointLabel.getItem());
+            selectManager.setStart(pointLabel.getItem());
     	});
 
         destinationButton.setOnAction( e-> {
-
+            selectManager.setDestination(pointLabel.getItem());
         });
     }
 
 
     private void setupLabels() {
+
 
     }
 
