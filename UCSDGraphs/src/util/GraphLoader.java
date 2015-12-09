@@ -593,6 +593,12 @@ public class GraphLoader
         return new RoadLineInfo(p1, p2, tokens.get(4), tokens.get(5));
 		
 	}
+	
+	public static void main(String[] args)
+	{
+		GraphLoader.createIntersectionsFile("data/hollywood_large.map", "data/intersections/hollywood_large.intersections.map");
+	}
+	
 }	
 	
 
@@ -669,6 +675,7 @@ class RoadLineInfo
 		return this.point1 + " " + this.point2 + " " + this.roadName + " " + this.roadType;
 		
 	}
+	
 	
 	
 }
