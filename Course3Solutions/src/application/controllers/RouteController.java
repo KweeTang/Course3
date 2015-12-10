@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import application.MapApp;
+import application.MarkerManager;
 import application.SelectManager;
 import application.CLabel;
 import application.services.GeneralService;
@@ -39,39 +40,48 @@ public class RouteController {
     private GeneralService generalService;
     private RouteService routeService;
     private Button displayButton;
+    private Button hideButton;
     private Button startButton;
     private Button destinationButton;
+    private Button visualizationButton;
     private String filename = "myroute.route";
     private CLabel<geography.GeographicPoint> startLabel;
     private CLabel<geography.GeographicPoint> endLabel;
+    private CLabel<geography.GeographicPoint> pointLabel;
     private Slider optionsSlider;
     private SelectManager selectManager;
+    private MarkerManager markerManager;
 
 
 
-
-	// display one route at a time
-	private Polyline routeLine;
-
-	public RouteController(RouteService routeService, Button displayButton, Button startButton, Button destinationButton,
-			CLabel<geography.GeographicPoint> startLabel, CLabel<geography.GeographicPoint> endLabel, SelectManager manager) {
+	public RouteController(RouteService routeService, Button displayButton, Button hideButton, Button startButton, Button destinationButton,
+						   Button visualizationButton, CLabel<geography.GeographicPoint> startLabel,
+						   CLabel<geography.GeographicPoint> endLabel, CLabel<geography.GeographicPoint> pointLabel,
+						   SelectManager manager, MarkerManager markerManager) {
+        // save parameters
         this.routeService = routeService;
 		this.displayButton = displayButton;
+        this.hideButton = hideButton;
 		this.startButton = startButton;
 		this.destinationButton = destinationButton;
+        this.visualizationButton = visualizationButton;
 
+        // maybe don't need references to labels;
 		this.startLabel = startLabel;
 		this.endLabel = endLabel;
+        this.pointLabel = pointLabel;
         this.selectManager = manager;
+        this.markerManager = markerManager;
 
-        setupDisplayButton();
+        setupDisplayButtons();
         setupRouteButtons();
+        setupVisualizationButton();
         setupLabels();
         //routeService.displayRoute("data/sampleroute.map");
 	}
 
 
-	private void setupDisplayButton() {
+	private void setupDisplayButtons() {
 		displayButton.setOnAction(e -> {
             if(startLabel.getItem() != null && endLabel.getItem() != null) {
     			routeService.displayRoute(startLabel.getItem(), endLabel.getItem());
@@ -80,19 +90,32 @@ public class RouteController {
             	MapApp.showErrorAlert("Route Display Error", "Make sure to choose points for both start and destination.");
             }
 		});
+
+        hideButton.setOnAction(e -> {
+        	routeService.removeRouteLine();
+        });
 	}
+
+    private void setupVisualizationButton() {
+    	visualizationButton.setOnAction( e -> {
+    		markerManager.startVisualization();
+    	});
+    }
 
     private void setupRouteButtons() {
     	startButton.setOnAction(e -> {
+            System.out.println();
+            selectManager.setStart();
     	});
 
         destinationButton.setOnAction( e-> {
-
+            selectManager.setDestination();
         });
     }
 
 
     private void setupLabels() {
+
 
     }
 

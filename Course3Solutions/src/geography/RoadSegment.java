@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** 
+/**
  * A segment of the road that includes the intersection end points
  * as well as all the minor points that make up the intermediate geometry.
  * @author Christine
@@ -15,16 +15,16 @@ public class RoadSegment {
 
 	private GeographicPoint point1;
 	private GeographicPoint point2;
-	
+
 	private List<GeographicPoint> geometryPoints;
-	
+
 	private String roadName;
 	private String roadType;
-	
+
 	// Length in km
 	private double length;
-	
-	public RoadSegment(GeographicPoint pt1, GeographicPoint pt2, 
+
+	public RoadSegment(GeographicPoint pt1, GeographicPoint pt2,
 						List<GeographicPoint> geometry, String roadName,
 						String roadType, double length)
 	{
@@ -35,15 +35,15 @@ public class RoadSegment {
 		this.roadType = roadType;
 		this.length = length;
 	}
-	
-	
+
+
 	/** Return all of the points from start to end in that order
 	 * on this segment.
 	 * @param start
 	 * @param end
 	 * @return
 	 */
-	public List<GeographicPoint> getPoints(GeographicPoint start, 
+	public List<GeographicPoint> getPoints(GeographicPoint start,
 											GeographicPoint end)
 	{
 		List<GeographicPoint> allPoints = new ArrayList<GeographicPoint>();
@@ -53,19 +53,27 @@ public class RoadSegment {
 			allPoints.add(end);
 		}
 		else if (point2.equals(start) && point1.equals(end)) {
-			allPoints.add(end);
+            System.out.println("RoadSegment getPoints :: Reversing");
+            // probably only want to reverse the geometryPoints
+			allPoints.addAll(geometryPoints);
+			Collections.reverse(allPoints);
+			allPoints.add(start);
+			allPoints.add(0, end);
+
+            // OLD CODE --- REMOVE!!
+			/*allPoints.add(end);
 			allPoints.addAll(geometryPoints);
 			allPoints.add(start);
-			Collections.reverse(allPoints);
+			Collections.reverse(allPoints);*/
 		}
 		else {
 			throw new IllegalArgumentException("Start and end points do not "
 					+ "match end points of segment");
 		}
-		
+
 		return allPoints;
 	}
-	
+
 	/** Two road segments are equal if they have the same start and end points
 	 *  and they have the same road name.
 	 */
@@ -74,7 +82,7 @@ public class RoadSegment {
 		if (!(o instanceof RoadSegment)) {
 			return false;
 		}
-		
+
 		RoadSegment other = (RoadSegment)o;
 		boolean ptsEqual = false;
 		if (other.point1.equals(this.point1) && other.point2.equals(this.point2)) {
@@ -86,12 +94,12 @@ public class RoadSegment {
 		}
 		return this.roadName.equals(other.roadName) && ptsEqual && this.length == other.length;
 	}
-	
+
 	public int hashCode()
 	{
 		return point1.hashCode() + point2.hashCode();
 	}
-	
+
 	public String toString()
 	{
 		String toReturn = this.roadName + ", " +this.roadType;
@@ -100,9 +108,23 @@ public class RoadSegment {
 			toReturn += "; " + p;
 		}
 		toReturn += "; " + point2 + "]";
-		
+
 		return toReturn;
 	}
-		
-	
+
+    public double getLength() { return this.length; }
+    public geography.GeographicPoint getOtherPoint(geography.GeographicPoint point) {
+    	if(point.equals(point1)) {
+    		return point2;
+    	}
+    	if(point.equals(point2)) {
+    		return point1;
+    	}
+
+    	System.out.println("ERROR!! : in RoadSegment::getOtherPoint Neither point matched");
+    	return null;
+    }
+
+
+
 }

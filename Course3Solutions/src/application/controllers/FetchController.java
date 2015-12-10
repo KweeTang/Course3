@@ -1,6 +1,8 @@
 package application.controllers;
 
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.FileReader;
 
 import com.sun.javafx.geom.Rectangle;
 
@@ -33,6 +35,9 @@ public class FetchController {
     private TextField writeFile;
     private String filename = "data.map";
 
+    // path for mapfiles to load when program starts
+    private String persistPath = "data/mapfiles/mapfiles.list";
+
 	// SHOULD I USE THIS????!!
     // LOOK AT TEXT EDIROT APP
 	// TODO CENTER ON ROUTE, GET BOUND OF AREA, THINK OF UI
@@ -47,8 +52,23 @@ public class FetchController {
         setupComboCells();
         setupFetchButton();
         setupDisplayButton();
+        loadDataSets();
+
     }
 
+    private void loadDataSets() {
+    	try {
+			BufferedReader reader = new BufferedReader(new FileReader(persistPath));
+            String line = reader.readLine();
+            while(line != null) {
+            	dataChoices.getItems().add(new DataSet(GeneralService.getDataSetDirectory() + line));
+                line = reader.readLine();
+            }
+		} catch (IOException e) {
+            System.out.println("No existing map files found.");
+			e.printStackTrace();
+		}
+    }
     private void setupComboCells() {
     	//dataChoices.setVisibleRowCount(ROW_COUNT);
     	dataChoices.setCellFactory(new Callback<ListView<DataSet>, ListCell<DataSet>>() {
@@ -67,7 +87,7 @@ public class FetchController {
                             super.setText(null);
                     	}
                     	else {
-                        	super.setText(item.getFileName());
+                        	super.setText(item.getFilePath().substring(GeneralService.getDataSetDirectory().length()));
 
                     	}
                     }
@@ -81,7 +101,7 @@ public class FetchController {
         	protected void updateItem(DataSet t, boolean bln) {
         		super.updateItem(t,  bln);
         		if(t!=null) {
-        			setText(t.getFileName());
+        			setText(t.getFilePath().substring(GeneralService.getDataSetDirectory().length()));
         		}
         		else {
         			setText("Choose...");
@@ -93,7 +113,7 @@ public class FetchController {
     private void setupFetchButton() {
     	fetchButton.setOnAction(e -> {
     		String fName = writeFile.getText();
-    		if(generalService.goodDataFileName(fName)) {
+    		if((fName = generalService.checkDataFileName(fName)) != null) {
                 System.out.println("file name is good");
     			generalService.runFetchTask(fName, dataChoices, fetchButton);
 
@@ -119,23 +139,26 @@ public class FetchController {
 
             // was any dataset selected?
             if(dataSet == null) {
-    		    Alert alert = new Alert(AlertType.INFORMATION);
-    			alert.setTitle("ZZZ");
-    			alert.setHeaderText("IZZZZ" );
-    			alert.setContentText("ZZZZZ");
+    		    Alert alert = new Alert(AlertType.ERROR);
+    			alert.setTitle("Display Error");
+    			alert.setHeaderText("Invalid Action :" );
+    			alert.setContentText("No map file has been selected for display.");
     			alert.showAndWait();
             }
             else if(!dataSet.isDisplayed()) {
-        		generalService.displayIntersections(dataSet.getFileName());
-//        		generalService.displayIntersections("test.");
+        		generalService.displayIntersections(dataSet);
+
             }
             else {
     		    Alert alert = new Alert(AlertType.INFORMATION);
     			alert.setTitle("Display Info");
     			alert.setHeaderText("Intersections Already Displayed" );
-    			alert.setContentText("Data set : " + dataSet.getFileName() + " has already been loaded.");
+    			alert.setContentText("Data set : " + dataSet.getFilePath() + " has already been loaded.");
     			alert.showAndWait();
             }
+
+            // TO TEST : only using test.map for intersections
+        	//generalService.displayIntersections(new DataSet("my.map"));
     	});
     }
 

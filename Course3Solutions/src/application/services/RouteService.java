@@ -4,23 +4,40 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.function.Consumer;
 
+import application.DataSet;
+import application.MarkerManager;
+
+import java.util.Iterator;
+
+import geography.GeographicPoint;
+import geography.RoadSegment;
 import gmapsfx.GoogleMapView;
 import gmapsfx.javascript.object.GoogleMap;
 import gmapsfx.javascript.object.LatLong;
 import gmapsfx.javascript.object.LatLongBounds;
 import gmapsfx.javascript.object.MVCArray;
 import gmapsfx.shapes.Polyline;
+import javafx.scene.control.Button;
 
 public class RouteService {
 	private GoogleMap map;
 	private GoogleMapView mapComponent;
-    private Polyline routeLine;
 
-	public RouteService(GoogleMapView mapComponent) {
+    // static variable
+    private MarkerManager markerManager;
+    private Polyline routeLine;
+    private Button vButton;
+
+	public RouteService(GoogleMapView mapComponent, MarkerManager manager, Button vButton) {
 		this.mapComponent = mapComponent;
 		this.map = mapComponent.getMap();
+        this.markerManager = manager;
+        this.vButton = vButton;
 
 	}
     // COULD SEPARATE INTO ROUTE SERVICES IF CONTROLLER
@@ -80,6 +97,9 @@ public class RouteService {
 	 * @return returns false if route fails to display
 	 */
 	private boolean displayRoute(List<LatLong> route) {
+        if(routeLine != null) {
+        	removeRouteLine();
+        }
 		routeLine = new Polyline();
 		MVCArray path = new MVCArray();
 		LatLongBounds bounds = new LatLongBounds();
@@ -88,6 +108,7 @@ public class RouteService {
             bounds = bounds.extend(point);
 		}
 		routeLine.setPath(path);
+
 		map.addMapShape(routeLine);
 
 		System.out.println(bounds.getNorthEast());
@@ -96,12 +117,88 @@ public class RouteService {
 
 
 		map.fitBounds(bounds);
+		vButton.setDisable(false);
 		return true;
 	}
 
-    public boolean displayRoute(geography.GeographicPoint start, geography.GeographicPoint end) {
+    public void removeRouteLine() {
+    	map.removeMapShape(routeLine);
+        vButton.setDisable(true);
+    }
 
-        return true;
+    public boolean displayRoute(geography.GeographicPoint start, geography.GeographicPoint end) {
+        markerManager.initVisualization();
+    	Consumer<geography.GeographicPoint> nodeAccepter = markerManager.getVisualization()::acceptPoint;
+    	List<geography.GeographicPoint> path = markerManager.getDataSet().getGraph().dijkstra(start, end, nodeAccepter);
+        if(path == null) {
+            System.out.println("In displayRoute : PATH NOT FOUND");
+        	return false;
+        }
+        // TODO -- debug road segments
+    	//List<LatLong> mapPath = constructMapPath(path);
+        List<LatLong> mapPath = new ArrayList<LatLong>();
+        for(geography.GeographicPoint point : path) {
+            mapPath.add(new LatLong(point.getX(), point.getY()));
+        }
+
+
+//        return false;
+        return displayRoute(mapPath);
+    }
+
+
+    /**
+     * Construct path including road regments
+     * @param path - path with only intersections
+     * @return list of LatLongs corresponding the path of route
+     */
+    private List<LatLong> constructMapPath(List<geography.GeographicPoint> path) {
+    	List<LatLong> retVal = new ArrayList<LatLong>();
+        List<geography.GeographicPoint> segmentList = null;
+    	geography.GeographicPoint curr;
+    	geography.GeographicPoint next;
+
+    	geography.RoadSegment chosenSegment = null;;
+
+        for(int i = 0; i < path.size() - 1; i++) {
+            double minLength = Double.MAX_VALUE;
+        	curr = path.get(i);
+        	next = path.get(i+1);
+
+        	if(markerManager.getDataSet().getRoads().containsKey(curr)) {
+        		HashSet<geography.RoadSegment> segments = markerManager.getDataSet().getRoads().get(curr);
+        		Iterator<geography.RoadSegment> it = segments.iterator();
+
+        		// get segments which are
+            	geography.RoadSegment currSegment;
+                while(it.hasNext()) {
+                    System.out.println("new segment");
+                	currSegment = it.next();
+                	if(currSegment.getOtherPoint(curr).equals(next)) {
+                        System.out.println("1st check passed : other point correct");
+                		if(currSegment.getLength() < minLength) {
+                            System.out.println("2nd check passed : length less");
+                			chosenSegment = currSegment;
+                		}
+                	}
+                }
+
+                if(chosenSegment != null) {
+                	System.out.println("YAYYY! chosenSegment was found");
+                    segmentList = chosenSegment.getPoints(curr, next);
+                    for(geography.GeographicPoint point : segmentList) {
+                        retVal.add(new LatLong(point.getX(), point.getY()));
+                    }
+                }
+                else {
+                	System.out.println("ERROR in constructMapPath : chosenSegment was null");
+                }
+        		// find
+
+        	}
+        }
+
+    	return retVal;
     }
 
 	public boolean displayRoute(String filename) {
@@ -111,6 +208,18 @@ public class RouteService {
 	}
 
 	private void hideRoute() {
-		// hide routeLine
+        if(routeLine != null) {
+    		map.removeMapShape(routeLine);
+        }
 	}
+
+    private void setMarkerManager(MarkerManager manager) {
+    	this.markerManager = manager;
+    }
+
+
+
+
 }
+
+
