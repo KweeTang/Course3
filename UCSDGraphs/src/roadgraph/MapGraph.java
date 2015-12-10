@@ -82,7 +82,7 @@ public class MapGraph {
 	 * Adds a directed edge to the graph from pt1 to pt2.  
 	 * Precondition: Both GeographicPoints have already been added to the graph
 	 * @param from The starting point of the edge
-	 * @param to The ending poing of the edge
+	 * @param to The ending point of the edge
 	 * @param roadName The name of the road
 	 * @param roadType The type of the road
 	 * @param length The length of the road, in km
@@ -146,7 +146,7 @@ public class MapGraph {
 		System.out.print("Making a new map...");
 		MapGraph theMap = new MapGraph();
 		System.out.print("DONE. \nLoading the map...");
-		GraphLoader.loadRoadMap("data/simpletest.map", theMap);
+		GraphLoader.loadRoadMap("data/maps/simpletest.map", theMap);
 		System.out.println("DONE.");
 		
 		// You can use this for testing.  Feel free to change the name

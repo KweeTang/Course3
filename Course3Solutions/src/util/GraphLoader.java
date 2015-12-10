@@ -776,8 +776,7 @@ class RoadLineInfo
 			return false;
 		}
 		RoadLineInfo info = (RoadLineInfo)o;
-		return (info.point1.equals(this.point1) && info.point2.equals(this.point2) ||
-				info.point1.equals(this.point2) && info.point2.equals(this.point1)) &&
+		return info.point1.equals(this.point1) && info.point2.equals(this.point2) &&
 				info.roadType.equals(this.roadType) && info.roadName.equals(this.roadName);
 				
 	}
