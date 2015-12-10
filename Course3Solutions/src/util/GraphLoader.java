@@ -57,7 +57,7 @@ public class GraphLoader
 		List<GeographicPoint> intersections = findIntersections(pointMap);
 		//System.out.println("Done finding intersections");
 		for (GeographicPoint pt : intersections) {
-			map.addNode(pt);
+			map.addVertex(pt);
 			nodes.add(pt);
 		}
 		
@@ -178,7 +178,7 @@ public class GraphLoader
         // Add the nodes to the graph
 		List<GeographicPoint> intersections = findIntersections(pointMap);
 		for (GeographicPoint pt : intersections) {
-			map.addNode(pt);
+			map.addVertex(pt);
 			nodes.add(pt);
 		}
 		

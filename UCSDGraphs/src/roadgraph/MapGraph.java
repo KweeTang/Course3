@@ -9,6 +9,8 @@ package roadgraph;
 
 
 import java.util.List;
+import java.util.Set;
+
 import geography.GeographicPoint;
 import util.GraphLoader;
 
@@ -41,9 +43,15 @@ public class MapGraph {
 		return 0;
 	}
 	
-	/** 
-	 * 
+	/**
+	 * Return the intersections, which are the vertices in this graph.
+	 * @return The vertices in this graph as GeographicPoints
 	 */
+	public Set<GeographicPoint> getVertices()
+	{
+		//TODO: Implement this method in WEEK 2
+		return null;
+	}
 	
 	/**
 	 * Get the number of road segments in the graph
@@ -64,7 +72,7 @@ public class MapGraph {
 	 * @return true if a node was added, false if it was not (e.g. the node
 	 * was already in the graph).
 	 */
-	public boolean addNode(GeographicPoint location)
+	public boolean addVertex(GeographicPoint location)
 	{
 		// TODO: Implement this method in WEEK 2
 		return false;

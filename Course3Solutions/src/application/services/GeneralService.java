@@ -103,7 +103,7 @@ public class GeneralService {
     	GraphLoader.loadRoadMap(filename, graph, roads);
 
 
-    	Iterator<GeographicPoint>it = graph.getNodes().iterator();
+    	Iterator<GeographicPoint>it = graph.getVertices().iterator();
         while(it.hasNext()) {
         	GeographicPoint point = it.next();
         	MarkerOptions markerOptions = new MarkerOptions();
