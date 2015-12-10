@@ -140,7 +140,7 @@ public class GraphLoader
         // Add the nodes to the graph
 		List<GeographicPoint> intersections = findIntersections(pointMap);
 		for (GeographicPoint pt : intersections) {
-			map.addNode(pt);
+			map.addVertex(pt);
 			nodes.add(pt);
 		}
 		
