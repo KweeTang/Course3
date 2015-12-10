@@ -3,6 +3,12 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+.root{
+  -fx-font-size: 16px ;
+  -fx-font-family: Helvetica, Trebuchet , Verdana, Sans-Serif, Times New Roman;
+}
+
 #map {
   height: 100%;
 }

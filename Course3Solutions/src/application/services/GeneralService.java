@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import application.DataSet;
 import application.MapApp;
+import application.MarkerManager;
 import application.SelectManager;
 import application.controllers.RouteController;
 
@@ -24,12 +25,12 @@ import gmapsfx.javascript.object.LatLongBounds;
 import gmapsfx.javascript.object.Marker;
 import gmapsfx.javascript.object.MarkerOptions;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 import mapmaker.MapMaker;
 import netscape.javascript.JSObject;
-import util.GraphLoader;
 
 // class for map and general application services (file IO, etc.)
 public class GeneralService {
@@ -38,24 +39,27 @@ public class GeneralService {
 	private SelectManager selectManager;
 	private GoogleMap map;
 	private GoogleMapView mapComponent;
-    private MapApp mainApp;
-    private String markerURL = "http://maps.google.com/mapfiles/kml/paddle/blu-diamond-lv.png";
+    private MarkerManager markerManager;
 
 
     // one for each instance, make sure application only has one instance of GeneralService
     private boolean currentlyFetching;
 
-    private static String dataFilePattern = "[\\w_]+.map|datafiles/[\\w_]+.map";
+    private static final String DATA_FILE_PATTERN = "[\\w_]+.map|mapfiles/[\\w_]+.map";
+    private static final String DATA_FILE_DIR_STR = "data/mapfiles/";
+    private static final int MAPFILE_DIR_OFFSET = 9;
+    private static final int NO_DIR_SPLIT = 0;
     private roadgraph.MapGraph graph;
-    private HashMap<GeographicPoint,HashSet<RoadSegment>>  roads;
     private List<String> filenames;
+    DataSet dataSet;
 
-    public GeneralService(GoogleMapView mapComponent, MapApp mainApp, SelectManager manager) {
+    public GeneralService(GoogleMapView mapComponent, SelectManager selectManager, MarkerManager markerManager) {
     	this.mapComponent = mapComponent;
     	this.map = mapComponent.getMap();
-    	this.selectManager = manager;
+    	this.selectManager = selectManager;
+        this.markerManager = markerManager;
+        this.markerManager.setMap(map);
     	filenames = new ArrayList<String>();
-        this.mainApp = mainApp;
 
     	// uncomment to click map and print coordinates
     	/*mapComponent.addUIEventHandler(UIEventType.click, (JSObject obj) -> {
@@ -77,6 +81,7 @@ public class GeneralService {
         return false;
     }
 
+    public static String getDataSetDirectory() { return GeneralService.DATA_FILE_DIR_STR; }
     // gets current bounds of map view
     public float[] getBoundsArray() {
         LatLong sw, ne;
@@ -94,59 +99,22 @@ public class GeneralService {
     	filenames.add(filename);
     }
 
-    public void displayIntersections(String filename) {
+    public void displayIntersections(DataSet dataset) {
     	// initialize graph instance var and HashMap for intermediate RoadSegments
-    	LatLongBounds bounds = new LatLongBounds();
-    	graph = new roadgraph.MapGraph();
-    	roads = new HashMap<GeographicPoint,HashSet<RoadSegment>>();
-    	RouteService.setGraph(graph);
-    	RouteService.setSegments(roads);
-
-    	GraphLoader.loadRoadMap(filename, graph, roads);
-
-
-    	Iterator<GeographicPoint>it = graph.getNodes().iterator();
-        while(it.hasNext()) {
-        	GeographicPoint point = it.next();
-        	MarkerOptions markerOptions = new MarkerOptions();
-        	LatLong coord = new LatLong(point.getX(), point.getY());
-        	bounds.extend(coord);
-        	markerOptions.animation(Animation.DROP)
-        				 .icon(markerURL)
-        				 .position(coord)
-                         .title(null)
-                         .visible(true);
-        	Marker marker = new Marker(markerOptions);
-        	map.addMarker(marker);
-
-            /*map.addUIEventHandler(marker, UIEventType.click, (JSObject o) -> {
-            	System.out.println(coord);
-            });*/
-
-            map.addUIEventHandler(marker, UIEventType.mouseover, (JSObject o) -> {
-               marker.setVisible(true);
-               //marker.setAnimation(Animation.BOUNCE);
-            });
-
-            map.addUIEventHandler(marker, UIEventType.mouseout, (JSObject o) -> {
-            	marker.setAnimation(null);
-            });
-
-            map.addUIEventHandler(marker, UIEventType.click, (JSObject o) -> {
-                System.out.println("Clicked Marker : " + point.toString());
-            	selectManager.setPoint(point);
-            });
-
-
-        }
-        map.fitBounds(bounds);
-        System.out.println("End of display Intersections");
-
+    	selectManager.setAndDisplayData(dataset);
 
     }
 
-    public boolean goodDataFileName(String str) {
-    	return Pattern.matches(dataFilePattern, str);
+    public String checkDataFileName(String str) {
+    	if(Pattern.matches(DATA_FILE_PATTERN, str)) {
+    		String[] splitPattern = DATA_FILE_PATTERN.split("[|]");
+            System.out.println(splitPattern[NO_DIR_SPLIT]);
+            if(Pattern.matches(splitPattern[NO_DIR_SPLIT], str))
+                return DATA_FILE_DIR_STR + str;
+
+            return DATA_FILE_DIR_STR + str.substring(MAPFILE_DIR_OFFSET);
+    	}
+    	return null;
     }
 
     public void runFetchTask(String fName, ComboBox<DataSet> cb, Button button) {
@@ -154,16 +122,14 @@ public class GeneralService {
             @Override
         	public String call() {
 
-                System.out.println("In call function for Fetch Task");
-                System.out.println(currentlyFetching);
-                if(currentlyFetching) {
+//                System.out.println("In call function for Fetch Task");
+                /*if(currentlyFetching) {
                 	MapApp.showErrorAlert("Fetch Error : ", "Data set already being fetched.\nTry again after task finishes.");
                 	return "alreadyFetching";
-                }
+                }*/
 
                 System.out.println("Before if(writeDataToFile...");
         		if(writeDataToFile(fName)) {
-
                     return fName;
         		}
 
@@ -174,11 +140,15 @@ public class GeneralService {
 
         //final Stage loadStage = new Stage();
 
+        Alert fetchingAlert = MapApp.getInfoAlert("Loading : ", "Fetching data for current map area...");
         task.setOnSucceeded( e -> {
            if(task.getValue().equals(fName)) {
                addDataFile(fName);
 
-               cb.getItems().addAll(new DataSet(fName));
+               cb.getItems().add(new DataSet(fName));
+               if(fetchingAlert.isShowing()) {
+            	   fetchingAlert.close();
+               }
                MapApp.showInfoAlert("Fetch completed : ", "Data set : \"" + fName + "\" written to file!");
                System.out.println("Fetch Task Succeeded");
 
@@ -201,8 +171,7 @@ public class GeneralService {
         task.setOnRunning(e -> {
             button.setDisable(true);
             System.out.println("ON RUNNING");
-            MapApp.showInfoAlert("Loading : ", "Fetching data for current map area...");
-
+            fetchingAlert.showAndWait();
         });
 
         Thread fetchThread = new Thread(task);
@@ -214,7 +183,7 @@ public class GeneralService {
     }
 
     public static String getFileRegex() {
-    	return GeneralService.dataFilePattern;
+    	return GeneralService.DATA_FILE_PATTERN;
     }
 
 
@@ -224,6 +193,7 @@ public class GeneralService {
 
 
     public double getState() { return currentState; }
+
 
 }
 

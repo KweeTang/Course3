@@ -4,9 +4,13 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 public class CLabel<T> extends Label {
 	private ObjectProperty<T> item = new SimpleObjectProperty<T>(this, "item");
+    private static final Paint RED = Color.web("#9E092F");
+    private static final Paint GREEN = Color.web("#099E78");
 
 	public CLabel() {
 		super();
@@ -35,9 +39,11 @@ public class CLabel<T> extends Label {
 
         if(item != null) {
     		setText(item.toString());
+        	setTextFill(GREEN);
         }
         else {
         	setText("Choose Point");
+        	setTextFill(RED);
         }
 	}
 
