@@ -53,26 +53,34 @@ public class FetchController {
         setupFetchButton();
         setupDisplayButton();
         loadDataSets();
+        for (DataSet d : dataChoices.getItems()) {
+        	System.out.println(d);
+        }
 
     }
 
     private void loadDataSets() {
     	try {
-			BufferedReader reader = new BufferedReader(new FileReader(persistPath));
+    		BufferedReader reader = null;
+        	reader = new BufferedReader(new FileReader(persistPath));
             String line = reader.readLine();
             while(line != null) {
+            	System.out.println("Getting " + line);;
             	dataChoices.getItems().add(new DataSet(GeneralService.getDataSetDirectory() + line));
                 line = reader.readLine();
             }
+            reader.close();
 		} catch (IOException e) {
-            System.out.println("No existing map files found.");
-			e.printStackTrace();
+            e.printStackTrace();
+
 		}
     }
     private void setupComboCells() {
+
     	//dataChoices.setVisibleRowCount(ROW_COUNT);
     	dataChoices.setCellFactory(new Callback<ListView<DataSet>, ListCell<DataSet>>() {
         	@Override public ListCell<DataSet> call(ListView<DataSet> p) {
+        		System.out.println("Calling call with " + p);
         		return new ListCell<DataSet>() {
         			{
                         super.setPrefWidth(100);
@@ -82,14 +90,19 @@ public class FetchController {
 
                     @Override
                     protected void updateItem(DataSet item, boolean empty) {
-                        super.updateItem(item, empty);
+                    	System.out.println("Updating item: " + item);
+                    	super.updateItem(item, empty);
                     	if(empty || item == null) {
+                    		System.out.println("Setting text to null");
                             super.setText(null);
                     	}
                     	else {
-                        	super.setText(item.getFilePath().substring(GeneralService.getDataSetDirectory().length()));
+                    		System.out.println("Setting text to " + item.getFilePath().substring(GeneralService.getDataSetDirectory().length()));
 
+                    		super.setText(item.getFilePath().substring(GeneralService.getDataSetDirectory().length()));
+                        	
                     	}
+                    	
                     }
         		};
 
@@ -99,11 +112,15 @@ public class FetchController {
         dataChoices.setButtonCell(new ListCell<DataSet>() {
         	@Override
         	protected void updateItem(DataSet t, boolean bln) {
+        		System.out.println("Calling setButtonCell");
         		super.updateItem(t,  bln);
         		if(t!=null) {
+        			System.out.println("IN SBC Setting text to: " + t.getFilePath().substring(GeneralService.getDataSetDirectory().length()));
         			setText(t.getFilePath().substring(GeneralService.getDataSetDirectory().length()));
         		}
         		else {
+        			System.out.println("IN SBC Setting text to: Choose..." );
+
         			setText("Choose...");
         		}
         	}
