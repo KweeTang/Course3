@@ -59,8 +59,8 @@ public class SearchGrader implements Runnable {
 
         feedback += "\n\n" + desc;
 
-        GraphLoader.loadRoadMap("data/graders/mod2" + file, graph);
-        CorrectAnswer corr = new CorrectAnswer("data/graders/mod2" + file + ".answer", true);
+        GraphLoader.loadRoadMap("data/graders/mod2/" + file, graph);
+        CorrectAnswer corr = new CorrectAnswer("data/graders/mod2/" + file + ".answer", true);
 
         judge(i, graph, corr, start, end);
     }
