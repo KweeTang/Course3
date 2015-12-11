@@ -21,6 +21,7 @@ public class SelectManager {
         pointLabel = null;
         startLabel = null;
         destinationLabel = null;
+        dataSet = null;
     }
 
 

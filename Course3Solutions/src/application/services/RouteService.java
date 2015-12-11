@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 import application.DataSet;
 import application.MarkerManager;
+import application.RouteVisualization;
 
 import java.util.Iterator;
 
@@ -32,6 +33,7 @@ public class RouteService {
     private MarkerManager markerManager;
     private Polyline routeLine;
     private Button vButton;
+    private RouteVisualization rv;
 
 	public RouteService(GoogleMapView mapComponent, MarkerManager manager, Button vButton) {
 		this.mapComponent = mapComponent;

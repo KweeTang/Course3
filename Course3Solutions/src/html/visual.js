@@ -1,19 +1,36 @@
-var obj, lat, long;
-var delay = 1000;
+var delay = 300;
+var map, positions;
+var markers = [];
 
+var markerURL = "http://maps.google.com/mapfiles/kml/paddle/red-diamond-lv.png";
+function visualizeSearch(mapParam, latLongs) {
+	positions = latLongs;
+	map = mapParam;
+	drop();
+}
 
-function visualizeSearch(map, latLongs) {
-	console.log("in the JS");
-	for( var i = 0; i<list.length; ++i) {
-		displayMarker(list[i]);
+function displayMarker(latLng, timeout) {
+	window.setTimeout(function() {
+		markers.push(new google.maps.Marker({
+			map: map,
+			icon: markerURL,
+			position: latLng,
+			animation: google.maps.Animation.DROP
+		}));
+	}, timeout);
+}
+
+function drop() {
+	for(var i = 0; i < positions.length; ++i) {
+		displayMarker(positions[i], i*delay);
+
 	}
 }
 
-function displayMarker(map, latLong) {
-	setTimeout(function() {
-		var marker = new google.maps.Marker({
-			map: map,
-			position: new google.maps.LatLng(latLong.lat(), latLong.lng())
-		})
-	}, delay);
+function clearMarkers() {
+	for(var i = 0; i < markers.length; ++i) {
+		markers[i].setMap(null);
+	}
+	markers = [];
+
 }
