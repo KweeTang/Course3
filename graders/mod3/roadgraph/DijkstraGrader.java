@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Consumer;
 import util.GraphLoader;
 import geography.*;
 
@@ -69,8 +70,10 @@ public class DijkstraGrader implements Runnable {
     }
 
     public void judge(int i, MapGraph result, CorrectAnswer corr, GeographicPoint start, GeographicPoint end) {
+        Consumer<GeographicPoint> temp = (x) -> {};
+
         feedback += appendFeedback(i, "Running Dijkstra's algorithm from (" + start.getX() + ", " + start.getY() + ") to (" + end.getX() + ", " + end.getY() + ")");
-        List<GeographicPoint> path = result.dijkstra(start, end);
+        List<GeographicPoint> path = result.dijkstra(start, end, temp);
         if (path == null) {
             if (corr.path == null) {
                 feedback += "PASSED.";
@@ -102,7 +105,8 @@ public class DijkstraGrader implements Runnable {
     public void printCorrect(String file, MapGraph graph, GeographicPoint start, GeographicPoint end) {
         try {
             PrintWriter outfile = new PrintWriter(file);
-            List<GeographicPoint> path = graph.dijkstra(start, end);
+            Consumer<GeographicPoint> temp = (x) -> {};
+            List<GeographicPoint> path = graph.dijkstra(start, end, temp);
             if (path != null) {
                 for (GeographicPoint point : path) {
                     outfile.println(point.getX() + " " + point.getY());
