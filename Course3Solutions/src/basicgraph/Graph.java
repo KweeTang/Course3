@@ -140,7 +140,7 @@ public abstract class Graph {
 	public abstract String adjacencyString();
 	
 	// For learners to implement
-	public String degreeSequence() {
+	public List<Integer> degreeSequence() {
 		List<Integer> degrees = new ArrayList<Integer>();
 		int deg;
 		for (int i = 0; i < numVertices; i ++) {
@@ -155,7 +155,7 @@ public abstract class Graph {
 		Collections.sort(degrees);
 		
 		
-		return degrees.toString();
+		return degrees;
 	}
 	
 	
