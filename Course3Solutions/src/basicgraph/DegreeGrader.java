@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Scanner;
 import util.GraphLoader;
 
+/**
+ * @author UCSD MOOC Development Team
+ * Grader for Module 1, Part 1.
+ */
 public class DegreeGrader {
     private String feedback;
 
@@ -16,21 +20,25 @@ public class DegreeGrader {
 
     private static final int TESTS = 12;
 
+    /** Turn a list into a readable and printable string */
     public static String printList(List<Integer> lst) {
         String res = "";
         for (int i : lst) {
             res += i + " ";
         }
+        // Some lists might be empty, so we can't run substring
         if (res.length() > 0)
-            return res.substring(0, res.length() - 1);
+            return res.substring(0, res.length() - 1); // last character is ' '
         else
             return res;
     }
 
+    /** Format readable feedback */
     public static String printOutput(double score, String feedback) {
         return "Score: " + score + "\n Feedback: " + feedback;
     }
 
+    /** Format test number and description */
     public static String appendFeedback(int num, String test) {
         return "\n** Test #" + num + ": " + test + "...";
     }
@@ -40,6 +48,12 @@ public class DegreeGrader {
         grader.run();
     }
 
+    /** Run a test case on an adjacency list and adjacency matrix.
+     * @param i The graph number
+     * @param desc A description of the graph
+     * @param start The node to start from
+     * @param corr A list containing the correct answer
+     */
     public void runTest(int i, String desc) {
         GraphAdjList lst = new GraphAdjList();
         GraphAdjMatrix mat = new GraphAdjMatrix();
@@ -50,6 +64,7 @@ public class DegreeGrader {
         feedback += "\n\nGRAPH: " + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list"); 
 
+        // Load the graph, get the user's output, and compare with right answer
         GraphLoader.loadGraph(file, lst);
         List<Integer> result = lst.degreeSequence();
         judge(result, corr);
@@ -61,6 +76,14 @@ public class DegreeGrader {
 
     }
 
+    /** Run a road map/airplane route test case.
+     * @param i The graph number
+     * @param file The file to read the correct answer from
+     * @param desc A description of the graph
+     * @param start The node to start from
+     * @param corr A list containing the correct answer
+     * @param type The type of graph to use
+     */
     public void runSpecialTest(int i, String file, String desc, String type) {
         GraphAdjList lst = new GraphAdjList();
         GraphAdjMatrix mat = new GraphAdjMatrix();
@@ -71,6 +94,7 @@ public class DegreeGrader {
         feedback += "\n\n" + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list");
 
+        // Different method calls for different graph types
         if (type.equals("road")) {
             GraphLoader.loadRoadMap(file, lst);
             GraphLoader.loadRoadMap(file, mat);
@@ -87,7 +111,12 @@ public class DegreeGrader {
 
     }
 
+    /** Compare the user's result with the right answer.
+     * @param result The list with the user's result
+     * @param corr The list with the correct answer
+     */
     public void judge(List<Integer> result, List<Integer> corr) {
+        // Correct answer if both lists contain the same elements
         if (result.size() != corr.size() || !result.containsAll(corr)) {
             feedback += "FAILED. Expected " + printList(corr) + ", got " + printList(result) + ". ";
         } else {
@@ -96,6 +125,10 @@ public class DegreeGrader {
         }
     }
 
+    /** Read a correct answer from a file.
+     * @param file The file to read from
+     * @return A list containing the correct answer
+     */
     public List<Integer> readCorrect(String file) {
         List<Integer> ret = new ArrayList<Integer>();
         try {
@@ -109,6 +142,7 @@ public class DegreeGrader {
         return ret;
     }
 
+    /** Run the grader. */
     public void run() {
         feedback = "";
 
@@ -134,6 +168,7 @@ public class DegreeGrader {
 
         } catch (Exception e) {
             feedback += "\nError during runtime: " + e;
+            e.printStackTrace();
         }
             
         System.out.println(printOutput((double)correct / TESTS, feedback));

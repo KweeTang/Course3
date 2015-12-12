@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import util.GraphLoader;
 
+/**
+ * @author UCSD MOOC Development Team
+ * Grader for Module 1, Part 2
+ */
 public class GraphGrader {
     private String feedback;
 
@@ -14,18 +18,22 @@ public class GraphGrader {
 
     private static final int TESTS = 16;
 
+    /** Turn a list into a readable and printable string */
     public static String printList(List<Integer> lst) {
         String res = "";
         for (int i : lst) {
             res += i + "-";
         }
+        // Last character will be a '-'
         return res.substring(0, res.length() - 1);
     }
 
+    /** Format readable feedback */
     public static String printOutput(double score, String feedback) {
         return "Score: " + score + "\nFeedback: " + feedback;
     }
 
+    /** Format test number and description */
     public static String appendFeedback(int num, String test) {
         return "\n** Test #" + num + ": " + test + "...";
     }
@@ -35,6 +43,12 @@ public class GraphGrader {
         grader.run();
     }
 
+    /** Run a test case on an adjacency list and adjacency matrix.
+     * @param i The graph number
+     * @param desc A description of the graph
+     * @param start The node to start from
+     * @param corr A list containing the correct answer
+     */
     public void runTest(int i, String desc, int start, List<Integer> corr) {
         GraphAdjList lst = new GraphAdjList();
         GraphAdjMatrix mat = new GraphAdjMatrix();
@@ -42,6 +56,7 @@ public class GraphGrader {
         feedback += "\n\nGRAPH: " + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list"); 
 
+        // Load the graph, get the user's answer, and compare with right answer
         GraphLoader.loadGraph("data/graders/mod1/graph" + i + ".txt", lst);
         List<Integer> result = lst.getDistance2(start);
         judge(result, corr);
@@ -52,6 +67,14 @@ public class GraphGrader {
         judge(result, corr);
     }
 
+    /** Run a road map/airplane route test case.
+     * @param i The graph number
+     * @param file The file to read the correct answer from
+     * @param desc A description of the graph
+     * @param start The node to start from
+     * @param corr A list containing the correct answer
+     * @param type The type of graph to use
+     */
     public void runSpecialTest(int i, String file, String desc, int start, List<Integer> corr, String type) {
         GraphAdjList lst = new GraphAdjList();
         GraphAdjMatrix mat = new GraphAdjMatrix();
@@ -61,6 +84,7 @@ public class GraphGrader {
         feedback += "\n\n" + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list");
 
+        // Different method calls for different graph types
         if (type.equals("road")) {
             GraphLoader.loadRoadMap(prefix + file, lst);
             GraphLoader.loadRoadMap(prefix + file, mat);
@@ -77,7 +101,12 @@ public class GraphGrader {
         judge(result, corr);
     }
 
+    /** Compare the user's result with the right answer.
+     * @param result The list with the user's result
+     * @param corr The list with the correct answer
+     */
     public void judge(List<Integer> result, List<Integer> corr) {
+        // Correct answer if both lists contain the same elements
         if (result.size() != corr.size() || !result.containsAll(corr)) {
             feedback += "FAILED. Expected " + printList(corr) + ", got " + printList(result) + ". ";
             if (result.size() > corr.size()) {
@@ -92,6 +121,10 @@ public class GraphGrader {
         }
     }
 
+    /** Read a correct answer from a file.
+     * @param file The file to read from
+     * @return A list containing the correct answer
+     */
     public ArrayList<Integer> readCorrect(String file) {
         ArrayList<Integer> ret = new ArrayList<Integer>();
         try {
@@ -101,11 +134,13 @@ public class GraphGrader {
                 ret.add(Integer.parseInt(next));
             }
         } catch (Exception e) {
+            // shouldn't happen
             feedback += "\nCould not open answer file! Please submit a bug report.";
         }
         return ret;
     }
 
+    /** Run the grader */
     public void run() {
         feedback = "";
         correct = 0;
@@ -152,6 +187,7 @@ public class GraphGrader {
 
         } catch (Exception e) {
             feedback += "\nError during runtime: " + e;
+            e.printStackTrace();
         }
             
         System.out.println(printOutput((double)correct / TESTS, feedback));

@@ -12,6 +12,10 @@ import java.util.Scanner;
 import util.GraphLoader;
 import geography.*;
 
+/**
+ * @author UCSD MOOC Development Team
+ * Grader for Module 2.
+ */
 public class SearchGrader implements Runnable {
     public String feedback;
 
@@ -19,31 +23,29 @@ public class SearchGrader implements Runnable {
 
     private static final int TESTS = 12;
 
-
-    public static String printList(List<Integer> lst) {
-        String res = "";
-        for (int i : lst) {
-            res += i + "-";
-        }
-        return res.substring(0, res.length() - 1);
-    }
-
+    /** Format readable feedback */
     public static String printOutput(double score, String feedback) {
         return "Score: " + score + "\nFeedback: " + feedback;
     }
 
+    /** Format test number and description */
     public static String appendFeedback(int num, String test) {
         return "\n** Test #" + num + ": " + test + "...";
     }
 
     public static void main(String[] args) {
         SearchGrader grader = new SearchGrader();
+
+        // Infinite loop detection
         Thread thread = new Thread(grader);
         thread.start();
+        
+        // Allow it to run for 10 seconds
         long endTime = System.currentTimeMillis() + 10000;
         boolean infinite = false;
         while(thread.isAlive()) {
             if (System.currentTimeMillis() > endTime) {
+                // Stop the thread if it takes too long
                 thread.stop();
                 infinite = true;
                 break;
@@ -54,6 +56,13 @@ public class SearchGrader implements Runnable {
         }
     }
 
+    /** Run a test case on an adjacency list and adjacency matrix.
+     * @param i The graph number
+     * @param file The file to read from
+     * @param desc A description of the graph
+     * @param start The point to start from
+     * @param end The point to end at
+     */
     public void runTest(int i, String file, String desc, GeographicPoint start, GeographicPoint end) {
         MapGraph graph = new MapGraph();
 
@@ -65,7 +74,15 @@ public class SearchGrader implements Runnable {
         judge(i, graph, corr, start, end);
     }
 
+    /** Compare the user's result with the right answer.
+     * @param i The graph number
+     * @param result The user's graph
+     * @param corr The correct answer
+     * @param start The point to start from
+     * @param end The point to end at
+     */
     public void judge(int i, MapGraph result, CorrectAnswer corr, GeographicPoint start, GeographicPoint end) {
+        // Correct if same number of vertices
         feedback += appendFeedback(i * 3 - 2, "Testing vertex count");
         if (result.getNumVertices() != corr.vertices) {
             feedback += "FAILED. Expected " + corr.vertices + "; got " + result.getNumVertices() + ".";
@@ -74,6 +91,7 @@ public class SearchGrader implements Runnable {
             correct++;
         }
 
+        // Correct if same number of edges
         feedback += appendFeedback(i * 3 - 1, "Testing edge count");
         if (result.getNumEdges() != corr.edges) {
             feedback += "FAILED. Expected " + corr.edges + "; got " + result.getNumEdges() + ".";
@@ -82,6 +100,7 @@ public class SearchGrader implements Runnable {
             correct++;
         }
 
+        // Correct if paths are same size and have same elements
         feedback += appendFeedback(i * 3, "Testing BFS");
         List<GeographicPoint> bfs = result.bfs(start, end);
         if (bfs == null) {
@@ -104,6 +123,7 @@ public class SearchGrader implements Runnable {
         }
     }
 
+    /** Print a BFS path in readable form */
     public String printBFSList(List<GeographicPoint> bfs) {
         String ret = "";
         for (GeographicPoint point : bfs) {
@@ -112,6 +132,7 @@ public class SearchGrader implements Runnable {
         return ret;
     }
 
+    /** Run the grader */
     @Override
     public void run() {
         feedback = "";
@@ -134,6 +155,7 @@ public class SearchGrader implements Runnable {
 
         } catch (Exception e) {
             feedback += "\nError during runtime: " + e;
+            e.printStackTrace();
         }
             
         System.out.println(printOutput((double)correct / TESTS, feedback));
