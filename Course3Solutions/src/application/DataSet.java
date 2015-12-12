@@ -11,7 +11,7 @@ public class DataSet {
 	boolean currentlyDisplayed;
 
 	public DataSet (String path) {
-        this.filePath = path;
+		this.filePath = path;
         graph = null;
         roads = null;
         currentlyDisplayed = false;

@@ -47,7 +47,7 @@ public class GeneralService {
 
     private static final String DATA_FILE_PATTERN = "[\\w_]+.map|mapfiles/[\\w_]+.map";
     private static final String DATA_FILE_DIR_STR = "data/mapfiles/";
-    private static final int MAPFILE_DIR_OFFSET = 9;
+    private static final int MAPFILE_DIR_OFFSET = 14;
     private static final int NO_DIR_SPLIT = 0;
     private roadgraph.MapGraph graph;
     private List<String> filenames;
@@ -116,6 +116,10 @@ public class GeneralService {
     	}
     	return null;
     }
+    
+    public void runFetchTask2(ComboBox<DataSet> cb) {
+    	cb.getItems().add(new DataSet("data/mapfiles/test.map"));
+    }
 
     public void runFetchTask(String fName, ComboBox<DataSet> cb, Button button) {
         Task<String> task = new Task<String>() {
@@ -145,6 +149,7 @@ public class GeneralService {
            if(task.getValue().equals(fName)) {
                addDataFile(fName);
 
+               System.out.println("Adding new file " + fName);
                cb.getItems().add(new DataSet(fName));
                if(fetchingAlert.isShowing()) {
             	   fetchingAlert.close();

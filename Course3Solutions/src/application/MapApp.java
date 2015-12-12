@@ -4,6 +4,7 @@
 package application;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -15,6 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -74,6 +76,14 @@ public class MapApp extends Application
         Button displayButton = new Button("Show Intersections");
         TextField tf = new TextField();
         ComboBox<DataSet> cb = new ComboBox<DataSet>();
+        
+        cb.setOnMousePressed(new EventHandler<MouseEvent>(){
+            @Override
+            public void handle(MouseEvent event) {
+                cb.requestFocus();
+            }
+        });
+        
         setupFetchTab(fetchTab, fetchButton, displayButton, tf, cb);
 
 
@@ -162,7 +172,7 @@ public class MapApp extends Application
 	 * @param displayButton
 	 * @param tf
 	 */
-    private void setupFetchTab(Tab fetchTab, Button fetchButton, Button displayButton, TextField tf, ComboBox cb) {
+    private void setupFetchTab(Tab fetchTab, Button fetchButton, Button displayButton, TextField tf, ComboBox<DataSet> cb) {
     	// add button to tab, rethink design and add V/HBox for content
         VBox v = new VBox();
         HBox h = new HBox();
