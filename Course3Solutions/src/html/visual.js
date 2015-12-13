@@ -15,8 +15,9 @@ function displayMarker(latLng, timeout) {
 			map: map,
 			icon: markerURL,
 			position: latLng,
-			animation: google.maps.Animation.DROP
-		}));
+			//animation: google.maps.Animation.DROP
+			animation: null
+		}))
 	}, timeout);
 }
 

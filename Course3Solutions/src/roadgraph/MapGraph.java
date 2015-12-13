@@ -92,17 +92,17 @@ public class MapGraph {
 	 * @param latitude The latitude of the location
 	 * @param longitude The longitude of the location
 	 * */
-	public void addVertex(double latitude, double longitude)
+	public void addNode(double latitude, double longitude)
 	{
 		GeographicPoint pt = new GeographicPoint(latitude, longitude);
-		this.addVertex(pt);
+		this.addNode(pt);
 	}
 
 	/** Add a node corresponding to an intersection at a Geographic Point
 	 *
 	 * @param location  The location of the intersection
 	 */
-	public void addVertex(GeographicPoint location)
+	public void addNode(GeographicPoint location)
 	{
 		MapNode n = pointNodeMap.get(location);
 		if (n == null) {
@@ -379,7 +379,7 @@ public class MapGraph {
 	 *   start to goal (including both start and goal).
 	 */
 	public List<GeographicPoint> aStarSearch(GeographicPoint start,
-											 GeographicPoint goal)
+											 GeographicPoint goal, Consumer<GeographicPoint> nodeAccepter)
 	{
 		// Set up
 		if (start == null || goal == null)
@@ -410,6 +410,7 @@ public class MapGraph {
 		MapNode next = null;
 		while (!toExplore.isEmpty()) {
 			next = toExplore.remove();
+            nodeAccepter.accept(next.getLocation());
 			System.out.println("A* visiting" + next);
 			if (next.equals(endNode)) break;
 			if(!visited.contains(next)) {

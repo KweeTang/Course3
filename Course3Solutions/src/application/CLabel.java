@@ -7,11 +7,21 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+/**
+ * Label which has an object property associated with it
+ *
+ * @author Adam
+ *
+ * @param <T> Type of object associated with label
+ */
+
+//TODO -- should this be generic?
 public class CLabel<T> extends Label {
 	private ObjectProperty<T> item = new SimpleObjectProperty<T>(this, "item");
     private static final Paint RED = Color.web("#9E092F");
     private static final Paint GREEN = Color.web("#099E78");
 
+    // CONSTRUCTORS
 	public CLabel() {
 		super();
         // what to do about null items?
@@ -34,6 +44,13 @@ public class CLabel<T> extends Label {
         	setItem(null);
 	}
 
+
+	/**
+	 * Used to update item when new item is set.
+	 *
+	 * @param item
+	 * @param empty
+	 */
 	protected void updateView(T item, boolean empty) {
 		System.out.println("In updateView!!");
 
@@ -42,6 +59,7 @@ public class CLabel<T> extends Label {
         	setTextFill(GREEN);
         }
         else {
+        	// TODO -- change here to make generic
         	setText("Choose Point");
         	setTextFill(RED);
         }

@@ -38,11 +38,7 @@ public class FetchController {
     // path for mapfiles to load when program starts
     private String persistPath = "data/mapfiles/mapfiles.list";
 
-	// SHOULD I USE THIS????!!
-    // LOOK AT TEXT EDIROT APP
-	// TODO CENTER ON ROUTE, GET BOUND OF AREA, THINK OF UI
 
-    // do i need reference to App?
     public FetchController(GeneralService generalService, TextField writeFile, Button fetchButton, ComboBox<DataSet> cb, Button displayButton) {
         this.generalService = generalService;
         this.fetchButton = fetchButton;
@@ -53,29 +49,25 @@ public class FetchController {
         setupFetchButton();
         setupDisplayButton();
         loadDataSets();
-    	
-        
 
     }
 
     private void loadDataSets() {
     	try {
-    		BufferedReader reader = null;
-        	reader = new BufferedReader(new FileReader(persistPath));
+			BufferedReader reader = new BufferedReader(new FileReader(persistPath));
             String line = reader.readLine();
             while(line != null) {
             	dataChoices.getItems().add(new DataSet(GeneralService.getDataSetDirectory() + line));
-            	//dataChoices.getItems().add(new DataSet("data/mapfiles/test.map"));
-            	line = reader.readLine();
+                line = reader.readLine();
             }
+
             reader.close();
 		} catch (IOException e) {
-            e.printStackTrace();
-
+            System.out.println("No existing map files found.");
+			e.printStackTrace();
 		}
     }
     private void setupComboCells() {
-
     	//dataChoices.setVisibleRowCount(ROW_COUNT);
     	dataChoices.setCellFactory(new Callback<ListView<DataSet>, ListCell<DataSet>>() {
         	@Override public ListCell<DataSet> call(ListView<DataSet> p) {
@@ -88,16 +80,14 @@ public class FetchController {
 
                     @Override
                     protected void updateItem(DataSet item, boolean empty) {
-                    	super.updateItem(item, empty);
+                        super.updateItem(item, empty);
                     	if(empty || item == null) {
-                    		super.setText(null);
+                            super.setText(null);
                     	}
                     	else {
-                    		
-                    		super.setText(item.getFilePath().substring(GeneralService.getDataSetDirectory().length()));
-                        	
+                        	super.setText(item.getFilePath().substring(GeneralService.getDataSetDirectory().length()));
+
                     	}
-                    	
                     }
         		};
 
@@ -112,40 +102,45 @@ public class FetchController {
         			setText(t.getFilePath().substring(GeneralService.getDataSetDirectory().length()));
         		}
         		else {
-        		
         			setText("Choose...");
         		}
         	}
         });
     }
 
+    /**
+     * Registers event to fetch data
+     */
     private void setupFetchButton() {
     	fetchButton.setOnAction(e -> {
     		String fName = writeFile.getText();
-    		
+
+    		// check for valid file name ___.map or mapfiles/___.map
     		if((fName = generalService.checkDataFileName(fName)) != null) {
                 System.out.println("file name is good");
-            	dataChoices.getItems().add(new DataSet("data/mapfiles/test.map"));
-                generalService.runFetchTask(fName, dataChoices, fetchButton);
-                
+
+    			generalService.runFetchTask(fName, dataChoices, fetchButton);
+
     		}
     		else {
     		    Alert alert = new Alert(AlertType.ERROR);
     			alert.setTitle("File Name Error");
     			alert.setHeaderText("Input Error");
-    			alert.setContentText("Check filename input, \n Only characters in class" + GeneralService.getFileRegex()
-    								 +"are allowed."
-    					             + "\n\nFilename must fit one of the following formats : \n"
-    								 + "[name].map or datasets/[name].map");
+    			alert.setContentText("Check filename input. \n\n\n"
+    								 + "Filename must match format : [filename].map."
+    								 + "\n\nUse only uppercase and lowercase letters, numbers, and underscores in [filename]");
 
     			alert.showAndWait();
     		}
-    		
     	});
     }
 
+    /**
+     * Registers event to fetch data
+     */
     private void setupDisplayButton() {
     	displayButton.setOnAction( e -> {
+            System.out.println("In setup display button");
             DataSet dataSet = dataChoices.getValue();
 
             // was any dataset selected?

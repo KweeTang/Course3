@@ -159,8 +159,13 @@ public class MarkerManager {
 
         map.addUIEventHandler(marker, UIEventType.click, (JSObject o) -> {
             //System.out.println("Clicked Marker : " + point.toString());
+        	if(selectedMarker != null && selectedMarker != startMarker
+        	   && selectedMarker != destinationMarker) {
+        		selectedMarker.setIcon(markerURL);
+        	}
         	selectManager.setPoint(point, marker);
             selectedMarker = marker;
+            selectedMarker.setIcon(SELECTED_URL);
         });
     }
 

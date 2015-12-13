@@ -22,7 +22,9 @@ import gmapsfx.shapes.Polyline;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleGroup;
 import javafx.util.StringConverter;
 
 public class RouteController {
@@ -30,20 +32,28 @@ public class RouteController {
 	private static final String DISABLE_STR = "Disable";
 	private static final String START_STR = "Select Start";
 	private static final String DEST_STR = "Select Destination";
+    public static final int A_STAR = 2;
+    public static final int DIJ = 1;
 	public static final int DISABLE = 0;
 	public static final int START = 1;
 	public static final int DESTINATION = 2;
 
+    private int selectedToggle = DIJ;
     private int currentState = 0;
 
 	private GoogleMap map;
-    private GeneralService generalService;
     private RouteService routeService;
     private Button displayButton;
     private Button hideButton;
     private Button startButton;
     private Button destinationButton;
     private Button visualizationButton;
+
+    // radio buttons to choose between A* and Dijkstra
+    private RadioButton rbD;
+    private RadioButton rbA;
+
+    private ToggleGroup group;
     private String filename = "myroute.route";
     private CLabel<geography.GeographicPoint> startLabel;
     private CLabel<geography.GeographicPoint> endLabel;
@@ -55,7 +65,7 @@ public class RouteController {
 
 
 	public RouteController(RouteService routeService, Button displayButton, Button hideButton, Button startButton, Button destinationButton,
-						   Button visualizationButton, CLabel<geography.GeographicPoint> startLabel,
+						   ToggleGroup group, RadioButton rbD, RadioButton rbA, Button visualizationButton, CLabel<geography.GeographicPoint> startLabel,
 						   CLabel<geography.GeographicPoint> endLabel, CLabel<geography.GeographicPoint> pointLabel,
 						   SelectManager manager, MarkerManager markerManager) {
         // save parameters
@@ -64,7 +74,11 @@ public class RouteController {
         this.hideButton = hideButton;
 		this.startButton = startButton;
 		this.destinationButton = destinationButton;
+        this.group = group;
         this.visualizationButton = visualizationButton;
+
+        this.rbD = rbD;
+        this.rbA = rbA;
 
         // maybe don't need references to labels;
 		this.startLabel = startLabel;
@@ -77,6 +91,7 @@ public class RouteController {
         setupRouteButtons();
         setupVisualizationButton();
         setupLabels();
+        setupToggle();
         //routeService.displayRoute("data/sampleroute.map");
 	}
 
@@ -84,7 +99,7 @@ public class RouteController {
 	private void setupDisplayButtons() {
 		displayButton.setOnAction(e -> {
             if(startLabel.getItem() != null && endLabel.getItem() != null) {
-    			routeService.displayRoute(startLabel.getItem(), endLabel.getItem());
+        			routeService.displayRoute(startLabel.getItem(), endLabel.getItem(), selectedToggle);
             }
             else {
             	MapApp.showErrorAlert("Route Display Error", "Make sure to choose points for both start and destination.");
@@ -117,6 +132,17 @@ public class RouteController {
     private void setupLabels() {
 
 
+    }
+
+    private void setupToggle() {
+    	group.selectedToggleProperty().addListener( li -> {
+            if(group.getSelectedToggle() == rbD) {
+            	selectedToggle = DIJ;
+            }
+            else if(group.getSelectedToggle() == rbA) {
+            	selectedToggle = A_STAR;
+            }
+    	});
     }
 
 

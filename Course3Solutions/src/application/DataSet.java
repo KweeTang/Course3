@@ -4,6 +4,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import util.GraphLoader;
 
+/**
+ * Class to wrap the graph, .map file map, and other information about
+ * the map data sets used
+ *
+ * @author Adam
+ *
+ */
 public class DataSet {
 	String filePath;
 	roadgraph.MapGraph graph;
@@ -11,7 +18,7 @@ public class DataSet {
 	boolean currentlyDisplayed;
 
 	public DataSet (String path) {
-		this.filePath = path;
+        this.filePath = path;
         graph = null;
         roads = null;
         currentlyDisplayed = false;

@@ -4,7 +4,6 @@
 package application;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,10 +12,11 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -45,29 +45,27 @@ public class MapApp extends Application
     protected BorderPane bp;
     protected Stage primaryStage;
 
+    // CONSTNATS
     private static final double MARGIN_VAL = 10;
-    private static final String BASEFONT = "Helvetica";
     private static final double FETCH_COMPONENT_WIDTH = 160.0;
 
 
 
-    // Write data sets to file and always put in dataset folder
-    // have file with all names of files
-    // have limit on number (15?) have queue
-    // for least recently used to decide which goes off if you load one with
-    // max datasets loaded
-
-
+    /**
+     * Application entry point
+     */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
+
+		// MAIN CONTAINER
 		bp = new BorderPane();
 
         // set up map
 		mapComponent = new GoogleMapView();
 		mapComponent.addMapInitializedListener(this);
 
-		// intialize tabs for data fetching and route controls
+		// initialize tabs for data fetching and route controls
         Tab routeTab = new Tab("Routing");
         Tab fetchTab = new Tab("Data Fetching");
 
@@ -76,14 +74,20 @@ public class MapApp extends Application
         Button displayButton = new Button("Show Intersections");
         TextField tf = new TextField();
         ComboBox<DataSet> cb = new ComboBox<DataSet>();
-        
-        cb.setOnMousePressed(new EventHandler<MouseEvent>(){
+
+        // set on mouse pressed, this fixes Windows 10 / Surface bug
+        cb.setOnMousePressed( e -> {
+        	cb.requestFocus();
+        });
+
+        // TODO - delete this if the above works for Christine's issue
+        /*cb.setOnMousePressed(new EventHandler<MouseEvent>(){
             @Override
             public void handle(MouseEvent event) {
                 cb.requestFocus();
             }
-        });
-        
+        });*/
+
         setupFetchTab(fetchTab, fetchButton, displayButton, tf, cb);
 
 
@@ -96,7 +100,20 @@ public class MapApp extends Application
         Button startButton = new Button("Start");
         Button destinationButton = new Button("Dest");
 
-        // Select and marker manangers for route choosing and marker display/visuals
+        // Radio buttons for selecting search algorithm
+        final ToggleGroup group = new ToggleGroup();
+
+        // Use Dijkstra as default
+        RadioButton rbD = new RadioButton("Dijkstra");
+        rbD.setSelected(true);
+
+
+        RadioButton rbA = new RadioButton("A*");
+
+        rbD.setToggleGroup(group);
+        rbA.setToggleGroup(group);
+
+        // Select and marker managers for route choosing and marker display/visuals
         SelectManager manager = new SelectManager();
         MarkerManager markerManager = new MarkerManager();
         markerManager.setSelectManager(manager);
@@ -108,21 +125,22 @@ public class MapApp extends Application
         manager.setStartLabel(startLabel);
         manager.setDestinationLabel(endLabel);
         setupRouteTab(routeTab,startLabel, endLabel, pointLabel, routeButton, hideRouteButton,
-            		  visualizationButton, startButton, destinationButton);
+            		  visualizationButton, startButton, destinationButton, rbD, rbA);
 
         // add tabs to pane, give no option to close
 		TabPane tp = new TabPane(routeTab, fetchTab);
         tp.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-		Button button = new Button("Display Route");
 
         // initialize Services and controllers after map is loaded
         mapComponent.addMapReadyListener(() -> {
             GeneralService gs = new GeneralService(mapComponent, manager, markerManager);
             RouteService rs = new RouteService(mapComponent, markerManager, visualizationButton);
             System.out.println("in map ready : " + this.getClass());
-    		RouteController routeController = new RouteController(rs, routeButton, hideRouteButton, startButton, destinationButton, visualizationButton,
+
+            // initialize controllers
+			new RouteController(rs, routeButton, hideRouteButton, startButton, destinationButton, group, rbD, rbA, visualizationButton,
     															  startLabel, endLabel, pointLabel, manager, markerManager);
-            FetchController fetchController = new FetchController(gs, tf, fetchButton, cb, displayButton);
+            new FetchController(gs, tf, fetchButton, cb, displayButton);
         });
 
 		// add components to border pane
@@ -165,6 +183,9 @@ public class MapApp extends Application
 
 	}
 
+
+	// SETTING UP THE VIEW
+
 	/**
 	 * Setup layout and controls for Fetch tab
 	 * @param fetchTab
@@ -172,7 +193,8 @@ public class MapApp extends Application
 	 * @param displayButton
 	 * @param tf
 	 */
-    private void setupFetchTab(Tab fetchTab, Button fetchButton, Button displayButton, TextField tf, ComboBox<DataSet> cb) {
+    private void setupFetchTab(Tab fetchTab, Button fetchButton, Button displayButton,
+    						   TextField tf, ComboBox<DataSet> cb) {
     	// add button to tab, rethink design and add V/HBox for content
         VBox v = new VBox();
         HBox h = new HBox();
@@ -207,7 +229,8 @@ public class MapApp extends Application
      * @param box
      */
     private void setupRouteTab(Tab routeTab, Label startLabel, Label endLabel, Label pointLabel,
-    						   Button showButton, Button hideButton, Button vButton, Button startButton, Button destButton) {
+    						   Button showButton, Button hideButton, Button vButton, Button startButton,
+    						   Button destButton, RadioButton rb1, RadioButton rb2) {
 
     	//set up tab layout
         HBox h = new HBox();
@@ -270,6 +293,8 @@ public class MapApp extends Application
         v.getChildren().add(new Label("Goal : "));
         v.getChildren().add(destinationBox);
         v.getChildren().add(showHideBox);
+        v.getChildren().add(rb1);
+        v.getChildren().add(rb2);
         v.getChildren().add(vButton);
         VBox.setMargin(showHideBox, new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
         VBox.setMargin(vButton, new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
@@ -281,6 +306,11 @@ public class MapApp extends Application
 
 
     }
+
+
+    /*
+     * METHODS FOR SHOWING DIALOGS/ALERTS
+     */
 
     public void showLoadStage(Stage loadStage, String text) {
     	loadStage.initModality(Modality.APPLICATION_MODAL);

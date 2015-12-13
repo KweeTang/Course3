@@ -1,8 +1,6 @@
 package application.services;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -10,51 +8,34 @@ import application.DataSet;
 import application.MapApp;
 import application.MarkerManager;
 import application.SelectManager;
-import application.controllers.RouteController;
-
-import java.util.Iterator;
-
-import geography.GeographicPoint;
-import geography.RoadSegment;
 import gmapsfx.GoogleMapView;
-import gmapsfx.javascript.event.UIEventType;
-import gmapsfx.javascript.object.Animation;
 import gmapsfx.javascript.object.GoogleMap;
 import gmapsfx.javascript.object.LatLong;
 import gmapsfx.javascript.object.LatLongBounds;
-import gmapsfx.javascript.object.Marker;
-import gmapsfx.javascript.object.MarkerOptions;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.stage.Stage;
 import mapmaker.MapMaker;
-import netscape.javascript.JSObject;
 
 // class for map and general application services (file IO, etc.)
 public class GeneralService {
-	private static boolean singleton = false;
+//	private static boolean singleton = false;
 	private int currentState;
 	private SelectManager selectManager;
 	private GoogleMap map;
-	private GoogleMapView mapComponent;
     private MarkerManager markerManager;
 
 
-    // one for each instance, make sure application only has one instance of GeneralService
-    private boolean currentlyFetching;
 
-    private static final String DATA_FILE_PATTERN = "[\\w_]+.map|mapfiles/[\\w_]+.map";
+    private static final String DATA_FILE_PATTERN = "[\\w_]+.map";
     private static final String DATA_FILE_DIR_STR = "data/mapfiles/";
-    private static final int MAPFILE_DIR_OFFSET = 14;
-    private static final int NO_DIR_SPLIT = 0;
-    private roadgraph.MapGraph graph;
+
     private List<String> filenames;
     DataSet dataSet;
 
     public GeneralService(GoogleMapView mapComponent, SelectManager selectManager, MarkerManager markerManager) {
-    	this.mapComponent = mapComponent;
+        // get map from GoogleMapView
     	this.map = mapComponent.getMap();
     	this.selectManager = selectManager;
         this.markerManager = markerManager;
@@ -82,6 +63,7 @@ public class GeneralService {
     }
 
     public static String getDataSetDirectory() { return GeneralService.DATA_FILE_DIR_STR; }
+
     // gets current bounds of map view
     public float[] getBoundsArray() {
         LatLong sw, ne;
@@ -105,20 +87,17 @@ public class GeneralService {
 
     }
 
+    /**
+     * Check if file name matches pattern [filename].map
+     *
+     * @param str - path to check
+     * @return string to use as path
+     */
     public String checkDataFileName(String str) {
     	if(Pattern.matches(DATA_FILE_PATTERN, str)) {
-    		String[] splitPattern = DATA_FILE_PATTERN.split("[|]");
-            System.out.println(splitPattern[NO_DIR_SPLIT]);
-            if(Pattern.matches(splitPattern[NO_DIR_SPLIT], str))
-                return DATA_FILE_DIR_STR + str;
-
-            return DATA_FILE_DIR_STR + str.substring(MAPFILE_DIR_OFFSET);
+            return DATA_FILE_DIR_STR + str;
     	}
     	return null;
-    }
-    
-    public void runFetchTask2(ComboBox<DataSet> cb) {
-    	cb.getItems().add(new DataSet("data/mapfiles/test.map"));
     }
 
     public void runFetchTask(String fName, ComboBox<DataSet> cb, Button button) {
@@ -149,7 +128,6 @@ public class GeneralService {
            if(task.getValue().equals(fName)) {
                addDataFile(fName);
 
-               System.out.println("Adding new file " + fName);
                cb.getItems().add(new DataSet(fName));
                if(fetchingAlert.isShowing()) {
             	   fetchingAlert.close();
