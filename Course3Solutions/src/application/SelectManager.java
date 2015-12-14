@@ -73,9 +73,11 @@ public class SelectManager {
 	}
 
 	public void setDestination() {
+		if(pointLabel.getItem() != null) {
         	GeographicPoint point = pointLabel.getItem();
     		destinationLabel.setItem(point);
     		markerManager.setDestination(point);
+		}
 	}
 
 

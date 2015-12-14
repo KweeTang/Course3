@@ -216,7 +216,8 @@ public class RouteService {
                 }
 
                 if(chosenSegment != null) {
-                	segmentList = chosenSegment.getPoints(curr, next);
+                	System.out.println("YAYYY! chosenSegment was found");
+                    segmentList = chosenSegment.getPoints(curr, next);
                     for(geography.GeographicPoint point : segmentList) {
                         retVal.add(new LatLong(point.getX(), point.getY()));
                     }

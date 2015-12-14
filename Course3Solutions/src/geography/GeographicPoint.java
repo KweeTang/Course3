@@ -4,25 +4,25 @@ import java.awt.geom.Point2D.Double;
 
 @SuppressWarnings("serial")
 public class GeographicPoint extends Double {
-	
+
 	public GeographicPoint(double latitude, double longitude)
 	{
 		super(latitude, longitude);
 	}
-	
+
 	/**
-	 * Calculates the geographic distance in km between this point and 
-	 * the other point. 
+	 * Calculates the geographic distance in km between this point and
+	 * the other point.
 	 * @param other
 	 * @return The distance between this lat, lon point and the other point
 	 */
 	public double distance(GeographicPoint other)
 	{
 		return getDist(this.getX(), this.getY(),
-                other.getX(), other.getY());     
+                other.getX(), other.getY());
 	}
-	
-    
+
+
     private double getDist(double lat1, double lon1, double lat2, double lon2)
     {
     	int R = 6373; // radius of the earth in kilometres
@@ -39,11 +39,12 @@ public class GeographicPoint extends Double {
     	double d = R * c;
     	return d;
     }
-    
+
     public String toString()
     {
-    	return "Lat: " + getX() + ", Lon: " + getY();
+    	return "Lat: " + getX() + "\nLon: " + getY();
+//    	return "Lat: " + getX() + ", Lon: " + getY();
     }
-	
-	
+
+
 }
