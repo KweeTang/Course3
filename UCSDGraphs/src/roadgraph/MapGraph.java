@@ -10,6 +10,7 @@ package roadgraph;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import geography.GeographicPoint;
 import util.GraphLoader;
@@ -104,9 +105,28 @@ public class MapGraph {
 	 * @return The list of intersections that form the shortest (unweighted)
 	 *   path from start to goal (including both start and goal).
 	 */
-	public List<GeographicPoint> bfs(GeographicPoint start, GeographicPoint goal)
+	public List<GeographicPoint> bfs(GeographicPoint start, GeographicPoint goal) {
+		// Dummy variable for calling the search algorithms
+        Consumer<GeographicPoint> temp = (x) -> {};
+        return bfs(start, goal, temp);
+	}
+	
+	/** Find the path from start to goal using breadth first search
+	 * 
+	 * @param start The starting location
+	 * @param goal The goal location
+	 * @param nodeSearched A hook for visualization.  See assignment instructions for how to use it.
+	 * @return The list of intersections that form the shortest (unweighted)
+	 *   path from start to goal (including both start and goal).
+	 */
+	public List<GeographicPoint> bfs(GeographicPoint start, 
+			 					     GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
 		// TODO: Implement this method in WEEK 2
+		
+		// Hook for visualization.  See writeup.
+		//nodeSearched.accept(next.getLocation());
+
 		return null;
 	}
 	
@@ -118,10 +138,29 @@ public class MapGraph {
 	 * @return The list of intersections that form the shortest path from 
 	 *   start to goal (including both start and goal).
 	 */
+	public List<GeographicPoint> dijkstra(GeographicPoint start, GeographicPoint goal) {
+		// Dummy variable for calling the search algorithms
+		// You do not need to change this method.
+        Consumer<GeographicPoint> temp = (x) -> {};
+        return dijkstra(start, goal, temp);
+	}
+	
+	/** Find the path from start to goal using Dijkstra's algorithm
+	 * 
+	 * @param start The starting location
+	 * @param goal The goal location
+	 * @param nodeSearched A hook for visualization.  See assignment instructions for how to use it.
+	 * @return The list of intersections that form the shortest path from 
+	 *   start to goal (including both start and goal).
+	 */
 	public List<GeographicPoint> dijkstra(GeographicPoint start, 
-										  GeographicPoint goal)
+										  GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
 		// TODO: Implement this method in WEEK 3
+
+		// Hook for visualization.  See writeup.
+		//nodeSearched.accept(next.getLocation());
+		
 		return null;
 	}
 
@@ -132,10 +171,28 @@ public class MapGraph {
 	 * @return The list of intersections that form the shortest path from 
 	 *   start to goal (including both start and goal).
 	 */
+	public List<GeographicPoint> aStarSearch(GeographicPoint start, GeographicPoint goal) {
+		// Dummy variable for calling the search algorithms
+        Consumer<GeographicPoint> temp = (x) -> {};
+        return aStarSearch(start, goal, temp);
+	}
+	
+	/** Find the path from start to goal using A-Star search
+	 * 
+	 * @param start The starting location
+	 * @param goal The goal location
+	 * @param nodeSearched A hook for visualization.  See assignment instructions for how to use it.
+	 * @return The list of intersections that form the shortest path from 
+	 *   start to goal (including both start and goal).
+	 */
 	public List<GeographicPoint> aStarSearch(GeographicPoint start, 
-											 GeographicPoint goal)
+											 GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
 		// TODO: Implement this method in WEEK 3
+		
+		// Hook for visualization.  See writeup.
+		//nodeSearched.accept(next.getLocation());
+		
 		return null;
 	}
 
