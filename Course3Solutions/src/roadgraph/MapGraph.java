@@ -220,6 +220,13 @@ public class MapGraph {
 		return 0.0;
 	}
 	*/
+	
+	public List<GeographicPoint> bfs(GeographicPoint start, GeographicPoint goal) {
+		// Dummy variable for calling the search algorithms
+        Consumer<GeographicPoint> temp = (x) -> {};
+        return bfs(start, goal, temp);
+	}
+	
 	/** Find the path from start to goal using Breadth First Search
 	 *
 	 * @param start The starting location
@@ -227,7 +234,8 @@ public class MapGraph {
 	 * @return The list of intersections that form the shortest path from
 	 *   start to goal (including both start and goal).
 	 */
-	public List<GeographicPoint> bfs(GeographicPoint start, GeographicPoint goal)
+	public List<GeographicPoint> bfs(GeographicPoint start, GeographicPoint goal,
+									Consumer<GeographicPoint> nodeSearched)
 	{
 		// Setup - check validity of inputs
 		if (start == null || goal == null)
@@ -252,6 +260,10 @@ public class MapGraph {
 
 		while (!toExplore.isEmpty()) {
 			next = toExplore.remove();
+			
+			 // hook for visualization
+			nodeSearched.accept(next.getLocation());
+			
 			if (next.equals(endNode)) break;
 			Set<MapNode> neighbors = getNeighbors(next);
 			for (MapNode neighbor : neighbors) {
@@ -299,6 +311,13 @@ public class MapGraph {
 		return path;
 	}
 
+	public List<GeographicPoint> dijkstra(GeographicPoint start, GeographicPoint goal) {
+		// Dummy variable for calling the search algorithms
+        Consumer<GeographicPoint> temp = (x) -> {};
+        return dijkstra(start, goal, temp);
+	}
+
+	
 	/** Find the path from start to goal using Dijkstra's algorithm
 	 *
 	 * @param start The starting location
@@ -370,6 +389,12 @@ public class MapGraph {
 
 		return path;
 	}
+	
+	public List<GeographicPoint> aStarSearch(GeographicPoint start, GeographicPoint goal) {
+		// Dummy variable for calling the search algorithms
+        Consumer<GeographicPoint> temp = (x) -> {};
+        return aStarSearch(start, goal, temp);
+	}
 
 	/** Find the path from start to goal using A-Star search
 	 *
@@ -410,6 +435,7 @@ public class MapGraph {
 		MapNode next = null;
 		while (!toExplore.isEmpty()) {
 			next = toExplore.remove();
+			
             nodeAccepter.accept(next.getLocation());
 			System.out.println("A* visiting" + next);
 			if (next.equals(endNode)) break;

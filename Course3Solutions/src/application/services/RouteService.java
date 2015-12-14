@@ -131,16 +131,59 @@ public class RouteService {
     }
 
     public boolean displayRoute(geography.GeographicPoint start, geography.GeographicPoint end, int toggle) {
-		if(toggle == RouteController.DIJ) {
-			return displayRouteDij(start, end);
-		}
-		else if(toggle == RouteController.A_STAR) {
-			return displayRouteAStar(start, end);
-		}
+		
+    	if(toggle == RouteController.DIJ || toggle == RouteController.A_STAR || 
+    			toggle == RouteController.BFS) {
+    		markerManager.initVisualization();
+        	Consumer<geography.GeographicPoint> nodeAccepter = markerManager.getVisualization()::acceptPoint;
+        	List<geography.GeographicPoint> path = null;
+        	if (toggle == RouteController.BFS) {
+        		path = markerManager.getDataSet().getGraph().bfs(start, end, nodeAccepter);
+        	}
+        	else if (toggle == RouteController.DIJ) {
+        		path = markerManager.getDataSet().getGraph().dijkstra(start, end, nodeAccepter);
+        	}
+        	else if (toggle == RouteController.A_STAR) {
+        		path = markerManager.getDataSet().getGraph().aStarSearch(start, end, nodeAccepter);
+        	}
 
+        	if(path == null) {
+                System.out.println("In displayRoute : PATH NOT FOUND");
+            	return false;
+            }
+            // TODO -- debug road segments
+        	//List<LatLong> mapPath = constructMapPath(path);
+            List<LatLong> mapPath = new ArrayList<LatLong>();
+            for(geography.GeographicPoint point : path) {
+                mapPath.add(new LatLong(point.getX(), point.getY()));
+            }
+
+            return displayRoute(mapPath);
+		}
+ 
 		return false;
     }
 
+    
+    public boolean displayRouteBFS(geography.GeographicPoint start, geography.GeographicPoint end) {
+    	markerManager.initVisualization();
+    	Consumer<geography.GeographicPoint> nodeAccepter = markerManager.getVisualization()::acceptPoint;
+    	List<geography.GeographicPoint> path = markerManager.getDataSet().getGraph().bfs(start, end, nodeAccepter);
+        if(path == null) {
+            System.out.println("In displayRoute : PATH NOT FOUND");
+        	return false;
+        }
+        // TODO -- debug road segments
+    	//List<LatLong> mapPath = constructMapPath(path);
+        List<LatLong> mapPath = new ArrayList<LatLong>();
+        for(geography.GeographicPoint point : path) {
+            mapPath.add(new LatLong(point.getX(), point.getY()));
+        }
+
+        return displayRoute(mapPath);
+    	
+    }
+    
     public boolean displayRouteDij(geography.GeographicPoint start, geography.GeographicPoint end) {
         markerManager.initVisualization();
     	Consumer<geography.GeographicPoint> nodeAccepter = markerManager.getVisualization()::acceptPoint;

@@ -32,6 +32,7 @@ public class RouteController {
 	private static final String DISABLE_STR = "Disable";
 	private static final String START_STR = "Select Start";
 	private static final String DEST_STR = "Select Destination";
+	public static final int BFS = 3;
     public static final int A_STAR = 2;
     public static final int DIJ = 1;
 	public static final int DISABLE = 0;
@@ -65,7 +66,7 @@ public class RouteController {
 
 
 	public RouteController(RouteService routeService, Button displayButton, Button hideButton, Button startButton, Button destinationButton,
-						   ToggleGroup group, RadioButton rbD, RadioButton rbA, Button visualizationButton, CLabel<geography.GeographicPoint> startLabel,
+						   ToggleGroup group, List<RadioButton> searchOptions, Button visualizationButton, CLabel<geography.GeographicPoint> startLabel,
 						   CLabel<geography.GeographicPoint> endLabel, CLabel<geography.GeographicPoint> pointLabel,
 						   SelectManager manager, MarkerManager markerManager) {
         // save parameters
@@ -77,8 +78,8 @@ public class RouteController {
         this.group = group;
         this.visualizationButton = visualizationButton;
 
-        this.rbD = rbD;
-        this.rbA = rbA;
+        //this.rbD = rbD;
+        //this.rbA = rbA;
 
         // maybe don't need references to labels;
 		this.startLabel = startLabel;
@@ -136,11 +137,17 @@ public class RouteController {
 
     private void setupToggle() {
     	group.selectedToggleProperty().addListener( li -> {
-            if(group.getSelectedToggle() == rbD) {
+            if(group.getSelectedToggle().getUserData().equals("Dijkstra")) {
             	selectedToggle = DIJ;
             }
-            else if(group.getSelectedToggle() == rbA) {
+            else if(group.getSelectedToggle().getUserData().equals("A*")) {
             	selectedToggle = A_STAR;
+            }
+            else if(group.getSelectedToggle().getUserData().equals("BFS")) {
+            	selectedToggle = BFS;
+            }
+            else {
+            	System.err.println("Invalid radio button selection");
             }
     	});
     }

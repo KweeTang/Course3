@@ -25,6 +25,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.util.LinkedList;
+import java.util.List;
 
 import application.controllers.FetchController;
 import application.controllers.RouteController;
@@ -105,14 +107,24 @@ public class MapApp extends Application
 
         // Use Dijkstra as default
         RadioButton rbD = new RadioButton("Dijkstra");
+        rbD.setUserData("Dijkstra");
         rbD.setSelected(true);
 
-
         RadioButton rbA = new RadioButton("A*");
-
+        rbA.setUserData("A*");
+        
+        RadioButton rbB = new RadioButton("BFS");
+        rbB.setUserData("BFS");
+        
+        rbB.setToggleGroup(group);
         rbD.setToggleGroup(group);
         rbA.setToggleGroup(group);
-
+        
+        List<RadioButton> searchOptions = new LinkedList<RadioButton>();
+        searchOptions.add(rbB);
+        searchOptions.add(rbD);
+        searchOptions.add(rbA);
+        
         // Select and marker managers for route choosing and marker display/visuals
         SelectManager manager = new SelectManager();
         MarkerManager markerManager = new MarkerManager();
@@ -125,7 +137,7 @@ public class MapApp extends Application
         manager.setStartLabel(startLabel);
         manager.setDestinationLabel(endLabel);
         setupRouteTab(routeTab,startLabel, endLabel, pointLabel, routeButton, hideRouteButton,
-            		  visualizationButton, startButton, destinationButton, rbD, rbA);
+            		  visualizationButton, startButton, destinationButton, searchOptions);
 
         // add tabs to pane, give no option to close
 		TabPane tp = new TabPane(routeTab, fetchTab);
@@ -138,7 +150,7 @@ public class MapApp extends Application
             System.out.println("in map ready : " + this.getClass());
 
             // initialize controllers
-			new RouteController(rs, routeButton, hideRouteButton, startButton, destinationButton, group, rbD, rbA, visualizationButton,
+			new RouteController(rs, routeButton, hideRouteButton, startButton, destinationButton, group, searchOptions, visualizationButton,
     															  startLabel, endLabel, pointLabel, manager, markerManager);
             new FetchController(gs, tf, fetchButton, cb, displayButton);
         });
@@ -158,7 +170,6 @@ public class MapApp extends Application
 	@Override
 	public void mapInitialized() {
 
-		// TODO Auto-generated djdlkjmet`hod stub
 		LatLong center = new LatLong(38.25, -85.7667);
 
 
@@ -230,7 +241,7 @@ public class MapApp extends Application
      */
     private void setupRouteTab(Tab routeTab, Label startLabel, Label endLabel, Label pointLabel,
     						   Button showButton, Button hideButton, Button vButton, Button startButton,
-    						   Button destButton, RadioButton rb1, RadioButton rb2) {
+    						   Button destButton, List<RadioButton> searchOptions) {
 
     	//set up tab layout
         HBox h = new HBox();
@@ -293,8 +304,9 @@ public class MapApp extends Application
         v.getChildren().add(new Label("Goal : "));
         v.getChildren().add(destinationBox);
         v.getChildren().add(showHideBox);
-        v.getChildren().add(rb1);
-        v.getChildren().add(rb2);
+        for (RadioButton rb : searchOptions) {
+        	v.getChildren().add(rb);
+        }
         v.getChildren().add(vButton);
         VBox.setMargin(showHideBox, new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
         VBox.setMargin(vButton, new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
