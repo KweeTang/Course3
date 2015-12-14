@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 
+
 import application.DataSet;
 import application.MarkerManager;
 import application.RouteVisualization;
@@ -33,14 +34,12 @@ public class RouteService {
     // static variable
     private MarkerManager markerManager;
     private Polyline routeLine;
-    private Button vButton;
     private RouteVisualization rv;
 
-	public RouteService(GoogleMapView mapComponent, MarkerManager manager, Button vButton) {
+	public RouteService(GoogleMapView mapComponent, MarkerManager manager) {
 		this.mapComponent = mapComponent;
 		this.map = mapComponent.getMap();
         this.markerManager = manager;
-        this.vButton = vButton;
 
 	}
     // COULD SEPARATE INTO ROUTE SERVICES IF CONTROLLER
@@ -120,19 +119,30 @@ public class RouteService {
         //System.out.println(routeLine.getBounds());
 
 
+		markerManager.hideIntermediateMarkers();
 		map.fitBounds(bounds);
-		vButton.setDisable(false);
+    	markerManager.disableVisButton(false);
 		return true;
 	}
 
     public void removeRouteLine() {
-    	map.removeMapShape(routeLine);
-        vButton.setDisable(true);
+    	if(routeLine != null) {
+        	map.removeMapShape(routeLine);
+        	if(markerManager.getVisualization() != null) {
+        		markerManager.clearVisualization();
+        		markerManager.restoreMarkers();
+        	}
+        	markerManager.disableVisButton(true);
+            routeLine = null;
+    	}
     }
 
     public boolean displayRoute(geography.GeographicPoint start, geography.GeographicPoint end, int toggle) {
-		
-    	if(toggle == RouteController.DIJ || toggle == RouteController.A_STAR || 
+    	if(markerManager.getVisualization() != null) {
+    		markerManager.clearVisualization();
+    	}
+
+    	if(toggle == RouteController.DIJ || toggle == RouteController.A_STAR ||
     			toggle == RouteController.BFS) {
     		markerManager.initVisualization();
         	Consumer<geography.GeographicPoint> nodeAccepter = markerManager.getVisualization()::acceptPoint;
@@ -158,13 +168,15 @@ public class RouteService {
             //    mapPath.add(new LatLong(point.getX(), point.getY()));
             //}
 
+
+            markerManager.setSelect(false);
             return displayRoute(mapPath);
 		}
- 
+
 		return false;
     }
 
-    
+
 
 
     /**
@@ -179,7 +191,7 @@ public class RouteService {
     	geography.GeographicPoint next;
 
     	geography.RoadSegment chosenSegment = null;;
-    	
+
         for(int i = 0; i < path.size() - 1; i++) {
             double minLength = Double.MAX_VALUE;
         	curr = path.get(i);

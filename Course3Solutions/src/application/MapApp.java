@@ -71,7 +71,6 @@ public class MapApp extends Application
 
 		// initialize tabs for data fetching and route controls
         Tab routeTab = new Tab("Routing");
-        Tab fetchTab = new Tab("Data Fetching");
 
         // create components for fetch tab
         Button fetchButton = new Button("Fetch Data");
@@ -92,7 +91,7 @@ public class MapApp extends Application
             }
         });*/
 
-        setupFetchTab(fetchTab, fetchButton, displayButton, tf, cb);
+        VBox fetchBox = getFetchBox(fetchButton, displayButton, tf, cb);
 
 
         // create components for fetch tab
@@ -114,41 +113,42 @@ public class MapApp extends Application
 
         RadioButton rbA = new RadioButton("A*");
         rbA.setUserData("A*");
-        
+
         RadioButton rbB = new RadioButton("BFS");
         rbB.setUserData("BFS");
-        
+
         rbB.setToggleGroup(group);
         rbD.setToggleGroup(group);
         rbA.setToggleGroup(group);
-        
+
         List<RadioButton> searchOptions = new LinkedList<RadioButton>();
         searchOptions.add(rbB);
         searchOptions.add(rbD);
         searchOptions.add(rbA);
-        
+
         // Select and marker managers for route choosing and marker display/visuals
         SelectManager manager = new SelectManager();
         MarkerManager markerManager = new MarkerManager();
         markerManager.setSelectManager(manager);
         manager.setMarkerManager(markerManager);
+        markerManager.setVisButton(visualizationButton);
 
         // create components for route tab
         CLabel<geography.GeographicPoint> pointLabel = new CLabel<geography.GeographicPoint>("No point Selected.", null);
         manager.setPointLabel(pointLabel);
         manager.setStartLabel(startLabel);
         manager.setDestinationLabel(endLabel);
-        setupRouteTab(routeTab,startLabel, endLabel, pointLabel, routeButton, hideRouteButton,
+        setupRouteTab(routeTab, fetchBox, startLabel, endLabel, pointLabel, routeButton, hideRouteButton,
             		  visualizationButton, startButton, destinationButton, searchOptions);
 
         // add tabs to pane, give no option to close
-		TabPane tp = new TabPane(routeTab, fetchTab);
+		TabPane tp = new TabPane(routeTab);
         tp.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         // initialize Services and controllers after map is loaded
         mapComponent.addMapReadyListener(() -> {
             GeneralService gs = new GeneralService(mapComponent, manager, markerManager);
-            RouteService rs = new RouteService(mapComponent, markerManager, visualizationButton);
+            RouteService rs = new RouteService(mapComponent, markerManager);
             //System.out.println("in map ready : " + this.getClass());
 
             // initialize controllers
@@ -206,10 +206,10 @@ public class MapApp extends Application
 	 * @param displayButton
 	 * @param tf
 	 */
-    private void setupFetchTab(Tab fetchTab, Button fetchButton, Button displayButton,
+    private VBox getFetchBox(Button fetchButton, Button displayButton,
     						   TextField tf, ComboBox<DataSet> cb) {
     	// add button to tab, rethink design and add V/HBox for content
-        VBox v = new VBox();
+    	VBox v = new VBox();
         HBox h = new HBox();
 
         HBox fetchControls = new HBox();
@@ -230,9 +230,8 @@ public class MapApp extends Application
         v.getChildren().add(fetchControls);
         v.getChildren().add(intersectionControls);
 
-//        v.setSpacing(MARGIN_VAL);
-
-        fetchTab.setContent(h);
+        //v.setSpacing(MARGIN_VAL);
+        return v;
     }
 
     /**
@@ -241,7 +240,7 @@ public class MapApp extends Application
      * @param routeTab
      * @param box
      */
-    private void setupRouteTab(Tab routeTab, Label startLabel, Label endLabel, Label pointLabel,
+    private void setupRouteTab(Tab routeTab, VBox fetchBox, Label startLabel, Label endLabel, Label pointLabel,
     						   Button showButton, Button hideButton, Button vButton, Button startButton,
     						   Button destButton, List<RadioButton> searchOptions) {
 
@@ -292,6 +291,7 @@ public class MapApp extends Application
 
         VBox.setMargin(markerLabel, new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
         VBox.setMargin(pointLabel, new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
+        VBox.setMargin(fetchBox, new Insets(0,0,MARGIN_VAL*2,0));
 
 
 
@@ -301,6 +301,7 @@ public class MapApp extends Application
         showHideBox.setSpacing(2*MARGIN_VAL);
 //        showHideBox.setAlignment(Pos.CENTER);
 
+        v.getChildren().add(fetchBox);
         v.getChildren().add(new Label("Start Position : "));
         v.getChildren().add(startBox);
         v.getChildren().add(new Label("Goal : "));

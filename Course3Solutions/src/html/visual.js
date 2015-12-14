@@ -7,6 +7,7 @@ function visualizeSearch(mapParam, latLongs) {
 	positions = latLongs;
 	map = mapParam;
 	drop();
+	return markers;
 }
 
 function displayMarker(latLng, timeout) {
@@ -22,16 +23,15 @@ function displayMarker(latLng, timeout) {
 }
 
 function drop() {
-	for(var i = 0; i < positions.length; ++i) {
+	for(var i = 1; i < positions.length - 1; ++i) {
 		displayMarker(positions[i], i*delay);
-
 	}
 }
+
 
 function clearMarkers() {
 	for(var i = 0; i < markers.length; ++i) {
 		markers[i].setMap(null);
 	}
-	markers = [];
 
 }

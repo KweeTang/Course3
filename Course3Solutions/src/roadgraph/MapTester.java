@@ -30,7 +30,7 @@ public class MapTester {
 		List<GeographicPoint> route = theMap.bfs(new GeographicPoint(1.0,1.0), new GeographicPoint(8.0,-1.0));
 		//List<GeographicPoint> route = theMap.dijkstra(new GeographicPoint(1.0,1.0), new GeographicPoint(8.0,-1.0));
 		//List<GeographicPoint> route = theMap.aStarSearch(new GeographicPoint(1.0,1.0), new GeographicPoint(8.0,-1.0));
-        GraphLoader.createIntersectionsFile("data/simpletestOneWay.map", "data/simpletest.intersections.map");
+        //GraphLoader.createIntersectionsFile("data/simpletestOneWay.map", "data/simpletest.intersections.map");
 		System.out.println(route);
 	}
 

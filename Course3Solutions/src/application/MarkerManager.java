@@ -1,5 +1,6 @@
 package application;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,12 +18,14 @@ import netscape.javascript.JSObject;
 public class MarkerManager {
 
     private HashMap<geography.GeographicPoint, Marker> markerMap;
+    private ArrayList<geography.GeographicPoint> markerPositions;
     private GoogleMap map;
     private String startURL = "http://maps.google.com/mapfiles/kml/pal3/icon40.png";
     private String destinationURL2 = "http://maps.google.com/mapfiles/kml/pal2/icon13.png";
     private String destinationURL = "http://maps.google.com/mapfiles/kml/pal2/icon5.png";
     private String SELECTED_URL = "http://maps.google.com/mapfiles/kml/paddle/ltblu-circle.png";
     private String markerURL = "http://maps.google.com/mapfiles/kml/paddle/blu-diamond-lv.png";
+	protected String visURL = "http://maps.google.com/mapfiles/kml/paddle/red-diamond-lv.png";
     private Marker startMarker;
     private Marker destinationMarker;
     private Marker selectedMarker;
@@ -31,12 +34,14 @@ public class MarkerManager {
     private SelectManager selectManager;
     private RouteVisualization rv;
     private Button vButton;
+    private boolean selectMode = true;
 
     public MarkerManager() {
     	markerMap = new HashMap<geography.GeographicPoint, Marker>();
     	this.map = null;
     	this.selectManager = null;
         this.rv = null;
+        markerPositions = null;
     }
     public MarkerManager(GoogleMap map, SelectManager selectManager) {
     	// TODO -- parameters?
@@ -44,6 +49,19 @@ public class MarkerManager {
 
     }
 
+    /**
+     * Used to set reference to visualization button. Manager will be responsible
+     * for disabling button
+     *
+     * @param vButton
+     */
+    public void setVisButton(Button vButton) {
+    	this.vButton = vButton;
+    }
+
+    public void setSelect(boolean value) {
+    	selectMode = value;
+    }
     public RouteVisualization getVisualization() { return rv; }
 
 
@@ -63,9 +81,16 @@ public class MarkerManager {
     public void initVisualization() {
     	rv = new RouteVisualization(this);
     }
+
+    public void clearVisualization() {
+    	rv = null;
+    }
+
     // TODO -- protect against this being called without visualization built
     public void startVisualization() {
-    	rv.startVisualization();
+    	if(rv != null) {
+	    	rv.startVisualization();
+    	}
     }
 
     public void setStart(geography.GeographicPoint point) {
@@ -86,12 +111,22 @@ public class MarkerManager {
     /**
      * TODO -- Might need to create all new markers and add them??
      */
-    private void restoreMarkers() {
-        Iterator<geography.GeographicPoint> it = markerMap.keySet().iterator();
-        while(it.hasNext()) {
-            Marker marker = markerMap.get(it.next());
-        	map.addMarker(marker);
+    public void restoreMarkers() {
+        if(startMarker != null) {
+        	startMarker.setVisible(false);
         }
+        if(destinationMarker != null) {
+        	destinationMarker.setVisible(false);
+        }
+        for(geography.GeographicPoint point : markerPositions) {
+        	MarkerOptions markerOptions = createDefaultOptions(point);
+        	Marker marker = new Marker(markerOptions);
+            registerEvents(marker, point);
+        	map.addMarker(marker);
+        	putMarker(point, marker);
+        }
+        selectManager.resetSelect();
+        selectMode = true;
     }
     public MarkerOptions createDefaultOptions(geography.GeographicPoint point) {
         	MarkerOptions markerOptions = new MarkerOptions();
@@ -127,6 +162,7 @@ public class MarkerManager {
     	}
     }
     public void displayDataSet() {
+        markerPositions = new ArrayList<geography.GeographicPoint>();
         dataSet.initializeGraph();
     	Iterator<geography.GeographicPoint>it = dataSet.getGraph().getVertices().iterator();
         bounds = new LatLongBounds();
@@ -137,6 +173,7 @@ public class MarkerManager {
             registerEvents(marker, point);
         	map.addMarker(marker);
         	putMarker(point, marker);
+        	markerPositions.add(point);
         }
         map.fitBounds(bounds);
         System.out.println("End of display Intersections");
@@ -159,19 +196,27 @@ public class MarkerManager {
 
         map.addUIEventHandler(marker, UIEventType.click, (JSObject o) -> {
             //System.out.println("Clicked Marker : " + point.toString());
-        	if(selectedMarker != null && selectedMarker != startMarker
-        	   && selectedMarker != destinationMarker) {
-        		selectedMarker.setIcon(markerURL);
-        	}
-        	selectManager.setPoint(point, marker);
-            selectedMarker = marker;
-            selectedMarker.setIcon(SELECTED_URL);
+            if(selectMode) {
+            	if(selectedMarker != null && selectedMarker != startMarker
+            	   && selectedMarker != destinationMarker) {
+            		selectedMarker.setIcon(markerURL);
+            	}
+            	selectManager.setPoint(point, marker);
+                selectedMarker = marker;
+                selectedMarker.setIcon(SELECTED_URL);
+            }
         });
     }
 
+    public void disableVisButton(boolean value) {
+    	if(vButton != null) {
+	    	vButton.setDisable(value);
+    	}
+    }
 	public void setDataSet(DataSet dataSet) {
 		this.dataSet= dataSet;
 	}
+
 
     public DataSet getDataSet() { return this.dataSet; }
 }
