@@ -17,6 +17,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -104,8 +106,15 @@ public class MapApp extends Application
         Button routeButton = new Button("Show Route");
         Button hideRouteButton = new Button("Hide Route");
         Button visualizationButton = new Button("Start Visualization");
-        CLabel<geography.GeographicPoint> startLabel = new CLabel<geography.GeographicPoint>("Empty.", null);
-        CLabel<geography.GeographicPoint> endLabel = new CLabel<geography.GeographicPoint>("Empty.", null);
+        Image sImage = new Image(MarkerManager.startURL);
+        Image dImage = new Image(MarkerManager.destinationURL);
+        CLabel<geography.GeographicPoint> startLabel = new CLabel<geography.GeographicPoint>("Empty.", new ImageView(sImage), null);
+        CLabel<geography.GeographicPoint> endLabel = new CLabel<geography.GeographicPoint>("Empty.", new ImageView(dImage), null);
+        //TODO -- hot fix
+        startLabel.setMinWidth(180);
+        endLabel.setMinWidth(180);
+//        startLabel.setWrapText(true);
+//        endLabel.setWrapText(true);
         Button startButton = new Button("Start");
         Button destinationButton = new Button("Dest");
 
@@ -291,7 +300,7 @@ public class MapApp extends Application
         markerBox.getChildren().add(pointLabel);
 
         VBox.setMargin(markerLabel, new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
-        VBox.setMargin(pointLabel, new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
+        VBox.setMargin(pointLabel, new Insets(0,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
         VBox.setMargin(fetchBox, new Insets(0,0,MARGIN_VAL*2,0));
 
 

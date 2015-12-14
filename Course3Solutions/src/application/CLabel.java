@@ -42,6 +42,7 @@ public class CLabel<T> extends Label {
             setItem(item);
         else
         	setItem(null);
+
 	}
 
 
