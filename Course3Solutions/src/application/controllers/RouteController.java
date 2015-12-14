@@ -50,10 +50,6 @@ public class RouteController {
     private Button destinationButton;
     private Button visualizationButton;
 
-    // radio buttons to choose between A* and Dijkstra
-    private RadioButton rbD;
-    private RadioButton rbA;
-
     private ToggleGroup group;
     private String filename = "myroute.route";
     private CLabel<geography.GeographicPoint> startLabel;
@@ -77,9 +73,6 @@ public class RouteController {
 		this.destinationButton = destinationButton;
         this.group = group;
         this.visualizationButton = visualizationButton;
-
-        //this.rbD = rbD;
-        //this.rbA = rbA;
 
         // maybe don't need references to labels;
 		this.startLabel = startLabel;
