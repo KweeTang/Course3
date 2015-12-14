@@ -9,108 +9,142 @@ import java.util.Arrays;
 import java.util.List;
 
 import application.MapApp;
+import application.MarkerManager;
+import application.SelectManager;
+import application.CLabel;
+import application.services.GeneralService;
+import application.services.RouteService;
 import gmapsfx.javascript.object.GoogleMap;
 import gmapsfx.javascript.object.LatLong;
+import gmapsfx.javascript.object.LatLongBounds;
 import gmapsfx.javascript.object.MVCArray;
 import gmapsfx.shapes.Polyline;
+import javafx.geometry.Orientation;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleGroup;
+import javafx.util.StringConverter;
 
 public class RouteController {
+	// Strings for slider labels
+	private static final String DISABLE_STR = "Disable";
+	private static final String START_STR = "Select Start";
+	private static final String DEST_STR = "Select Destination";
+	public static final int BFS = 3;
+    public static final int A_STAR = 2;
+    public static final int DIJ = 1;
+	public static final int DISABLE = 0;
+	public static final int START = 1;
+	public static final int DESTINATION = 2;
+
+    private int selectedToggle = DIJ;
+    private int currentState = 0;
+
 	private GoogleMap map;
-	private MapApp mainApp;
+    private RouteService routeService;
+    private Button displayButton;
+    private Button hideButton;
+    private Button startButton;
+    private Button destinationButton;
+    private Button visualizationButton;
 
-	// display one route at a time
-	private Polyline routeLine;
+    private ToggleGroup group;
+    private String filename = "myroute.route";
+    private CLabel<geography.GeographicPoint> startLabel;
+    private CLabel<geography.GeographicPoint> endLabel;
+    private CLabel<geography.GeographicPoint> pointLabel;
+    private Slider optionsSlider;
+    private SelectManager selectManager;
+    private MarkerManager markerManager;
 
-	public RouteController(GoogleMap map, MapApp mainApp) {
-		this.map = map;
-		this.mainApp = mainApp;
 
-       displayRoute("data/sampleroute.map");
+
+	public RouteController(RouteService routeService, Button displayButton, Button hideButton, Button startButton, Button destinationButton,
+						   ToggleGroup group, List<RadioButton> searchOptions, Button visualizationButton, CLabel<geography.GeographicPoint> startLabel,
+						   CLabel<geography.GeographicPoint> endLabel, CLabel<geography.GeographicPoint> pointLabel,
+						   SelectManager manager, MarkerManager markerManager) {
+        // save parameters
+        this.routeService = routeService;
+		this.displayButton = displayButton;
+        this.hideButton = hideButton;
+		this.startButton = startButton;
+		this.destinationButton = destinationButton;
+        this.group = group;
+        this.visualizationButton = visualizationButton;
+
+        // maybe don't need references to labels;
+		this.startLabel = startLabel;
+		this.endLabel = endLabel;
+        this.pointLabel = pointLabel;
+        this.selectManager = manager;
+        this.markerManager = markerManager;
+
+        setupDisplayButtons();
+        setupRouteButtons();
+        setupVisualizationButton();
+        setupLabels();
+        setupToggle();
+        //routeService.displayRoute("data/sampleroute.map");
 	}
 
 
+	private void setupDisplayButtons() {
+		displayButton.setOnAction(e -> {
+            if(startLabel.getItem() != null && endLabel.getItem() != null) {
+        			routeService.displayRoute(startLabel.getItem(), endLabel.getItem(), selectedToggle);
+            }
+            else {
+            	MapApp.showErrorAlert("Route Display Error", "Make sure to choose points for both start and destination.");
+            }
+		});
 
-    // COULD SEPARATE INTO ROUTE SERVICES IF CONTROLLER
-	// GETS BIG
-	/**
-	 *
-	 * @param filename - path of route text file
-	 * @return MVCArray of LatLongs (in order, 0 is start) representing the route on the map.
-	 */
-	private List<LatLong> parseRouteFromFile(String filename) {
-		// string for reading line of file
-		String line;
-		String[] lineSplit;
-		BufferedReader br = null;
-
-		List<LatLong> route = new ArrayList<LatLong>();
-
-		// open file with route data
-		try {
-			br = new BufferedReader(new FileReader(filename));
-
-			// get first line of file then loop until EOF
-			line = br.readLine();
-			while(line != null) {
-				// split String into latitude [0] and longitude [1]s
-				lineSplit = line.split(",");
-
-				// make sure line is of length 2 (lat and lon)
-				// TODO MAYBE ADD MORE ROBUST CHECKS!!!!!
-				if(lineSplit.length == 2) {
-					route.add(new LatLong(Double.parseDouble(lineSplit[0]), Double.parseDouble(lineSplit[1])));
-				}
-				else {
-					System.err.println("Incorrect Latitude, Longitude line in route file : \n" + line + "\n...skipping line");
-				}
-
-				// get new line
-				line = br.readLine();
-			}
-		}
-		catch (IOException e ) {
-			// DEBUG
-			e.printStackTrace();
-		}
-
-
-
-
-		return route;
-	}
-	// initialize??
-
-	// add route polyline to map
-	//DISPLAY ROUTE METHODS
-	/**
-	 * Displays route on Google Map
-	 * @return returns false if route fails to display
-	 */
-	private boolean displayRoute(List<LatLong> route) {
-		routeLine = new Polyline();
-        // mayube async would be faster
-		MVCArray path = new MVCArray();
-		for(LatLong point : route)  {
-			path.push(point);
-		}
-		routeLine.setPath(path);
-		map.addMapShape(routeLine);
-
-		//EXCEPTION getBounds() messed up??
-        //System.out.println(routeLine.getBounds());
-		//map.fitBounds(routeLine.getBounds());
-		return true;
+        hideButton.setOnAction(e -> {
+        	routeService.removeRouteLine();
+        });
 	}
 
-	private boolean displayRoute(String filename) {
-		List<LatLong> path = parseRouteFromFile(filename);
-		return displayRoute(path);
+    private void setupVisualizationButton() {
+    	visualizationButton.setOnAction( e -> {
+    		markerManager.startVisualization();
+    	});
+    }
 
-	}
+    private void setupRouteButtons() {
+    	startButton.setOnAction(e -> {
+            System.out.println();
+            selectManager.setStart();
+    	});
 
-	private void hideRoute() {
-		// hide routeLine
-	}
+        destinationButton.setOnAction( e-> {
+            selectManager.setDestination();
+        });
+    }
+
+
+    private void setupLabels() {
+
+
+    }
+
+    private void setupToggle() {
+    	group.selectedToggleProperty().addListener( li -> {
+            if(group.getSelectedToggle().getUserData().equals("Dijkstra")) {
+            	selectedToggle = DIJ;
+            }
+            else if(group.getSelectedToggle().getUserData().equals("A*")) {
+            	selectedToggle = A_STAR;
+            }
+            else if(group.getSelectedToggle().getUserData().equals("BFS")) {
+            	selectedToggle = BFS;
+            }
+            else {
+            	System.err.println("Invalid radio button selection");
+            }
+    	});
+    }
+
 
 
 

@@ -286,7 +286,6 @@ public class JavascriptObject {
      */
     protected Object checkUndefined(Object val) {
         if (val instanceof String && ((String) val).equals("undefined")) {
-            System.out.println("Here");
             return null;
         }
         return val;

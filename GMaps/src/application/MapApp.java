@@ -1,16 +1,39 @@
+/* JavaFX application used to display routes with Google Maps API
+ * @author Adam Setters
+ */
 package application;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import application.controllers.ClientMapController;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import application.controllers.FetchController;
 import application.controllers.RouteController;
+import application.services.GeneralService;
+import application.services.RouteService;
 import gmapsfx.GoogleMapView;
 import gmapsfx.MapComponentInitializedListener;
 import gmapsfx.javascript.object.GoogleMap;
@@ -23,31 +46,139 @@ public class MapApp extends Application
 
 	protected GoogleMapView mapComponent;
 	protected GoogleMap map;
+    protected BorderPane bp;
+    protected Stage primaryStage;
 
+    // CONSTNATS
+    private static final double MARGIN_VAL = 10;
+    private static final double FETCH_COMPONENT_WIDTH = 160.0;
 
+    public static void main(String[] args){
+       launch(args);
+    }
+
+    /**
+     * Application entry point
+     */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		this.primaryStage = primaryStage;
 
+		// MAIN CONTAINER
+		bp = new BorderPane();
+
+        // set up map
 		mapComponent = new GoogleMapView();
 		mapComponent.addMapInitializedListener(this);
 
-		// border pane for main layout
-		BorderPane bp = new BorderPane();
+		// initialize tabs for data fetching and route controls
+        Tab routeTab = new Tab("Routing");
 
-		// HBox for top panel with options
-		HBox rightPanel = new HBox();
-		VBox panelV = new VBox();
-		TabPane tp = new TabPane(new Tab("Routing"), new Tab("Data Fetching"));
-		Button button = new Button("Display Route");
-//		rightPanel.getChildren().add(panelV);
-//		panelV.getChildren().add(button);
+        // create components for fetch tab
+        Button fetchButton = new Button("Fetch Data");
+        Button displayButton = new Button("Show Intersections");
+        TextField tf = new TextField();
+        ComboBox<DataSet> cb = new ComboBox<DataSet>();
+
+        // set on mouse pressed, this fixes Windows 10 / Surface bug
+        cb.setOnMousePressed( e -> {
+        	cb.requestFocus();
+        });
+
+        // TODO - delete this if the above works for Christine's issue
+        /*cb.setOnMousePressed(new EventHandler<MouseEvent>(){
+            @Override
+            public void handle(MouseEvent event) {
+                cb.requestFocus();
+            }
+        });*/
+
+        HBox fetchControls = new HBox();
+        tf.setPrefWidth(FETCH_COMPONENT_WIDTH);
+        fetchControls.getChildren().add(tf);
+        fetchButton.setPrefWidth(FETCH_COMPONENT_WIDTH);
+        fetchControls.getChildren().add(fetchButton);
+
+        VBox fetchBox = getFetchBox(displayButton, cb);
+
+
+        // create components for fetch tab
+        Button routeButton = new Button("Show Route");
+        Button hideRouteButton = new Button("Hide Route");
+        Button visualizationButton = new Button("Start Visualization");
+        Image sImage = new Image(MarkerManager.startURL);
+        Image dImage = new Image(MarkerManager.destinationURL);
+        CLabel<geography.GeographicPoint> startLabel = new CLabel<geography.GeographicPoint>("Empty.", new ImageView(sImage), null);
+        CLabel<geography.GeographicPoint> endLabel = new CLabel<geography.GeographicPoint>("Empty.", new ImageView(dImage), null);
+        //TODO -- hot fix
+        startLabel.setMinWidth(180);
+        endLabel.setMinWidth(180);
+//        startLabel.setWrapText(true);
+//        endLabel.setWrapText(true);
+        Button startButton = new Button("Start");
+        Button destinationButton = new Button("Dest");
+
+        // Radio buttons for selecting search algorithm
+        final ToggleGroup group = new ToggleGroup();
+
+        // Use Dijkstra as default
+        RadioButton rbD = new RadioButton("Dijkstra");
+        rbD.setUserData("Dijkstra");
+        rbD.setSelected(true);
+
+        RadioButton rbA = new RadioButton("A*");
+        rbA.setUserData("A*");
+
+        RadioButton rbB = new RadioButton("BFS");
+        rbB.setUserData("BFS");
+
+        rbB.setToggleGroup(group);
+        rbD.setToggleGroup(group);
+        rbA.setToggleGroup(group);
+
+        List<RadioButton> searchOptions = new LinkedList<RadioButton>();
+        searchOptions.add(rbB);
+        searchOptions.add(rbD);
+        searchOptions.add(rbA);
+
+        // Select and marker managers for route choosing and marker display/visuals
+        SelectManager manager = new SelectManager();
+        MarkerManager markerManager = new MarkerManager();
+        markerManager.setSelectManager(manager);
+        manager.setMarkerManager(markerManager);
+        markerManager.setVisButton(visualizationButton);
+
+        // create components for route tab
+        CLabel<geography.GeographicPoint> pointLabel = new CLabel<geography.GeographicPoint>("No point Selected.", null);
+        manager.setPointLabel(pointLabel);
+        manager.setStartLabel(startLabel);
+        manager.setDestinationLabel(endLabel);
+        setupRouteTab(routeTab, fetchBox, startLabel, endLabel, pointLabel, routeButton, hideRouteButton,
+            		  visualizationButton, startButton, destinationButton, searchOptions);
+
+        // add tabs to pane, give no option to close
+		TabPane tp = new TabPane(routeTab);
+        tp.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+
+        // initialize Services and controllers after map is loaded
+        mapComponent.addMapReadyListener(() -> {
+            GeneralService gs = new GeneralService(mapComponent, manager, markerManager);
+            RouteService rs = new RouteService(mapComponent, markerManager);
+            //System.out.println("in map ready : " + this.getClass());
+
+            // initialize controllers
+			new RouteController(rs, routeButton, hideRouteButton, startButton, destinationButton, group, searchOptions, visualizationButton,
+    															  startLabel, endLabel, pointLabel, manager, markerManager);
+            new FetchController(gs, tf, fetchButton, cb, displayButton);
+        });
 
 		// add components to border pane
-
 		bp.setRight(tp);
+        bp.setBottom(fetchControls);
 		bp.setCenter(mapComponent);
 
 		Scene scene = new Scene(bp);
+        scene.getStylesheets().add("html/routing.css");
 		primaryStage.setScene(scene);
 		primaryStage.show();
 
@@ -56,11 +187,9 @@ public class MapApp extends Application
 
 	@Override
 	public void mapInitialized() {
-		// TODO Auto-generated djdlkjmet`hod stub
-		LatLong center = new LatLong(34.0219, -118.4814);
-        mapComponent.addMapReadyListener(() -> {
 
-        });
+		LatLong center = new LatLong(38.25, -85.7667);
+
 
 		// set map options
 		MapOptions options = new MapOptions();
@@ -79,11 +208,171 @@ public class MapApp extends Application
 
 		// create map;
 		map = mapComponent.createMap(options);
-		RouteController routeController = new RouteController(map, this);
-        ClientMapController userController = new ClientMapController(map, this);
-
 
 
 	}
+
+
+	// SETTING UP THE VIEW
+
+	/**
+	 * Setup layout and controls for Fetch tab
+	 * @param fetchTab
+	 * @param fetchButton
+	 * @param displayButton
+	 * @param tf
+	 */
+    private VBox getFetchBox(Button displayButton, ComboBox<DataSet> cb) {
+    	// add button to tab, rethink design and add V/HBox for content
+    	VBox v = new VBox();
+        HBox h = new HBox();
+
+
+
+        HBox intersectionControls = new HBox();
+//        cb.setMinWidth(displayButton.getWidth());
+        cb.setPrefWidth(FETCH_COMPONENT_WIDTH);
+        intersectionControls.getChildren().add(cb);
+        displayButton.setPrefWidth(FETCH_COMPONENT_WIDTH);
+        intersectionControls.getChildren().add(displayButton);
+
+        h.getChildren().add(v);
+        v.getChildren().add(new Label("Choose map file : "));
+        v.getChildren().add(intersectionControls);
+
+        //v.setSpacing(MARGIN_VAL);
+        return v;
+    }
+
+    /**
+     * Setup layout of route tab and controls
+     *
+     * @param routeTab
+     * @param box
+     */
+    private void setupRouteTab(Tab routeTab, VBox fetchBox, Label startLabel, Label endLabel, Label pointLabel,
+    						   Button showButton, Button hideButton, Button vButton, Button startButton,
+    						   Button destButton, List<RadioButton> searchOptions) {
+
+    	//set up tab layout
+        HBox h = new HBox();
+    	// v is inner container
+        VBox v = new VBox();
+        h.getChildren().add(v);
+
+
+
+        VBox selectLeft = new VBox();
+
+
+        selectLeft.getChildren().add(startLabel);
+        HBox startBox = new HBox();
+        startBox.getChildren().add(startLabel);
+        startBox.getChildren().add(startButton);
+        startBox.setSpacing(20);
+
+        HBox destinationBox = new HBox();
+        destinationBox.getChildren().add(endLabel);
+        destinationBox.getChildren().add(destButton);
+        destinationBox.setSpacing(20);
+
+
+
+/*        int i = 0;
+	    while (i<selectLeft.getChildren().size())
+	    {
+	       selectLeft.setMargin(selectLeft.getChildren().get((i)), new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
+	       i++;
+	    }*/
+
+
+
+//        selectRight.setMargin(startButton, new Insets(MARGIN_VAL/2, MARGIN_VAL, 0, MARGIN_VAL));
+//        selectRight.setMargin(destButton, new Insets(MARGIN_VAL*9/2, MARGIN_VAL, 0, MARGIN_VAL));
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							//       eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee	eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+
+        VBox markerBox = new VBox();
+        Label markerLabel = new Label("Selected Marker : ");
+
+
+        markerBox.getChildren().add(markerLabel);
+
+        markerBox.getChildren().add(pointLabel);
+
+        VBox.setMargin(markerLabel, new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
+        VBox.setMargin(pointLabel, new Insets(0,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
+        VBox.setMargin(fetchBox, new Insets(0,0,MARGIN_VAL*2,0));
+
+
+
+        HBox showHideBox = new HBox();
+        showHideBox.getChildren().add(showButton);
+        showHideBox.getChildren().add(hideButton);
+        showHideBox.setSpacing(2*MARGIN_VAL);
+//        showHideBox.setAlignment(Pos.CENTER);
+
+        v.getChildren().add(fetchBox);
+        v.getChildren().add(new Label("Start Position : "));
+        v.getChildren().add(startBox);
+        v.getChildren().add(new Label("Goal : "));
+        v.getChildren().add(destinationBox);
+        v.getChildren().add(showHideBox);
+        for (RadioButton rb : searchOptions) {
+        	v.getChildren().add(rb);
+        }
+        v.getChildren().add(vButton);
+        VBox.setMargin(showHideBox, new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
+        VBox.setMargin(vButton, new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
+        vButton.setDisable(true);
+        v.getChildren().add(markerBox);
+
+
+        routeTab.setContent(h);
+
+
+    }
+
+
+    /*
+     * METHODS FOR SHOWING DIALOGS/ALERTS
+     */
+
+    public void showLoadStage(Stage loadStage, String text) {
+    	loadStage.initModality(Modality.APPLICATION_MODAL);
+    	loadStage.initOwner(primaryStage);
+        VBox loadVBox = new VBox(20);
+        loadVBox.setAlignment(Pos.CENTER);
+        Text tNode = new Text(text);
+        tNode.setFont(new Font(16));
+        loadVBox.getChildren().add(new HBox());
+        loadVBox.getChildren().add(tNode);
+        loadVBox.getChildren().add(new HBox());
+        Scene loadScene = new Scene(loadVBox, 300, 200);
+        loadStage.setScene(loadScene);
+        loadStage.show();
+    }
+
+    public static void showInfoAlert(String header, String content) {
+	    Alert alert = getInfoAlert(header, content);
+		alert.showAndWait();
+    }
+
+    public static Alert getInfoAlert(String header, String content) {
+	    Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Information");
+		alert.setHeaderText(header);
+		alert.setContentText(content);
+		return alert;
+    }
+
+    public static void showErrorAlert(String header, String content) {
+    	Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("File Name Error");
+		alert.setHeaderText(header);
+		alert.setContentText(content);
+
+		alert.showAndWait();
+    }
+
 
 }

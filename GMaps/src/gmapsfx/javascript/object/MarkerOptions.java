@@ -31,6 +31,7 @@ public class MarkerOptions extends JavascriptObject {
     protected Animation animation;
     
     
+    
     public MarkerOptions() {
         super(GMapObjectType.OBJECT);
     }
