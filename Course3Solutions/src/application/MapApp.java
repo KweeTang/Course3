@@ -147,7 +147,7 @@ public class MapApp extends Application
         mapComponent.addMapReadyListener(() -> {
             GeneralService gs = new GeneralService(mapComponent, manager, markerManager);
             RouteService rs = new RouteService(mapComponent, markerManager, visualizationButton);
-            System.out.println("in map ready : " + this.getClass());
+            //System.out.println("in map ready : " + this.getClass());
 
             // initialize controllers
 			new RouteController(rs, routeButton, hideRouteButton, startButton, destinationButton, group, searchOptions, visualizationButton,

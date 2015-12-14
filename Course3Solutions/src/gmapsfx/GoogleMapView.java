@@ -122,7 +122,7 @@ public class GoogleMapView extends AnchorPane {
             htmlFile = mapResourcePath;
         }
         webview = new WebView();
-        System.out.println("webview : " + webview);
+        //System.out.println("webview : " + webview);
         webengine = new JavaFxWebEngine(webview.getEngine());
         JavascriptRuntime.setDefaultWebEngine(webengine);
 
@@ -148,9 +148,9 @@ public class GoogleMapView extends AnchorPane {
                         }
                     }
                 });
-        System.out.println("web engine before load : " + webengine);
+        //System.out.println("web engine before load : " + webengine);
         webengine.load(getClass().getResource(htmlFile).toExternalForm());
-        System.out.println("AFTER LOAD");
+        //System.out.println("AFTER LOAD");
 
     }
 

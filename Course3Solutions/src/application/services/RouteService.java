@@ -115,7 +115,7 @@ public class RouteService {
 
 		map.addMapShape(routeLine);
 
-		System.out.println(bounds.getNorthEast());
+		//System.out.println(bounds.getNorthEast());
 		//EXCEPTION getBounds() messed up??
         //System.out.println(routeLine.getBounds());
 
@@ -152,11 +152,11 @@ public class RouteService {
             	return false;
             }
             // TODO -- debug road segments
-        	//List<LatLong> mapPath = constructMapPath(path);
-            List<LatLong> mapPath = new ArrayList<LatLong>();
-            for(geography.GeographicPoint point : path) {
-                mapPath.add(new LatLong(point.getX(), point.getY()));
-            }
+        	List<LatLong> mapPath = constructMapPath(path);
+            //List<LatLong> mapPath = new ArrayList<LatLong>();
+            //for(geography.GeographicPoint point : path) {
+            //    mapPath.add(new LatLong(point.getX(), point.getY()));
+            //}
 
             return displayRoute(mapPath);
 		}
@@ -165,64 +165,8 @@ public class RouteService {
     }
 
     
-    public boolean displayRouteBFS(geography.GeographicPoint start, geography.GeographicPoint end) {
-    	markerManager.initVisualization();
-    	Consumer<geography.GeographicPoint> nodeAccepter = markerManager.getVisualization()::acceptPoint;
-    	List<geography.GeographicPoint> path = markerManager.getDataSet().getGraph().bfs(start, end, nodeAccepter);
-        if(path == null) {
-            System.out.println("In displayRoute : PATH NOT FOUND");
-        	return false;
-        }
-        // TODO -- debug road segments
-    	//List<LatLong> mapPath = constructMapPath(path);
-        List<LatLong> mapPath = new ArrayList<LatLong>();
-        for(geography.GeographicPoint point : path) {
-            mapPath.add(new LatLong(point.getX(), point.getY()));
-        }
-
-        return displayRoute(mapPath);
-    	
-    }
-    
-    public boolean displayRouteDij(geography.GeographicPoint start, geography.GeographicPoint end) {
-        markerManager.initVisualization();
-    	Consumer<geography.GeographicPoint> nodeAccepter = markerManager.getVisualization()::acceptPoint;
-    	List<geography.GeographicPoint> path = markerManager.getDataSet().getGraph().dijkstra(start, end, nodeAccepter);
-        if(path == null) {
-            System.out.println("In displayRoute : PATH NOT FOUND");
-        	return false;
-        }
-        // TODO -- debug road segments
-    	//List<LatLong> mapPath = constructMapPath(path);
-        List<LatLong> mapPath = new ArrayList<LatLong>();
-        for(geography.GeographicPoint point : path) {
-            mapPath.add(new LatLong(point.getX(), point.getY()));
-        }
 
 
-//        return false;
-        return displayRoute(mapPath);
-    }
-
-    public boolean displayRouteAStar(geography.GeographicPoint start, geography.GeographicPoint end) {
-        markerManager.initVisualization();
-    	Consumer<geography.GeographicPoint> nodeAccepter = markerManager.getVisualization()::acceptPoint;
-    	List<geography.GeographicPoint> path = markerManager.getDataSet().getGraph().aStarSearch(start, end, nodeAccepter);
-        if(path == null) {
-            System.out.println("In displayRoute : PATH NOT FOUND");
-        	return false;
-        }
-        // TODO -- debug road segments
-    	//List<LatLong> mapPath = constructMapPath(path);
-        List<LatLong> mapPath = new ArrayList<LatLong>();
-        for(geography.GeographicPoint point : path) {
-            mapPath.add(new LatLong(point.getX(), point.getY()));
-        }
-
-
-//        return false;
-        return displayRoute(mapPath);
-    }
     /**
      * Construct path including road regments
      * @param path - path with only intersections
@@ -235,7 +179,7 @@ public class RouteService {
     	geography.GeographicPoint next;
 
     	geography.RoadSegment chosenSegment = null;;
-
+    	
         for(int i = 0; i < path.size() - 1; i++) {
             double minLength = Double.MAX_VALUE;
         	curr = path.get(i);
@@ -248,12 +192,12 @@ public class RouteService {
         		// get segments which are
             	geography.RoadSegment currSegment;
                 while(it.hasNext()) {
-                    System.out.println("new segment");
+                    //System.out.println("new segment");
                 	currSegment = it.next();
                 	if(currSegment.getOtherPoint(curr).equals(next)) {
-                        System.out.println("1st check passed : other point correct");
+                        //System.out.println("1st check passed : other point correct");
                 		if(currSegment.getLength() < minLength) {
-                            System.out.println("2nd check passed : length less");
+                            //System.out.println("2nd check passed : length less");
                 			chosenSegment = currSegment;
                 		}
                 	}
@@ -274,6 +218,7 @@ public class RouteService {
         	}
         }
 
+        System.out.println("NOW there are " + retVal.size() + " points");
     	return retVal;
     }
 

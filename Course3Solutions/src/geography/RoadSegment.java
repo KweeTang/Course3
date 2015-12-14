@@ -46,6 +46,7 @@ public class RoadSegment {
 	public List<GeographicPoint> getPoints(GeographicPoint start,
 											GeographicPoint end)
 	{
+		
 		List<GeographicPoint> allPoints = new ArrayList<GeographicPoint>();
 		if (point1.equals(start) && point2.equals(end)) {
 			allPoints.add(start);
@@ -53,23 +54,20 @@ public class RoadSegment {
 			allPoints.add(end);
 		}
 		else if (point2.equals(start) && point1.equals(end)) {
-            System.out.println("RoadSegment getPoints :: Reversing");
             // probably only want to reverse the geometryPoints
-			allPoints.addAll(geometryPoints);
-			Collections.reverse(allPoints);
-			allPoints.add(start);
-			allPoints.add(0, end);
 
-            // OLD CODE --- REMOVE!!
-			/*allPoints.add(end);
+			allPoints.add(end);
 			allPoints.addAll(geometryPoints);
 			allPoints.add(start);
-			Collections.reverse(allPoints);*/
+			Collections.reverse(allPoints);
 		}
+
 		else {
 			throw new IllegalArgumentException("Start and end points do not "
 					+ "match end points of segment");
 		}
+		
+		
 
 		return allPoints;
 	}
