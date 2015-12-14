@@ -91,7 +91,13 @@ public class MapApp extends Application
             }
         });*/
 
-        VBox fetchBox = getFetchBox(fetchButton, displayButton, tf, cb);
+        HBox fetchControls = new HBox();
+        tf.setPrefWidth(FETCH_COMPONENT_WIDTH);
+        fetchControls.getChildren().add(tf);
+        fetchButton.setPrefWidth(FETCH_COMPONENT_WIDTH);
+        fetchControls.getChildren().add(fetchButton);
+
+        VBox fetchBox = getFetchBox(displayButton, cb);
 
 
         // create components for fetch tab
@@ -159,6 +165,7 @@ public class MapApp extends Application
 
 		// add components to border pane
 		bp.setRight(tp);
+        bp.setBottom(fetchControls);
 		bp.setCenter(mapComponent);
 
 		Scene scene = new Scene(bp);
@@ -206,17 +213,11 @@ public class MapApp extends Application
 	 * @param displayButton
 	 * @param tf
 	 */
-    private VBox getFetchBox(Button fetchButton, Button displayButton,
-    						   TextField tf, ComboBox<DataSet> cb) {
+    private VBox getFetchBox(Button displayButton, ComboBox<DataSet> cb) {
     	// add button to tab, rethink design and add V/HBox for content
     	VBox v = new VBox();
         HBox h = new HBox();
 
-        HBox fetchControls = new HBox();
-        tf.setPrefWidth(FETCH_COMPONENT_WIDTH);
-        fetchControls.getChildren().add(tf);
-        fetchButton.setPrefWidth(FETCH_COMPONENT_WIDTH);
-        fetchControls.getChildren().add(fetchButton);
 
 
         HBox intersectionControls = new HBox();
@@ -227,7 +228,7 @@ public class MapApp extends Application
         intersectionControls.getChildren().add(displayButton);
 
         h.getChildren().add(v);
-        v.getChildren().add(fetchControls);
+        v.getChildren().add(new Label("Choose map file : "));
         v.getChildren().add(intersectionControls);
 
         //v.setSpacing(MARGIN_VAL);
