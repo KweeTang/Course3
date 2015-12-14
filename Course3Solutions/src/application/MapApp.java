@@ -51,7 +51,9 @@ public class MapApp extends Application
     private static final double MARGIN_VAL = 10;
     private static final double FETCH_COMPONENT_WIDTH = 160.0;
 
-
+    public static void main(String[] args){
+       launch(args);
+    }
 
     /**
      * Application entry point
