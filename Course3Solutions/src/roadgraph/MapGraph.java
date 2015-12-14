@@ -92,17 +92,17 @@ public class MapGraph {
 	 * @param latitude The latitude of the location
 	 * @param longitude The longitude of the location
 	 * */
-	public void addNode(double latitude, double longitude)
+	public void addVertex(double latitude, double longitude)
 	{
 		GeographicPoint pt = new GeographicPoint(latitude, longitude);
-		this.addNode(pt);
+		this.addVertex(pt);
 	}
 
 	/** Add a node corresponding to an intersection at a Geographic Point
 	 *
 	 * @param location  The location of the intersection
 	 */
-	public void addNode(GeographicPoint location)
+	public void addVertex(GeographicPoint location)
 	{
 		MapNode n = pointNodeMap.get(location);
 		if (n == null) {

@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Consumer;
+
 import util.GraphLoader;
 import geography.*;
 
@@ -80,9 +82,12 @@ public class AStarGrader implements Runnable {
      * @param end The point to end at
      */
     public void judge(int i, MapGraph result, CorrectAnswer corr, GeographicPoint start, GeographicPoint end) {
-        // Correct if paths are same length and have the same elements
+    	// Dummy variable for calling astar
+        Consumer<GeographicPoint> temp = (x) -> {};
+    	
+    	// Correct if paths are same length and have the same elements
         feedback += appendFeedback(i, "Running A* from (" + start.getX() + ", " + start.getY() + ") to (" + end.getX() + ", " + end.getY() + ")");
-        List<GeographicPoint> path = result.aStarSearch(start, end);
+        List<GeographicPoint> path = result.aStarSearch(start, end, temp);
         if (path == null) {
             if (corr.path == null) {
                 feedback += "PASSED.";
