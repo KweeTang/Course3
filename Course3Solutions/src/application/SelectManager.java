@@ -25,6 +25,14 @@ public class SelectManager {
     }
 
 
+    public void resetSelect() {
+    	startMarker = null;
+    	destinationMarker = null;
+    	selectedMarker = null;
+    	pointLabel.setItem(null);
+    	startLabel.setItem(null);
+    	destinationLabel.setItem(null);
+    }
 
     public void setAndDisplayData(DataSet data) {
     	setDataSet(data);
