@@ -153,7 +153,7 @@ public abstract class Graph {
 
 		}
 		Collections.sort(degrees);
-		
+		Collections.reverse(degrees);
 		
 		return degrees;
 	}
