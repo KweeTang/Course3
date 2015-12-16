@@ -49,7 +49,7 @@ public class MapApp extends Application
     protected BorderPane bp;
     protected Stage primaryStage;
 
-    // CONSTNATS
+    // CONSTANTS
     private static final double MARGIN_VAL = 10;
     private static final double FETCH_COMPONENT_WIDTH = 160.0;
 
@@ -188,7 +188,7 @@ public class MapApp extends Application
 	@Override
 	public void mapInitialized() {
 
-		LatLong center = new LatLong(38.25, -85.7667);
+		LatLong center = new LatLong(32.88, -117.238);
 
 
 		// set map options
