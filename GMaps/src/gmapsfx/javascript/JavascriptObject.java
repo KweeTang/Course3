@@ -240,6 +240,7 @@ public class JavascriptObject {
      * @return The result of the function.
      */
     protected <T> T invokeJavascriptReturnValue(String function, Class<T> returnType) {
+    	System.out.println("calling " + function + " with Class " + returnType);
         Object returnObject = invokeJavascript(function);
         if (returnObject instanceof JSObject) {
             try {
@@ -263,7 +264,8 @@ public class JavascriptObject {
      * @return The result of the function.
      */
     protected <T> T invokeJavascriptReturnValue(String function, Class<T> returnType, Object... args) {
-        Object returnObject = invokeJavascript(function, args);
+    	System.out.println("calling " + function + " with Class " + returnType);
+    	Object returnObject = invokeJavascript(function, args);
         if (returnObject != null) {
             return (T) returnObject;
         } else {

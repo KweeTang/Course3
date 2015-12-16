@@ -70,10 +70,8 @@ public class DijkstraGrader implements Runnable {
     }
 
     public void judge(int i, MapGraph result, CorrectAnswer corr, GeographicPoint start, GeographicPoint end) {
-        Consumer<GeographicPoint> temp = (x) -> {};
-
         feedback += appendFeedback(i, "Running Dijkstra's algorithm from (" + start.getX() + ", " + start.getY() + ") to (" + end.getX() + ", " + end.getY() + ")");
-        List<GeographicPoint> path = result.dijkstra(start, end, temp);
+        List<GeographicPoint> path = result.dijkstra(start, end);
         if (path == null) {
             if (corr.path == null) {
                 feedback += "PASSED.";

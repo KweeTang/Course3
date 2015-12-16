@@ -81,12 +81,9 @@ public class DijkstraGrader implements Runnable {
      * @param end The point to end at
      */
     public void judge(int i, MapGraph result, CorrectAnswer corr, GeographicPoint start, GeographicPoint end) {
-        // Dummy variable for calling dijkstra
-        Consumer<GeographicPoint> temp = (x) -> {};
-
         // Correct if paths are same length and have the same elements
         feedback += appendFeedback(i, "Running Dijkstra's algorithm from (" + start.getX() + ", " + start.getY() + ") to (" + end.getX() + ", " + end.getY() + ")");
-        List<GeographicPoint> path = result.dijkstra(start, end, temp);
+        List<GeographicPoint> path = result.dijkstra(start, end);
         if (path == null) {
             if (corr.path == null) {
                 feedback += "PASSED.";

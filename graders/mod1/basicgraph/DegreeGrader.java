@@ -87,7 +87,7 @@ public class DegreeGrader {
             GraphLoader.loadRoutes(file, lst);
             GraphLoader.loadRoutes(file, mat);
         }
-/*   
+/*
         try {
             PrintWriter tempout = new PrintWriter(file + ".degrees");
             List<Integer> result = lst.degreeSequence();
