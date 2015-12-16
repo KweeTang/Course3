@@ -49,7 +49,7 @@ public class MapApp extends Application
     protected BorderPane bp;
     protected Stage primaryStage;
 
-    // CONSTNATS
+    // CONSTANTS
     private static final double MARGIN_VAL = 10;
     private static final double FETCH_COMPONENT_WIDTH = 160.0;
 
@@ -165,7 +165,6 @@ public class MapApp extends Application
             GeneralService gs = new GeneralService(mapComponent, manager, markerManager);
             RouteService rs = new RouteService(mapComponent, markerManager);
             //System.out.println("in map ready : " + this.getClass());
-
             // initialize controllers
 			new RouteController(rs, routeButton, hideRouteButton, startButton, destinationButton, group, searchOptions, visualizationButton,
     															  startLabel, endLabel, pointLabel, manager, markerManager);

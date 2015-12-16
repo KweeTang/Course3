@@ -50,9 +50,9 @@ public class GeneralService {
 
 
 	// writes geographic data flat file
-    public boolean writeDataToFile(String filename) {
-    	float[] arr = getBoundsArray();
-    	MapMaker mm = new MapMaker(arr);
+    // parameters arr contains the coordinates of the bounds for the map region
+    public boolean writeDataToFile(String filename, float[] arr) {
+     	MapMaker mm = new MapMaker(arr);
 
     	// parse data and write to filename
     	if(mm.parseData(filename)) {
@@ -101,18 +101,12 @@ public class GeneralService {
     }
 
     public void runFetchTask(String fName, ComboBox<DataSet> cb, Button button) {
-        Task<String> task = new Task<String>() {
+        float[] arr = getBoundsArray();
+
+    	Task<String> task = new Task<String>() {
             @Override
         	public String call() {
-
-//                System.out.println("In call function for Fetch Task");
-                /*if(currentlyFetching) {
-                	MapApp.showErrorAlert("Fetch Error : ", "Data set already being fetched.\nTry again after task finishes.");
-                	return "alreadyFetching";
-                }*/
-
-                System.out.println("Before if(writeDataToFile...");
-        		if(writeDataToFile(fName)) {
+        		if(writeDataToFile(fName, arr)) {
                     return fName;
         		}
 
@@ -121,11 +115,12 @@ public class GeneralService {
             }
         };
 
+   
         //final Stage loadStage = new Stage();
 
         Alert fetchingAlert = MapApp.getInfoAlert("Loading : ", "Fetching data for current map area...");
         task.setOnSucceeded( e -> {
-           if(task.getValue().equals(fName)) {
+          if(task.getValue().equals(fName)) {
                addDataFile(fName);
 
                cb.getItems().add(new DataSet(fName));
@@ -137,10 +132,9 @@ public class GeneralService {
 
            }
            else {
-               System.out.println("Task Succeeded : fName returned differently");
+               System.out.println("Something went wrong, data not written to file : Task succeeded but fName returned differently");
 
            }
-           System.out.println("In onSucceeded");
 
            button.setDisable(false);
 
@@ -153,13 +147,15 @@ public class GeneralService {
 
         task.setOnRunning(e -> {
             button.setDisable(true);
-            System.out.println("ON RUNNING");
             fetchingAlert.showAndWait();
         });
 
+        
         Thread fetchThread = new Thread(task);
         fetchThread.start();
     }
+
+
 
     public List<String> getDataFiles() {
     	return filenames;

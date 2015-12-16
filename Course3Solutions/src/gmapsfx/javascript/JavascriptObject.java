@@ -73,10 +73,8 @@ public class JavascriptObject {
     protected JavascriptObject(String type, Object... args) {
         runtime = JavascriptRuntime.getInstance();
         variableName = getNextVariableName();
-        System.out.println("var " + variableName + " = " + runtime.getConstructor(type, args));
         runtime.execute("var " + variableName + " = " + runtime.getConstructor(type, args));
         jsObject = runtime.execute(variableName);
-        System.out.println(jsObject);
         peerRegistry.put(jsObject, this);
     }
 
@@ -208,7 +206,6 @@ public class JavascriptObject {
      * @return The return value of the function call.
      */
     protected Object invokeJavascript(String function) {
-        System.out.println("OBJECT" + jsObject);
         return checkUndefined(jsObject.call(function));
     }
 
@@ -243,7 +240,6 @@ public class JavascriptObject {
      * @return The result of the function.
      */
     protected <T> T invokeJavascriptReturnValue(String function, Class<T> returnType) {
-    	System.out.println("calling " + function + " with Class " + returnType);
     	Object returnObject = invokeJavascript(function);
         if (returnObject instanceof JSObject) {
             try {
