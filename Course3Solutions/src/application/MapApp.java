@@ -188,7 +188,7 @@ public class MapApp extends Application
 	@Override
 	public void mapInitialized() {
 
-		LatLong center = new LatLong(38.25, -85.7667);
+		LatLong center = new LatLong(32.8810, -117.2380);
 
 
 		// set map options
@@ -203,7 +203,7 @@ public class MapApp extends Application
 		       .rotateControl(false)
 		       .scaleControl(false)
 		       .streetViewControl(false)
-		       .zoom(8)
+		       .zoom(14)
 		       .zoomControl(true);
 
 		// create map;

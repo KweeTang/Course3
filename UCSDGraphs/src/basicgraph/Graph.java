@@ -115,7 +115,7 @@ public abstract class Graph {
 
 	/** 
 	 * The degree sequence of a graph is a sorted (organized in numerical order 
-	 * from smallest to largest, possibly with repetitions) list of the degrees 
+	 * from largest to smallest, possibly with repetitions) list of the degrees 
 	 * of the vertices in the graph.
 	 * 
 	 * @return The degree sequence of this graph.
@@ -228,9 +228,7 @@ public abstract class Graph {
 
 	
 	public static void main (String[] args) {
-		GraphLoader.createIntersectionsFile("data/newbury_small.map", "data/intersections/newbury_small.intersections.map");
-		GraphLoader.createIntersectionsFile("data/newbury_verysmall.map", "data/intersections/newbury_verysmall.intersections.map");
-		GraphLoader.createIntersectionsFile("data/ucsd.map", "data/intersections/ucsd.intersections.map");
+		GraphLoader.createIntersectionsFile("data/maps/myucsd.map", "data/intersections/myucsd.intersections");
 		
 
 		// For testing of Part 1 functionality
@@ -242,7 +240,7 @@ public abstract class Graph {
 		System.out.println("****");
 		System.out.println("Roads / intersections:");
 		GraphAdjList graphFromFile = new GraphAdjList();
-		GraphLoader.loadRoadMap("data/ucsd.map", graphFromFile);
+		GraphLoader.loadRoadMap("data/testdata/simpletest.map", graphFromFile);
 		System.out.println(graphFromFile);
 		
 		System.out.println("Observe all degrees are <= 12.");
@@ -251,7 +249,7 @@ public abstract class Graph {
 		System.out.println("\n****");
 		System.out.println("Flight data:");
 		GraphAdjList airportGraph = new GraphAdjList();
-		GraphLoader.loadRoutes("data/routesUA.dat", airportGraph);
+		GraphLoader.loadRoutes("data/airports/routesUA.dat", airportGraph);
 		System.out.println(airportGraph);
 		System.out.println("Observe most degrees are small (1-30), eight are over 100.");
 		System.out.println("****");

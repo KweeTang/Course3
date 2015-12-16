@@ -67,11 +67,11 @@ public class MapGraph {
 	
 	
 	/** Add a node corresponding to an intersection at a Geographic Point
-	 * If the node is already in the graph, this method does not change 
-	 * the graph.
+	 * If the location is already in the graph or null, this method does 
+	 * not change the graph.
 	 * @param location  The location of the intersection
-	 * @return true if a node was added, false if it was not (e.g. the node
-	 * was already in the graph).
+	 * @return true if a node was added, false if it was not (the node
+	 * was already in the graph, or the parameter is null).
 	 */
 	public boolean addVertex(GeographicPoint location)
 	{
@@ -88,7 +88,8 @@ public class MapGraph {
 	 * @param roadType The type of the road
 	 * @param length The length of the road, in km
 	 * @throws IllegalArgumentException If the points have not already been
-	 *   added as nodes to the graph.
+	 *   added as nodes to the graph, if any of the arguments is null,
+	 *   or if the length is less than 0.
 	 */
 	public void addEdge(GeographicPoint from, GeographicPoint to, String roadName,
 			String roadType, double length) throws IllegalArgumentException {
@@ -206,7 +207,7 @@ public class MapGraph {
 		GraphLoader.loadRoadMap("data/testdata/simpletest.map", theMap);
 		System.out.println("DONE.");
 		
-		// You can use this for testing.  Feel free to change the name
+		// You can use this method for testing.  
 		
 	}
 	
