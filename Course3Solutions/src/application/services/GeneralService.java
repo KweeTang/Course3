@@ -93,6 +93,18 @@ public class GeneralService {
         dataset.setDisplayed(true);
 
     }
+    
+    public float boundsSize() {
+    	float[] bounds = getBoundsArray();
+    	return (bounds[2] - bounds[0]) * (bounds[3] - bounds[1]);
+    }
+    
+    public boolean checkBoundsSize(double limit) {
+    	if (boundsSize() > limit) {
+    		return false;
+    	}
+    	return true;
+    }
 
     /**
      * Check if file name matches pattern [filename].map

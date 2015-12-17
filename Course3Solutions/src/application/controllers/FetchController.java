@@ -17,6 +17,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ListCell;
@@ -67,7 +68,7 @@ public class FetchController {
 
             reader.close();
 		} catch (IOException e) {
-            System.out.println("No existing map files found.");
+            // System.out.println("No existing map files found.");
 			e.printStackTrace();
 		}
     }
@@ -120,19 +121,36 @@ public class FetchController {
     		String fName = writeFile.getText();
 
     		// check for valid file name ___.map or mapfiles/___.map
-    		if((fName = generalService.checkDataFileName(fName)) != null) {
-                System.out.println("file name is good");
+    		if((generalService.checkDataFileName(fName)) != null) {
+    			if (!generalService.checkBoundsSize(.1)) {
+    				Alert alert = new Alert(AlertType.ERROR);
+        			alert.setTitle("Size Error");
+        			alert.setHeaderText("Map Size Error");
+        			alert.setContentText("Map boundaries are too large.");
+        			alert.showAndWait();
+    			} else if (!generalService.checkBoundsSize(0.02)) {
+                	Alert warning = new Alert(AlertType.CONFIRMATION);
+                	warning.setTitle("Size Warning");
+                	warning.setHeaderText("Map Size Warning");
+                	warning.setContentText("Your map file may take a long time to download,\nand your computer may crash when you try to\nload the intersections. Continue?");
+                	warning.showAndWait().ifPresent(response -> {
+                		if (response == ButtonType.OK) {
+                			generalService.runFetchTask(generalService.checkDataFileName(fName), dataChoices, fetchButton);
+                		}
+                	});
+                } else {
+                	generalService.runFetchTask(generalService.checkDataFileName(fName), dataChoices, fetchButton);
+                }
 
-    			generalService.runFetchTask(fName, dataChoices, fetchButton);
 
     		}
     		else {
     		    Alert alert = new Alert(AlertType.ERROR);
-    			alert.setTitle("File Name Error");
+    			alert.setTitle("Filename Error");
     			alert.setHeaderText("Input Error");
     			alert.setContentText("Check filename input. \n\n\n"
     								 + "Filename must match format : [filename].map."
-    								 + "\n\nUse only uppercase and lowercase letters, numbers, and underscores in [filename]");
+    								 + "\n\nUse only uppercase and lowercase letters,\nnumbers, and underscores in [filename].");
 
     			alert.showAndWait();
     		}
@@ -144,7 +162,7 @@ public class FetchController {
      */
     private void setupDisplayButton() {
     	displayButton.setOnAction( e -> {
-            System.out.println("In setup display button");
+            // System.out.println("In setup display button");
             DataSet dataSet = dataChoices.getValue();
 
             // was any dataset selected?
