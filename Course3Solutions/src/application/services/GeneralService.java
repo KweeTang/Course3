@@ -29,7 +29,7 @@ public class GeneralService {
 
 
     private static final String DATA_FILE_PATTERN = "[\\w_]+.map";
-    private static final String DATA_FILE_DIR_STR = "data/mapfiles/";
+    private static final String DATA_FILE_DIR_STR = "data/maps/";
 
     private List<String> filenames;
     DataSet dataSet;
