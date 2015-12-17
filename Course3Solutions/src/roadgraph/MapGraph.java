@@ -410,6 +410,7 @@ public class MapGraph {
 	public List<GeographicPoint> aStarSearch(GeographicPoint start,
 											 GeographicPoint goal, Consumer<GeographicPoint> nodeAccepter)
 	{
+		boolean debug = false;
 		// Set up
 		if (start == null || goal == null)
 			throw new NullPointerException("Cannot find route from or to null node");
@@ -444,7 +445,10 @@ public class MapGraph {
 			
             nodeAccepter.accept(next.getLocation());
             count++;
-			System.out.println("A* visiting" + next);
+            if(debug) {
+			  System.out.println("\nA* visiting" + next+"\nActual = "+
+										next.getActualDistance()+", Pred: "+next.getDistance());
+            }
 			if (next.equals(endNode)) break;
 			if(!visited.contains(next)) {
 				visited.add(next);
@@ -459,7 +463,10 @@ public class MapGraph {
 						double predDist = currDist+ (neighbor.getLocation()).distance(endNode.getLocation());
 						if(predDist < neighbor.getDistance()){
 							// debug
-							//System.out.println("Pred Distance: " + predDist + "Node\n"+neighbor);
+							if(debug) {
+							  System.out.println("Adding to queue node at: "+neighbor.getLocation());
+							  System.out.println("Curr dist: "+currDist+" Pred Distance: " + predDist);
+							}
 							parentMap.put(neighbor, next);
 							neighbor.setActualDistance(currDist);
 							neighbor.setDistance(predDist);
@@ -501,7 +508,7 @@ public class MapGraph {
 	// main method for testing
 	public static void main(String[] args)
 	{
-		
+		/*
 		System.out.print("Making a new map...");
 		MapGraph theMap = new MapGraph();
 		System.out.print("DONE. \nLoading the map...");
@@ -516,6 +523,20 @@ public class MapGraph {
 												 new GeographicPoint(8.0,-1.0));
 		
 		System.out.println(route);
+		*/
+		
+		MapGraph theMap = new MapGraph();
+		System.out.print("DONE. \nLoading the map...");
+		GraphLoader.loadRoadMap("data/mapfiles/utc.map", theMap);
+		System.out.println("DONE.");
+
+		GeographicPoint start = new GeographicPoint(32.8648772, -117.2254046);
+		GeographicPoint end = new GeographicPoint(32.8660691, -117.217393);
+		
+		//List<GeographicPoint> route = theMap.dijkstra(start,end);
+		List<GeographicPoint> route2 = theMap.aStarSearch(start,end);
+		System.out.println(route2);
+		
 		/* Use this code in Week 3 End of Week Quiz
 		MapGraph theMap = new MapGraph();
 		System.out.print("DONE. \nLoading the map...");
