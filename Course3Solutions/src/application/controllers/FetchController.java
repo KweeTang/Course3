@@ -9,6 +9,7 @@ import com.sun.javafx.geom.Rectangle;
 import application.DataSet;
 import application.MapApp;
 import application.services.GeneralService;
+import application.services.RouteService;
 import gmapsfx.javascript.object.GoogleMap;
 import gmapsfx.javascript.object.LatLong;
 import gmapsfx.javascript.object.LatLongBounds;
@@ -16,6 +17,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ListCell;
@@ -26,7 +28,8 @@ import mapmaker.MapMaker;
 
 public class FetchController {
     private static final int ROW_COUNT = 5;
-    GeneralService generalService;
+    private GeneralService generalService;
+    private RouteService routeService;
     private Node container;
     private Button fetchButton;
     private Button displayButton;
@@ -36,11 +39,13 @@ public class FetchController {
     private String filename = "data.map";
 
     // path for mapfiles to load when program starts
-    private String persistPath = "data/mapfiles/mapfiles.list";
+    private String persistPath = "data/maps/mapfiles.list";
 
 
-    public FetchController(GeneralService generalService, TextField writeFile, Button fetchButton, ComboBox<DataSet> cb, Button displayButton) {
+    public FetchController(GeneralService generalService, RouteService routeService, TextField writeFile,
+    					   Button fetchButton, ComboBox<DataSet> cb, Button displayButton) {
         this.generalService = generalService;
+        this.routeService = routeService;
         this.fetchButton = fetchButton;
         this.displayButton = displayButton;
         this.writeFile = writeFile;
@@ -63,7 +68,7 @@ public class FetchController {
 
             reader.close();
 		} catch (IOException e) {
-            System.out.println("No existing map files found.");
+            // System.out.println("No existing map files found.");
 			e.printStackTrace();
 		}
     }
@@ -82,7 +87,7 @@ public class FetchController {
                     protected void updateItem(DataSet item, boolean empty) {
                         super.updateItem(item, empty);
                     	if(empty || item == null) {
-                            super.setText(null);
+                            super.setText("None.");
                     	}
                     	else {
                         	super.setText(item.getFilePath().substring(GeneralService.getDataSetDirectory().length()));
@@ -116,19 +121,36 @@ public class FetchController {
     		String fName = writeFile.getText();
 
     		// check for valid file name ___.map or mapfiles/___.map
-    		if((fName = generalService.checkDataFileName(fName)) != null) {
-                System.out.println("file name is good");
+    		if((generalService.checkDataFileName(fName)) != null) {
+    			if (!generalService.checkBoundsSize(.1)) {
+    				Alert alert = new Alert(AlertType.ERROR);
+        			alert.setTitle("Size Error");
+        			alert.setHeaderText("Map Size Error");
+        			alert.setContentText("Map boundaries are too large.");
+        			alert.showAndWait();
+    			} else if (!generalService.checkBoundsSize(0.02)) {
+                	Alert warning = new Alert(AlertType.CONFIRMATION);
+                	warning.setTitle("Size Warning");
+                	warning.setHeaderText("Map Size Warning");
+                	warning.setContentText("Your map file may take a long time to download,\nand your computer may crash when you try to\nload the intersections. Continue?");
+                	warning.showAndWait().ifPresent(response -> {
+                		if (response == ButtonType.OK) {
+                			generalService.runFetchTask(generalService.checkDataFileName(fName), dataChoices, fetchButton);
+                		}
+                	});
+                } else {
+                	generalService.runFetchTask(generalService.checkDataFileName(fName), dataChoices, fetchButton);
+                }
 
-    			generalService.runFetchTask(fName, dataChoices, fetchButton);
 
     		}
     		else {
     		    Alert alert = new Alert(AlertType.ERROR);
-    			alert.setTitle("File Name Error");
+    			alert.setTitle("Filename Error");
     			alert.setHeaderText("Input Error");
     			alert.setContentText("Check filename input. \n\n\n"
     								 + "Filename must match format : [filename].map."
-    								 + "\n\nUse only uppercase and lowercase letters, numbers, and underscores in [filename]");
+    								 + "\n\nUse only uppercase and lowercase letters,\nnumbers, and underscores in [filename].");
 
     			alert.showAndWait();
     		}
@@ -140,7 +162,7 @@ public class FetchController {
      */
     private void setupDisplayButton() {
     	displayButton.setOnAction( e -> {
-            System.out.println("In setup display button");
+            // System.out.println("In setup display button");
             DataSet dataSet = dataChoices.getValue();
 
             // was any dataset selected?
@@ -152,6 +174,10 @@ public class FetchController {
     			alert.showAndWait();
             }
             else if(!dataSet.isDisplayed()) {
+            	// TODO -- only time I need route service ....redo?
+                if(routeService.isRouteDisplayed()) {
+                	routeService.hideRoute();
+                }
         		generalService.displayIntersections(dataSet);
 
             }

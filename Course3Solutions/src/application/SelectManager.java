@@ -26,12 +26,15 @@ public class SelectManager {
 
 
     public void resetSelect() {
-    	startMarker = null;
+        markerManager.setSelectMode(true);
+    	/*startMarker = null;
     	destinationMarker = null;
+    	startLabel.setItem(null);
+    	destinationLabel.setItem(null);*/
+    }
+    public void clearSelected() {
     	selectedMarker = null;
     	pointLabel.setItem(null);
-    	startLabel.setItem(null);
-    	destinationLabel.setItem(null);
     }
 
     public void setAndDisplayData(DataSet data) {
@@ -40,11 +43,14 @@ public class SelectManager {
         if(markerManager != null) {
             markerManager.displayDataSet();
         }
+        else {
+        	System.err.println("Error : Marker Manager is null.");
+        }
     }
 
     public void setMarkerManager(MarkerManager manager) { this.markerManager = manager; }
     public void setPoint(GeographicPoint point, Marker marker) {
-        System.out.println("inSetPoint.. passed : " + point);
+        // System.out.println("inSetPoint.. passed : " + point);
     	pointLabel.setItem(point);
         selectedMarker = marker;
     }
@@ -79,6 +85,7 @@ public class SelectManager {
     		markerManager.setDestination(point);
 		}
 	}
+
 
 
 }

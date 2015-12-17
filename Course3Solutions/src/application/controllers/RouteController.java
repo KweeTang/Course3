@@ -29,9 +29,6 @@ import javafx.util.StringConverter;
 
 public class RouteController {
 	// Strings for slider labels
-	private static final String DISABLE_STR = "Disable";
-	private static final String START_STR = "Select Start";
-	private static final String DEST_STR = "Select Destination";
 	public static final int BFS = 3;
     public static final int A_STAR = 2;
     public static final int DIJ = 1;
@@ -40,36 +37,35 @@ public class RouteController {
 	public static final int DESTINATION = 2;
 
     private int selectedToggle = DIJ;
-    private int currentState = 0;
 
-	private GoogleMap map;
     private RouteService routeService;
     private Button displayButton;
     private Button hideButton;
     private Button startButton;
+    private Button resetButton;
     private Button destinationButton;
     private Button visualizationButton;
 
     private ToggleGroup group;
-    private String filename = "myroute.route";
     private CLabel<geography.GeographicPoint> startLabel;
     private CLabel<geography.GeographicPoint> endLabel;
     private CLabel<geography.GeographicPoint> pointLabel;
-    private Slider optionsSlider;
     private SelectManager selectManager;
     private MarkerManager markerManager;
 
 
 
-	public RouteController(RouteService routeService, Button displayButton, Button hideButton, Button startButton, Button destinationButton,
-						   ToggleGroup group, List<RadioButton> searchOptions, Button visualizationButton, CLabel<geography.GeographicPoint> startLabel,
-						   CLabel<geography.GeographicPoint> endLabel, CLabel<geography.GeographicPoint> pointLabel,
-						   SelectManager manager, MarkerManager markerManager) {
+	public RouteController(RouteService routeService, Button displayButton, Button hideButton,
+						   Button resetButton, Button startButton, Button destinationButton,
+						   ToggleGroup group, List<RadioButton> searchOptions, Button visualizationButton,
+						   CLabel<geography.GeographicPoint> startLabel, CLabel<geography.GeographicPoint> endLabel,
+						   CLabel<geography.GeographicPoint> pointLabel, SelectManager manager, MarkerManager markerManager) {
         // save parameters
         this.routeService = routeService;
 		this.displayButton = displayButton;
         this.hideButton = hideButton;
 		this.startButton = startButton;
+		this.resetButton = resetButton;
 		this.destinationButton = destinationButton;
         this.group = group;
         this.visualizationButton = visualizationButton;
@@ -101,7 +97,13 @@ public class RouteController {
 		});
 
         hideButton.setOnAction(e -> {
-        	routeService.removeRouteLine();
+        	routeService.hideRoute();
+        });
+
+        //TODO -- implement
+        resetButton.setOnAction( e -> {
+
+            routeService.reset();
         });
 	}
 
@@ -113,7 +115,7 @@ public class RouteController {
 
     private void setupRouteButtons() {
     	startButton.setOnAction(e -> {
-            System.out.println();
+            //System.out.println();
             selectManager.setStart();
     	});
 

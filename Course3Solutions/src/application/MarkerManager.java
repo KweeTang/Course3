@@ -82,6 +82,7 @@ public class MarkerManager {
     }
 
     public void clearVisualization() {
+        rv.clearMarkers();
     	rv = null;
     }
 
@@ -94,44 +95,65 @@ public class MarkerManager {
 
     public void setStart(geography.GeographicPoint point) {
     	if(startMarker!= null) {
-    		startMarker.setIcon(markerURL);
+            changeIcon(startMarker, markerURL);
     	}
         startMarker = markerMap.get(point);
-        startMarker.setIcon(startURL);
+        changeIcon(startMarker, startURL);
     }
     public void setDestination(geography.GeographicPoint point) {
     	if(destinationMarker != null) {
     		destinationMarker.setIcon(markerURL);
     	}
         destinationMarker = markerMap.get(point);
-        destinationMarker.setIcon(destinationURL);
+        changeIcon(destinationMarker, destinationURL);
+    }
+
+    public void changeIcon(Marker marker, String url) {
+        marker.setVisible(false);
+        marker.setIcon(url);
+        marker.setVisible(true);
     }
 
     /**
      * TODO -- Might need to create all new markers and add them??
      */
     public void restoreMarkers() {
-        if(startMarker != null) {
-        	startMarker.setVisible(false);
-        }
-        if(destinationMarker != null) {
-        	destinationMarker.setVisible(false);
-        }
-        for(geography.GeographicPoint point : markerPositions) {
-        	MarkerOptions markerOptions = createDefaultOptions(point);
-        	Marker marker = new Marker(markerOptions);
-            registerEvents(marker, point);
-        	map.addMarker(marker);
-        	putMarker(point, marker);
+    	Iterator<geography.GeographicPoint> it = markerMap.keySet().iterator();
+        while(it.hasNext()) {
+            Marker marker = markerMap.get(it.next());
+            // destination marker needs to be added because it is added in javascript
+            if(marker != startMarker) {
+                marker.setVisible(true);
+            }
+//        	map.addMarker(marker);
         }
         selectManager.resetSelect();
-        selectMode = true;
     }
-    public MarkerOptions createDefaultOptions(geography.GeographicPoint point) {
+
+    public void clearMarkers() {
+        if(rv != null) {
+        	rv.clearMarkers();
+        	rv = null;
+        }
+    	Iterator<geography.GeographicPoint> it = markerMap.keySet().iterator();
+    	while(it.hasNext()) {
+    		markerMap.get(it.next()).setVisible(false);
+    	}
+    }
+
+    public void setSelectMode(boolean value) {
+        if(!value) {
+        	selectManager.clearSelected();
+        }
+    	selectMode = value;
+    }
+
+    public boolean getSelectMode() {
+    	return selectMode;
+    }
+    public static MarkerOptions createDefaultOptions(LatLong coord) {
         	MarkerOptions markerOptions = new MarkerOptions();
-        	LatLong coord = new LatLong(point.getX(), point.getY());
-        	bounds.extend(coord);
-        	markerOptions.animation(Animation.DROP)
+        	markerOptions.animation(null)
         				 .icon(markerURL)
         				 .position(coord)
                          .title(null)
@@ -150,14 +172,18 @@ public class MarkerManager {
         }
     }
 
+    public void hideDestinationMarker() {
+    	destinationMarker.setVisible(false);
+    }
+
     public void displayMarker(geography.GeographicPoint point) {
     	if(markerMap.containsKey(point)) {
         	Marker marker = markerMap.get(point);
             marker.setVisible(true);
-            System.out.println("Marker : " + marker + "set to visible");
+            // System.out.println("Marker : " + marker + "set to visible");
     	}
     	else {
-    		System.out.println("no key found for MarkerManager::displayMarker");
+    		// System.out.println("no key found for MarkerManager::displayMarker");
     	}
     }
     public void displayDataSet() {
@@ -167,7 +193,9 @@ public class MarkerManager {
         bounds = new LatLongBounds();
         while(it.hasNext()) {
         	geography.GeographicPoint point = it.next();
-        	MarkerOptions markerOptions = createDefaultOptions(point);
+            LatLong ll = new LatLong(point.getX(), point.getY());
+        	MarkerOptions markerOptions = createDefaultOptions(ll);
+            bounds.extend(ll);
         	Marker marker = new Marker(markerOptions);
             registerEvents(marker, point);
         	map.addMarker(marker);
@@ -175,7 +203,7 @@ public class MarkerManager {
         	markerPositions.add(point);
         }
         map.fitBounds(bounds);
-        System.out.println("End of display Intersections");
+        // System.out.println("End of display Intersections");
 
     }
 
@@ -203,6 +231,7 @@ public class MarkerManager {
             	selectManager.setPoint(point, marker);
                 selectedMarker = marker;
                 selectedMarker.setIcon(SELECTED_URL);
+//                selectedMarker.setZIndex(2);
             }
         });
     }

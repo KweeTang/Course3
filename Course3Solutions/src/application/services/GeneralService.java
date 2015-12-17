@@ -29,7 +29,7 @@ public class GeneralService {
 
 
     private static final String DATA_FILE_PATTERN = "[\\w_]+.map";
-    private static final String DATA_FILE_DIR_STR = "data/mapfiles/";
+    private static final String DATA_FILE_DIR_STR = "data/maps/";
 
     private List<String> filenames;
     DataSet dataSet;
@@ -50,9 +50,9 @@ public class GeneralService {
 
 
 	// writes geographic data flat file
-    public boolean writeDataToFile(String filename) {
-    	float[] arr = getBoundsArray();
-    	MapMaker mm = new MapMaker(arr);
+    // parameters arr contains the coordinates of the bounds for the map region
+    public boolean writeDataToFile(String filename, float[] arr) {
+     	MapMaker mm = new MapMaker(arr);
 
     	// parse data and write to filename
     	if(mm.parseData(filename)) {
@@ -82,9 +82,28 @@ public class GeneralService {
     }
 
     public void displayIntersections(DataSet dataset) {
-    	// initialize graph instance var and HashMap for intermediate RoadSegments
-    	selectManager.setAndDisplayData(dataset);
+        // remove old data set markers
+        if(markerManager.getDataSet() != null) {
+        	markerManager.clearMarkers();
+            markerManager.getDataSet().setDisplayed(false);
+        }
 
+        // display new data set
+    	selectManager.setAndDisplayData(dataset);
+        dataset.setDisplayed(true);
+
+    }
+    
+    public float boundsSize() {
+    	float[] bounds = getBoundsArray();
+    	return (bounds[2] - bounds[0]) * (bounds[3] - bounds[1]);
+    }
+    
+    public boolean checkBoundsSize(double limit) {
+    	if (boundsSize() > limit) {
+    		return false;
+    	}
+    	return true;
     }
 
     /**
@@ -101,18 +120,12 @@ public class GeneralService {
     }
 
     public void runFetchTask(String fName, ComboBox<DataSet> cb, Button button) {
-        Task<String> task = new Task<String>() {
+        float[] arr = getBoundsArray();
+
+    	Task<String> task = new Task<String>() {
             @Override
         	public String call() {
-
-//                System.out.println("In call function for Fetch Task");
-                /*if(currentlyFetching) {
-                	MapApp.showErrorAlert("Fetch Error : ", "Data set already being fetched.\nTry again after task finishes.");
-                	return "alreadyFetching";
-                }*/
-
-                System.out.println("Before if(writeDataToFile...");
-        		if(writeDataToFile(fName)) {
+        		if(writeDataToFile(fName, arr)) {
                     return fName;
         		}
 
@@ -121,11 +134,11 @@ public class GeneralService {
             }
         };
 
-        //final Stage loadStage = new Stage();
+
 
         Alert fetchingAlert = MapApp.getInfoAlert("Loading : ", "Fetching data for current map area...");
         task.setOnSucceeded( e -> {
-           if(task.getValue().equals(fName)) {
+          if(task.getValue().equals(fName)) {
                addDataFile(fName);
 
                cb.getItems().add(new DataSet(fName));
@@ -133,14 +146,13 @@ public class GeneralService {
             	   fetchingAlert.close();
                }
                MapApp.showInfoAlert("Fetch completed : ", "Data set : \"" + fName + "\" written to file!");
-               System.out.println("Fetch Task Succeeded");
+               // System.out.println("Fetch Task Succeeded");
 
            }
            else {
-               System.out.println("Task Succeeded : fName returned differently");
+               // System.out.println("Something went wrong, data not written to file : Task succeeded but fName returned differently");
 
            }
-           System.out.println("In onSucceeded");
 
            button.setDisable(false);
 
@@ -153,13 +165,15 @@ public class GeneralService {
 
         task.setOnRunning(e -> {
             button.setDisable(true);
-            System.out.println("ON RUNNING");
             fetchingAlert.showAndWait();
         });
+
 
         Thread fetchThread = new Thread(task);
         fetchThread.start();
     }
+
+
 
     public List<String> getDataFiles() {
     	return filenames;

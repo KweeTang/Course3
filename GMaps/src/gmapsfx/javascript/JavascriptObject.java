@@ -73,8 +73,10 @@ public class JavascriptObject {
     protected JavascriptObject(String type, Object... args) {
         runtime = JavascriptRuntime.getInstance();
         variableName = getNextVariableName();
+        System.out.println("var " + variableName + " = " + runtime.getConstructor(type, args));
         runtime.execute("var " + variableName + " = " + runtime.getConstructor(type, args));
         jsObject = runtime.execute(variableName);
+        System.out.println(jsObject);
         peerRegistry.put(jsObject, this);
     }
 

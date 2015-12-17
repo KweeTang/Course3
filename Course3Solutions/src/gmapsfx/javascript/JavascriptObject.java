@@ -206,7 +206,6 @@ public class JavascriptObject {
      * @return The return value of the function call.
      */
     protected Object invokeJavascript(String function) {
-        System.out.println(jsObject);
         return checkUndefined(jsObject.call(function));
     }
 
@@ -218,7 +217,8 @@ public class JavascriptObject {
      * @return The result of the function.
      */
     protected Object invokeJavascript(String function, Object... args) {
-        Object[] jsArgs = new Object[args.length];
+    	
+    	Object[] jsArgs = new Object[args.length];
         for (int i = 0; i < jsArgs.length; i++) {
             if (args[i] instanceof JavascriptObject) {
                 jsArgs[i] = ((JavascriptObject) args[i]).getJSObject();
@@ -240,7 +240,7 @@ public class JavascriptObject {
      * @return The result of the function.
      */
     protected <T> T invokeJavascriptReturnValue(String function, Class<T> returnType) {
-        Object returnObject = invokeJavascript(function);
+    	Object returnObject = invokeJavascript(function);
         if (returnObject instanceof JSObject) {
             try {
                 Constructor<T> constructor = returnType.getConstructor(JSObject.class);
@@ -263,7 +263,8 @@ public class JavascriptObject {
      * @return The result of the function.
      */
     protected <T> T invokeJavascriptReturnValue(String function, Class<T> returnType, Object... args) {
-        Object returnObject = invokeJavascript(function, args);
+    	
+    	Object returnObject = invokeJavascript(function, args);
         if (returnObject != null) {
             return (T) returnObject;
         } else {
