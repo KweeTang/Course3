@@ -39,7 +39,7 @@ public class FetchController {
     private String filename = "data.map";
 
     // path for mapfiles to load when program starts
-    private String persistPath = "data/mapfiles/mapfiles.list";
+    private String persistPath = "data/maps/mapfiles.list";
 
 
     public FetchController(GeneralService generalService, RouteService routeService, TextField writeFile,
