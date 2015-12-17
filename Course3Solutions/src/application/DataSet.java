@@ -2,6 +2,8 @@ package application;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
+
 import util.GraphLoader;
 
 /**
@@ -42,8 +44,18 @@ public class DataSet {
 		return this.filePath;
 	}
 
+
+    public Object[] getPoints() {
+    	Set<geography.GeographicPoint> pointSet = roads.keySet();
+    	return pointSet.toArray();
+    }
+
     public boolean isDisplayed() {
     	return this.currentlyDisplayed;
+    }
+
+    public void setDisplayed(boolean value) {
+    	this.currentlyDisplayed = value;
     }
 
 }

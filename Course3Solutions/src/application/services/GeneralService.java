@@ -82,8 +82,15 @@ public class GeneralService {
     }
 
     public void displayIntersections(DataSet dataset) {
-    	// initialize graph instance var and HashMap for intermediate RoadSegments
+        // remove old data set markers
+        if(markerManager.getDataSet() != null) {
+        	markerManager.clearMarkers();
+            markerManager.getDataSet().setDisplayed(false);
+        }
+
+        // display new data set
     	selectManager.setAndDisplayData(dataset);
+        dataset.setDisplayed(true);
 
     }
 
@@ -115,8 +122,7 @@ public class GeneralService {
             }
         };
 
-   
-        //final Stage loadStage = new Stage();
+
 
         Alert fetchingAlert = MapApp.getInfoAlert("Loading : ", "Fetching data for current map area...");
         task.setOnSucceeded( e -> {
@@ -150,7 +156,7 @@ public class GeneralService {
             fetchingAlert.showAndWait();
         });
 
-        
+
         Thread fetchThread = new Thread(task);
         fetchThread.start();
     }

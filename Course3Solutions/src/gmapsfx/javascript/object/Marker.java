@@ -79,6 +79,9 @@ public class Marker extends JavascriptObject {
         invokeJavascript("setAnimation", animation);
     }
 
+    public void setZIndex(double index) {
+    	invokeJavascript("setZIndex", index);
+    }
 
     public void setPosition( LatLong latLong ) {
         invokeJavascript( "setPosition", latLong );

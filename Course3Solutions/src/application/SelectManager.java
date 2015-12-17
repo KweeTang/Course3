@@ -26,12 +26,15 @@ public class SelectManager {
 
 
     public void resetSelect() {
-    	startMarker = null;
+        markerManager.setSelectMode(true);
+    	/*startMarker = null;
     	destinationMarker = null;
+    	startLabel.setItem(null);
+    	destinationLabel.setItem(null);*/
+    }
+    public void clearSelected() {
     	selectedMarker = null;
     	pointLabel.setItem(null);
-    	startLabel.setItem(null);
-    	destinationLabel.setItem(null);
     }
 
     public void setAndDisplayData(DataSet data) {
@@ -39,6 +42,9 @@ public class SelectManager {
         //TODO - maybe if markerManager!= null?
         if(markerManager != null) {
             markerManager.displayDataSet();
+        }
+        else {
+        	System.err.println("Error : Marker Manager is null.");
         }
     }
 
@@ -79,6 +85,7 @@ public class SelectManager {
     		markerManager.setDestination(point);
 		}
 	}
+
 
 
 }

@@ -85,14 +85,6 @@ public class MapApp extends Application
         	cb.requestFocus();
         });
 
-        // TODO - delete this if the above works for Christine's issue
-        /*cb.setOnMousePressed(new EventHandler<MouseEvent>(){
-            @Override
-            public void handle(MouseEvent event) {
-                cb.requestFocus();
-            }
-        });*/
-
         HBox fetchControls = new HBox();
         tf.setPrefWidth(FETCH_COMPONENT_WIDTH);
         fetchControls.getChildren().add(tf);
@@ -105,6 +97,7 @@ public class MapApp extends Application
         // create components for fetch tab
         Button routeButton = new Button("Show Route");
         Button hideRouteButton = new Button("Hide Route");
+        Button resetButton = new Button("Reset");
         Button visualizationButton = new Button("Start Visualization");
         Image sImage = new Image(MarkerManager.startURL);
         Image dImage = new Image(MarkerManager.destinationURL);
@@ -142,6 +135,7 @@ public class MapApp extends Application
         searchOptions.add(rbA);
 
         // Select and marker managers for route choosing and marker display/visuals
+        // should only be one instance (singleton)
         SelectManager manager = new SelectManager();
         MarkerManager markerManager = new MarkerManager();
         markerManager.setSelectManager(manager);
@@ -154,7 +148,7 @@ public class MapApp extends Application
         manager.setStartLabel(startLabel);
         manager.setDestinationLabel(endLabel);
         setupRouteTab(routeTab, fetchBox, startLabel, endLabel, pointLabel, routeButton, hideRouteButton,
-            		  visualizationButton, startButton, destinationButton, searchOptions);
+            		  resetButton, visualizationButton, startButton, destinationButton, searchOptions);
 
         // add tabs to pane, give no option to close
 		TabPane tp = new TabPane(routeTab);
@@ -166,9 +160,9 @@ public class MapApp extends Application
             RouteService rs = new RouteService(mapComponent, markerManager);
             //System.out.println("in map ready : " + this.getClass());
             // initialize controllers
-			new RouteController(rs, routeButton, hideRouteButton, startButton, destinationButton, group, searchOptions, visualizationButton,
+			new RouteController(rs, routeButton, hideRouteButton, resetButton, startButton, destinationButton, group, searchOptions, visualizationButton,
     															  startLabel, endLabel, pointLabel, manager, markerManager);
-            new FetchController(gs, tf, fetchButton, cb, displayButton);
+            new FetchController(gs, rs, tf, fetchButton, cb, displayButton);
         });
 
 		// add components to border pane
@@ -250,7 +244,7 @@ public class MapApp extends Application
      * @param box
      */
     private void setupRouteTab(Tab routeTab, VBox fetchBox, Label startLabel, Label endLabel, Label pointLabel,
-    						   Button showButton, Button hideButton, Button vButton, Button startButton,
+    						   Button showButton, Button hideButton, Button resetButton, Button vButton, Button startButton,
     						   Button destButton, List<RadioButton> searchOptions) {
 
     	//set up tab layout
@@ -324,6 +318,7 @@ public class MapApp extends Application
         VBox.setMargin(vButton, new Insets(MARGIN_VAL,MARGIN_VAL,MARGIN_VAL,MARGIN_VAL));
         vButton.setDisable(true);
         v.getChildren().add(markerBox);
+        v.getChildren().add(resetButton);
 
 
         routeTab.setContent(h);

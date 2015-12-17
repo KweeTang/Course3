@@ -9,6 +9,7 @@ import com.sun.javafx.geom.Rectangle;
 import application.DataSet;
 import application.MapApp;
 import application.services.GeneralService;
+import application.services.RouteService;
 import gmapsfx.javascript.object.GoogleMap;
 import gmapsfx.javascript.object.LatLong;
 import gmapsfx.javascript.object.LatLongBounds;
@@ -26,7 +27,8 @@ import mapmaker.MapMaker;
 
 public class FetchController {
     private static final int ROW_COUNT = 5;
-    GeneralService generalService;
+    private GeneralService generalService;
+    private RouteService routeService;
     private Node container;
     private Button fetchButton;
     private Button displayButton;
@@ -39,8 +41,10 @@ public class FetchController {
     private String persistPath = "data/mapfiles/mapfiles.list";
 
 
-    public FetchController(GeneralService generalService, TextField writeFile, Button fetchButton, ComboBox<DataSet> cb, Button displayButton) {
+    public FetchController(GeneralService generalService, RouteService routeService, TextField writeFile,
+    					   Button fetchButton, ComboBox<DataSet> cb, Button displayButton) {
         this.generalService = generalService;
+        this.routeService = routeService;
         this.fetchButton = fetchButton;
         this.displayButton = displayButton;
         this.writeFile = writeFile;
@@ -82,7 +86,7 @@ public class FetchController {
                     protected void updateItem(DataSet item, boolean empty) {
                         super.updateItem(item, empty);
                     	if(empty || item == null) {
-                            super.setText(null);
+                            super.setText("None.");
                     	}
                     	else {
                         	super.setText(item.getFilePath().substring(GeneralService.getDataSetDirectory().length()));
@@ -152,6 +156,10 @@ public class FetchController {
     			alert.showAndWait();
             }
             else if(!dataSet.isDisplayed()) {
+            	// TODO -- only time I need route service ....redo?
+                if(routeService.isRouteDisplayed()) {
+                	routeService.hideRoute();
+                }
         		generalService.displayIntersections(dataSet);
 
             }

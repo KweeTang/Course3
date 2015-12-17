@@ -29,7 +29,6 @@ import javafx.scene.control.Button;
 
 public class RouteService {
 	private GoogleMap map;
-	private GoogleMapView mapComponent;
 
     // static variable
     private MarkerManager markerManager;
@@ -37,59 +36,12 @@ public class RouteService {
     private RouteVisualization rv;
 
 	public RouteService(GoogleMapView mapComponent, MarkerManager manager) {
-		this.mapComponent = mapComponent;
 		this.map = mapComponent.getMap();
         this.markerManager = manager;
 
 	}
     // COULD SEPARATE INTO ROUTE SERVICES IF CONTROLLER
 	// GETS BIG
-	/**
-	 *
-	 * @param filename - path of route text file
-	 * @return MVCArray of LatLongs (in order, 0 is start) representing the route on the map.
-	 */
-	private List<LatLong> parseRouteFromFile(String filename) {
-		// string for reading line of file
-		String line;
-		String[] lineSplit;
-		BufferedReader br = null;
-
-		List<LatLong> route = new ArrayList<LatLong>();
-
-		// open file with route data
-		try {
-			br = new BufferedReader(new FileReader(filename));
-
-			// get first line of file then loop until EOF
-			line = br.readLine();
-			while(line != null) {
-				// split String into latitude [0] and longitude [1]s
-				lineSplit = line.split(",");
-
-				// make sure line is of length 2 (lat and lon)
-				// TODO MAYBE ADD MORE ROBUST CHECKS!!!!!
-				if(lineSplit.length == 2) {
-					route.add(new LatLong(Double.parseDouble(lineSplit[0]), Double.parseDouble(lineSplit[1])));
-				}
-				else {
-					System.err.println("Incorrect Latitude, Longitude line in route file : \n" + line + "\n...skipping line");
-				}
-
-				// get new line
-				line = br.readLine();
-			}
-		}
-		catch (IOException e ) {
-			// DEBUG
-			e.printStackTrace();
-		}
-
-
-
-
-		return route;
-	}
 	// initialize??
 
 	// add route polyline to map
@@ -125,18 +77,25 @@ public class RouteService {
 		return true;
 	}
 
-    public void removeRouteLine() {
+    public void hideRoute() {
     	if(routeLine != null) {
         	map.removeMapShape(routeLine);
         	if(markerManager.getVisualization() != null) {
         		markerManager.clearVisualization();
-        		markerManager.restoreMarkers();
         	}
+            markerManager.restoreMarkers();
         	markerManager.disableVisButton(true);
             routeLine = null;
     	}
     }
 
+    public void reset() {
+
+    }
+
+    public boolean isRouteDisplayed() {
+    	return routeLine != null;
+    }
     public boolean displayRoute(geography.GeographicPoint start, geography.GeographicPoint end, int toggle) {
     	if(markerManager.getVisualization() != null) {
     		markerManager.clearVisualization();
@@ -169,7 +128,7 @@ public class RouteService {
             //}
 
 
-            markerManager.setSelect(false);
+            markerManager.setSelectMode(false);
             return displayRoute(mapPath);
 		}
 
@@ -216,14 +175,13 @@ public class RouteService {
                 }
 
                 if(chosenSegment != null) {
-                	System.out.println("YAYYY! chosenSegment was found");
                     segmentList = chosenSegment.getPoints(curr, next);
                     for(geography.GeographicPoint point : segmentList) {
                         retVal.add(new LatLong(point.getX(), point.getY()));
                     }
                 }
                 else {
-                	System.out.println("ERROR in constructMapPath : chosenSegment was null");
+                	System.err.println("ERROR in constructMapPath : chosenSegment was null");
                 }
         		// find
 
@@ -234,21 +192,16 @@ public class RouteService {
     	return retVal;
     }
 
-	public boolean displayRoute(String filename) {
-		List<LatLong> path = parseRouteFromFile(filename);
-		return displayRoute(path);
 
-	}
-
-	private void hideRoute() {
+	private void removeRouteLine() {
         if(routeLine != null) {
     		map.removeMapShape(routeLine);
         }
 	}
 
-    private void setMarkerManager(MarkerManager manager) {
-    	this.markerManager = manager;
-    }
+//    private void setMarkerManager(MarkerManager manager) {
+//    	this.markerManager = manager;
+//    }
 
 
 
