@@ -199,28 +199,6 @@ public class MapGraph {
 		return node.getNeighbors();
 	}
 
-	/*
-	public double lengthOfPath(List<GeographicPoint> path) {
-		if(path== null || path.size()==0)
-			return 0.0;
-
-		GeographicPoint currPoint;
-		GeographicPoint nextPoint;
-		MapNode currNode;
-		MapNode nextNode;
-		for(int i = 0; i< path.size()-1; i++) {
-			currPoint = path.get(i);
-			nextPoint = path.get(i+1);
-			currNode = pointNodeMap.get(currPoint);
-			Set<MapEdge> edges = currPoint.getEdges();
-
-			neighbors.
-		}
-
-		return 0.0;
-	}
-	*/
-	
 	public List<GeographicPoint> bfs(GeographicPoint start, GeographicPoint goal) {
 		// Dummy variable for calling the search algorithms
         Consumer<GeographicPoint> temp = (x) -> {};
@@ -550,19 +528,6 @@ public class MapGraph {
 		List<GeographicPoint> route2 = theMap.aStarSearch(start,end);
 
 		*/
-		//theMap.printNodes();
-		//theMap.printEdges();
-		
-		// Print the road segments
-		// System.out.println("Road segments: ");
-		// for (GeographicPoint p : theRoads.keySet()) {
-		//   System.out.println("Road segment with end a " + p);
-		// 	 HashSet<RoadSegment> segments = theRoads.get(p);
-		//	 for (RoadSegment seg : segments) {
-		//		System.out.println("\t"+ seg);
-		//	}
-
-		//}
 		
 	}
 
