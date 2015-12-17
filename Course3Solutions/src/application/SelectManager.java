@@ -50,7 +50,7 @@ public class SelectManager {
 
     public void setMarkerManager(MarkerManager manager) { this.markerManager = manager; }
     public void setPoint(GeographicPoint point, Marker marker) {
-        System.out.println("inSetPoint.. passed : " + point);
+        // System.out.println("inSetPoint.. passed : " + point);
     	pointLabel.setItem(point);
         selectedMarker = marker;
     }

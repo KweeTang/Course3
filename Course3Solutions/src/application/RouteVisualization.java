@@ -35,7 +35,7 @@ public class RouteVisualization {
     public void acceptPoint(geography.GeographicPoint point) {
     	points.add(point);
 
-        System.out.println("accepted point : " + point);
+        // System.out.println("accepted point : " + point);
     }
 
 
@@ -65,7 +65,7 @@ public class RouteVisualization {
         // get javascript runtime and execute animation
     	runtime = JavascriptRuntime.getInstance();
     	String command = runtime.getFunction("visualizeSearch", manager.getMap(), jsArray);
-    	System.out.println(command);
+    	// System.out.println(command);
 
     	runtime.execute(command);
 

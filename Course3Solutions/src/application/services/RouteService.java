@@ -117,7 +117,7 @@ public class RouteService {
         	}
 
         	if(path == null) {
-                System.out.println("In displayRoute : PATH NOT FOUND");
+                // System.out.println("In displayRoute : PATH NOT FOUND");
             	return false;
             }
             // TODO -- debug road segments
@@ -188,7 +188,7 @@ public class RouteService {
         	}
         }
 
-        System.out.println("NOW there are " + retVal.size() + " points");
+        // System.out.println("NOW there are " + retVal.size() + " points");
     	return retVal;
     }
 

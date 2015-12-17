@@ -53,7 +53,7 @@ public class CLabel<T> extends Label {
 	 * @param empty
 	 */
 	protected void updateView(T item, boolean empty) {
-		System.out.println("In updateView!!");
+		// System.out.println("In updateView!!");
 
         if(item != null) {
     		setText(item.toString());
@@ -74,9 +74,9 @@ public class CLabel<T> extends Label {
 	}
 
 	public void setItem(T newItem) {
-        System.out.println("old item : "  + item.get());
+        // System.out.println("old item : "  + item.get());
 		item.set(newItem);
         updateView(item.get(), true);
-        System.out.println("new item : "  + item.get());
+        // System.out.println("new item : "  + item.get());
 	}
 }

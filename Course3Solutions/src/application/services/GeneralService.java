@@ -146,11 +146,11 @@ public class GeneralService {
             	   fetchingAlert.close();
                }
                MapApp.showInfoAlert("Fetch completed : ", "Data set : \"" + fName + "\" written to file!");
-               System.out.println("Fetch Task Succeeded");
+               // System.out.println("Fetch Task Succeeded");
 
            }
            else {
-               System.out.println("Something went wrong, data not written to file : Task succeeded but fName returned differently");
+               // System.out.println("Something went wrong, data not written to file : Task succeeded but fName returned differently");
 
            }
 

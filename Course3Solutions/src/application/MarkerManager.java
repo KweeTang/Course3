@@ -180,10 +180,10 @@ public class MarkerManager {
     	if(markerMap.containsKey(point)) {
         	Marker marker = markerMap.get(point);
             marker.setVisible(true);
-            System.out.println("Marker : " + marker + "set to visible");
+            // System.out.println("Marker : " + marker + "set to visible");
     	}
     	else {
-    		System.out.println("no key found for MarkerManager::displayMarker");
+    		// System.out.println("no key found for MarkerManager::displayMarker");
     	}
     }
     public void displayDataSet() {
@@ -203,7 +203,7 @@ public class MarkerManager {
         	markerPositions.add(point);
         }
         map.fitBounds(bounds);
-        System.out.println("End of display Intersections");
+        // System.out.println("End of display Intersections");
 
     }
 

@@ -115,7 +115,7 @@ public class RouteController {
 
     private void setupRouteButtons() {
     	startButton.setOnAction(e -> {
-            System.out.println();
+            //System.out.println();
             selectManager.setStart();
     	});
 
