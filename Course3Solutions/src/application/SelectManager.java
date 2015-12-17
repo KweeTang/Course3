@@ -27,10 +27,6 @@ public class SelectManager {
 
     public void resetSelect() {
         markerManager.setSelectMode(true);
-    	/*startMarker = null;
-    	destinationMarker = null;
-    	startLabel.setItem(null);
-    	destinationLabel.setItem(null);*/
     }
     public void clearSelected() {
     	selectedMarker = null;

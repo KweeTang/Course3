@@ -21,11 +21,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.web.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -85,11 +88,7 @@ public class MapApp extends Application
         	cb.requestFocus();
         });
 
-        HBox fetchControls = new HBox();
-        tf.setPrefWidth(FETCH_COMPONENT_WIDTH);
-        fetchControls.getChildren().add(tf);
-        fetchButton.setPrefWidth(FETCH_COMPONENT_WIDTH);
-        fetchControls.getChildren().add(fetchButton);
+        HBox fetchControls = getBottomBox(tf, fetchButton);
 
         VBox fetchBox = getFetchBox(displayButton, cb);
 
@@ -183,6 +182,7 @@ public class MapApp extends Application
 
 		LatLong center = new LatLong(32.8810, -117.2380);
 
+
 		// set map options
 		MapOptions options = new MapOptions();
 		options.center(center)
@@ -200,6 +200,8 @@ public class MapApp extends Application
 
 		// create map;
 		map = mapComponent.createMap(options);
+        setupJSAlerts(mapComponent.getWebView());
+
 
 
 	}
@@ -207,6 +209,14 @@ public class MapApp extends Application
 
 	// SETTING UP THE VIEW
 
+        private HBox getBottomBox(TextField tf, Button fetchButton) {
+            HBox box = new HBox();
+            tf.setPrefWidth(FETCH_COMPONENT_WIDTH);
+            box.getChildren().add(tf);
+            fetchButton.setPrefWidth(FETCH_COMPONENT_WIDTH);
+            box.getChildren().add(fetchButton);
+            return box;
+        }
 	/**
 	 * Setup layout and controls for Fetch tab
 	 * @param fetchTab
@@ -323,6 +333,24 @@ public class MapApp extends Application
         routeTab.setContent(h);
 
 
+    }
+
+    private void setupJSAlerts(WebView webView) {
+        webView.getEngine().setOnAlert( e -> {
+            Stage popup = new Stage();
+            popup.initOwner(primaryStage);
+            popup.initStyle(StageStyle.UTILITY);
+            popup.initModality(Modality.WINDOW_MODAL);
+
+            StackPane content = new StackPane();
+            content.getChildren().setAll(
+              new Label(e.getData())
+            );
+            content.setPrefSize(200, 100);
+
+            popup.setScene(new Scene(content));
+            popup.showAndWait();
+        });
     }
 
 

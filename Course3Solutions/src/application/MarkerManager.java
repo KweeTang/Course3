@@ -17,6 +17,10 @@ import netscape.javascript.JSObject;
 
 public class MarkerManager {
 
+    private static final double DEFAULT_Z = 2;
+    private static final double SELECT_Z = 1;
+    private static final double STRTDEST_Z = 3;
+
     private HashMap<geography.GeographicPoint, Marker> markerMap;
     private ArrayList<geography.GeographicPoint> markerPositions;
     private GoogleMap map;
@@ -96,15 +100,19 @@ public class MarkerManager {
     public void setStart(geography.GeographicPoint point) {
     	if(startMarker!= null) {
             changeIcon(startMarker, markerURL);
+//            startMarker.setZIndex(DEFAULT_Z);
     	}
         startMarker = markerMap.get(point);
+//        startMarker.setZIndex(STRTDEST_Z);
         changeIcon(startMarker, startURL);
     }
     public void setDestination(geography.GeographicPoint point) {
     	if(destinationMarker != null) {
     		destinationMarker.setIcon(markerURL);
+//            destinationMarker.setZIndex(DEFAULT_Z);
     	}
         destinationMarker = markerMap.get(point);
+//        destinationMarker.setZIndex(STRTDEST_Z);
         changeIcon(destinationMarker, destinationURL);
     }
 
@@ -123,13 +131,21 @@ public class MarkerManager {
             Marker marker = markerMap.get(it.next());
             // destination marker needs to be added because it is added in javascript
             if(marker != startMarker) {
+                marker.setVisible(false);
                 marker.setVisible(true);
             }
-//        	map.addMarker(marker);
         }
         selectManager.resetSelect();
     }
 
+    public void refreshMarkers() {
+
+    	Iterator<geography.GeographicPoint> it = markerMap.keySet().iterator();
+        while(it.hasNext()) {
+        	Marker marker = markerMap.get(it.next());
+        	marker.setVisible(true);
+        }
+    }
     public void clearMarkers() {
         if(rv != null) {
         	rv.clearMarkers();
@@ -201,15 +217,13 @@ public class MarkerManager {
         	map.addMarker(marker);
         	putMarker(point, marker);
         	markerPositions.add(point);
+//            marker.setZIndex(DEFAULT_Z);
         }
         map.fitBounds(bounds);
         // System.out.println("End of display Intersections");
 
     }
 
-    public Marker createMarker(geography.GeographicPoint point) {
-    	return null;
-    }
 
     private void registerEvents(Marker marker, geography.GeographicPoint point) {
         /*map.addUIEventHandler(marker, UIEventType.mouseover, (JSObject o) -> {
@@ -224,14 +238,19 @@ public class MarkerManager {
         map.addUIEventHandler(marker, UIEventType.click, (JSObject o) -> {
             //System.out.println("Clicked Marker : " + point.toString());
             if(selectMode) {
-            	if(selectedMarker != null && selectedMarker != startMarker
-            	   && selectedMarker != destinationMarker) {
-            		selectedMarker.setIcon(markerURL);
-            	}
+                	if(selectedMarker != null && selectedMarker != startMarker
+                	   && selectedMarker != destinationMarker) {
+                		selectedMarker.setIcon(markerURL);
+//                		selectedMarker.setZIndex(DEFAULT_Z);
+                	}
             	selectManager.setPoint(point, marker);
                 selectedMarker = marker;
                 selectedMarker.setIcon(SELECTED_URL);
-//                selectedMarker.setZIndex(2);
+//                selectedMarker.setZIndex(SELECT_Z);
+
+                // re add markers to map
+                // slightly glitchy
+//                refreshMarkers();
             }
         });
     }

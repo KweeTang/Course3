@@ -284,4 +284,8 @@ public class GoogleMapView extends AnchorPane {
         }
     }
 
+    public WebView getWebView() {
+    	return this.webview;
+    }
+
 }

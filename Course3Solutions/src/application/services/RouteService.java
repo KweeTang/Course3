@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 
 import application.DataSet;
+import application.MapApp;
 import application.MarkerManager;
 import application.RouteVisualization;
 import application.controllers.RouteController;
@@ -90,49 +91,53 @@ public class RouteService {
     }
 
     public void reset() {
-
+        removeRouteLine();
     }
 
     public boolean isRouteDisplayed() {
     	return routeLine != null;
     }
     public boolean displayRoute(geography.GeographicPoint start, geography.GeographicPoint end, int toggle) {
-    	if(markerManager.getVisualization() != null) {
-    		markerManager.clearVisualization();
-    	}
-
-    	if(toggle == RouteController.DIJ || toggle == RouteController.A_STAR ||
-    			toggle == RouteController.BFS) {
-    		markerManager.initVisualization();
-        	Consumer<geography.GeographicPoint> nodeAccepter = markerManager.getVisualization()::acceptPoint;
-        	List<geography.GeographicPoint> path = null;
-        	if (toggle == RouteController.BFS) {
-        		path = markerManager.getDataSet().getGraph().bfs(start, end, nodeAccepter);
-        	}
-        	else if (toggle == RouteController.DIJ) {
-        		path = markerManager.getDataSet().getGraph().dijkstra(start, end, nodeAccepter);
-        	}
-        	else if (toggle == RouteController.A_STAR) {
-        		path = markerManager.getDataSet().getGraph().aStarSearch(start, end, nodeAccepter);
+        if(routeLine == null) {
+        	if(markerManager.getVisualization() != null) {
+        		markerManager.clearVisualization();
         	}
 
-        	if(path == null) {
-                // System.out.println("In displayRoute : PATH NOT FOUND");
-            	return false;
-            }
-            // TODO -- debug road segments
-        	List<LatLong> mapPath = constructMapPath(path);
-            //List<LatLong> mapPath = new ArrayList<LatLong>();
-            //for(geography.GeographicPoint point : path) {
-            //    mapPath.add(new LatLong(point.getX(), point.getY()));
-            //}
+        	if(toggle == RouteController.DIJ || toggle == RouteController.A_STAR ||
+        			toggle == RouteController.BFS) {
+        		markerManager.initVisualization();
+            	Consumer<geography.GeographicPoint> nodeAccepter = markerManager.getVisualization()::acceptPoint;
+            	List<geography.GeographicPoint> path = null;
+            	if (toggle == RouteController.BFS) {
+            		path = markerManager.getDataSet().getGraph().bfs(start, end, nodeAccepter);
+            	}
+            	else if (toggle == RouteController.DIJ) {
+            		path = markerManager.getDataSet().getGraph().dijkstra(start, end, nodeAccepter);
+            	}
+            	else if (toggle == RouteController.A_STAR) {
+            		path = markerManager.getDataSet().getGraph().aStarSearch(start, end, nodeAccepter);
+            	}
+
+            	if(path == null) {
+                    // System.out.println("In displayRoute : PATH NOT FOUND");
+                    MapApp.showInfoAlert("Routing Error : ", "No path found");
+                	return false;
+                }
+                // TODO -- debug road segments
+            	List<LatLong> mapPath = constructMapPath(path);
+                //List<LatLong> mapPath = new ArrayList<LatLong>();
+                //for(geography.GeographicPoint point : path) {
+                //    mapPath.add(new LatLong(point.getX(), point.getY()));
+                //}
 
 
-            markerManager.setSelectMode(false);
-            return displayRoute(mapPath);
-		}
+                markerManager.setSelectMode(false);
+                return displayRoute(mapPath);
+    		}
 
-		return false;
+    		return false;
+        }
+        return false;
     }
 
 

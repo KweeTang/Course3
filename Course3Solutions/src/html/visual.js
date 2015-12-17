@@ -21,5 +21,13 @@ function drop() {
 	for(i = 1; i < markers.length - 1; ++i) {
 		displayMarker(markers[i], i*delay, markerURL);
 	}
-	displayMarker(markers[markers.length - 1], i*delay, destURL)
+	displayMarker(markers[markers.length - 1], i*delay, destURL);
+	i++;
+	displayAlert(markers.length, i*delay);
+}
+
+function displayAlert(length, delay) {
+	////window.setTimeout(function() {
+		alert(length + " nodes visited in search.");
+	//}, delay);
 }
