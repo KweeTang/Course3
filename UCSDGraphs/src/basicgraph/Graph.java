@@ -247,6 +247,9 @@ public abstract class Graph {
 		System.out.println("****");
 
 		System.out.println("\n****");
+		
+		// You can test with real road data here.  Use the data files in data/maps
+		
 		System.out.println("Flight data:");
 		GraphAdjList airportGraph = new GraphAdjList();
 		GraphLoader.loadRoutes("data/airports/routesUA.dat", airportGraph);
