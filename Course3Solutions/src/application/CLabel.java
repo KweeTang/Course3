@@ -24,24 +24,23 @@ public class CLabel<T> extends Label {
     // CONSTRUCTORS
 	public CLabel() {
 		super();
-        // what to do about null items?
 	}
 
 	public CLabel(String text, T item) {
 		super(text);
 
-        if(item != null)
-            setItem(item);
-        else
-        	setItem(null);
+    if(item != null)
+        setItem(item);
+    else
+    	setItem(null);
 	}
 
 	public CLabel(String text, Node graphic, T item) {
 		super(text, graphic);
-        if(item != null)
-            setItem(item);
-        else
-        	setItem(null);
+    if(item != null)
+        setItem(item);
+    else
+    	setItem(null);
 
 	}
 
@@ -53,17 +52,15 @@ public class CLabel<T> extends Label {
 	 * @param empty
 	 */
 	protected void updateView(T item, boolean empty) {
-		// System.out.println("In updateView!!");
-
-        if(item != null) {
-    		setText(item.toString());
-        	setTextFill(GREEN);
-        }
-        else {
-        	// TODO -- change here to make generic
-        	setText("Choose Point");
-        	setTextFill(RED);
-        }
+    if(item != null) {
+		setText(item.toString());
+    	setTextFill(GREEN);
+    }
+    else {
+    	// TODO -- change here to make more generic
+    	setText("Choose Point");
+    	setTextFill(RED);
+    }
 	}
 
     public final ObjectProperty<T> itemProperty(){ return item; }
@@ -74,9 +71,7 @@ public class CLabel<T> extends Label {
 	}
 
 	public void setItem(T newItem) {
-        // System.out.println("old item : "  + item.get());
 		item.set(newItem);
-        updateView(item.get(), true);
-        // System.out.println("new item : "  + item.get());
+    updateView(item.get(), true);
 	}
 }
