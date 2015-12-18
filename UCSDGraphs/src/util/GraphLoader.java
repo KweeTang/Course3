@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -108,10 +109,9 @@ public class GraphLoader
 	 */
 	public static void loadRoadMap(String filename, roadgraph.MapGraph map)
 	{
-		loadRoadMap(filename, map, null);
+		loadRoadMap(filename, map, null, null);
 	}
 
-	
 	
 	/**	  
 	 *  Read in a file specifying a map.
@@ -131,7 +131,8 @@ public class GraphLoader
 	 *   assumed to be directed.
 	 */
 	public static void loadRoadMap(String filename, roadgraph.MapGraph map,  
-			HashMap<GeographicPoint,HashSet<RoadSegment>> segments)
+			HashMap<GeographicPoint,HashSet<RoadSegment>> segments, 
+			Set<GeographicPoint> intersectionsToLoad)
 	{
 		Collection<GeographicPoint> nodes = new HashSet<GeographicPoint>();
         HashMap<GeographicPoint,List<LinkedList<RoadLineInfo>>> pointMap = 
@@ -141,6 +142,9 @@ public class GraphLoader
 		List<GeographicPoint> intersections = findIntersections(pointMap);
 		for (GeographicPoint pt : intersections) {
 			map.addVertex(pt);
+			if (intersectionsToLoad != null) {
+				intersectionsToLoad.add(pt);
+			}
 			nodes.add(pt);
 		}
 		

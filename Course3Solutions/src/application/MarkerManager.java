@@ -205,7 +205,7 @@ public class MarkerManager {
     public void displayDataSet() {
         markerPositions = new ArrayList<geography.GeographicPoint>();
         dataSet.initializeGraph();
-    	Iterator<geography.GeographicPoint>it = dataSet.getGraph().getVertices().iterator();
+    	Iterator<geography.GeographicPoint>it = dataSet.getIntersections().iterator();
         bounds = new LatLongBounds();
         while(it.hasNext()) {
         	geography.GeographicPoint point = it.next();

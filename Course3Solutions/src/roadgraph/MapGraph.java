@@ -190,7 +190,7 @@ public class MapGraph {
 
 
 	/** Returns the nodes in terms of their geographic locations */
-	public Collection<GeographicPoint> getVertices() {
+	public Set<GeographicPoint> getVertices() {
 		return pointNodeMap.keySet();
 	}
 
