@@ -87,11 +87,13 @@ public class RoadSegment {
 		return this.roadName.equals(other.roadName) && ptsEqual && this.length == other.length;
 	}
 	
+	// get hashCode
 	public int hashCode()
 	{
 		return point1.hashCode() + point2.hashCode();
 	}
 	
+	// return road segment as String
 	public String toString()
 	{
 		String toReturn = this.roadName + ", " +this.roadType;
@@ -103,6 +105,24 @@ public class RoadSegment {
 		
 		return toReturn;
 	}
-		
+
+	// get the length of the road segment
+	public double getLength() { return this.length; }
+	
+	
+	// given one end, return the other.
+	public geography.GeographicPoint getOtherPoint(geography.GeographicPoint point) {
+		if(point.equals(point1)) {
+			return point2;
+		}
+		if(point.equals(point2)) {
+			return point1;
+		}
+
+		System.out.println("ERROR!! : in RoadSegment::getOtherPoint Neither point matched");
+		return null;
+	}
+
+
 	
 }

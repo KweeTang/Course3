@@ -505,7 +505,7 @@ public class MapGraph {
 		
 		MapGraph theMap = new MapGraph();
 		System.out.print("DONE. \nLoading the map...");
-		GraphLoader.loadRoadMap("data/mapfiles/utc.map", theMap);
+		GraphLoader.loadRoadMap("data/maps/utc.map", theMap);
 		System.out.println("DONE.");
 
 		GeographicPoint start = new GeographicPoint(32.8648772, -117.2254046);
@@ -518,7 +518,7 @@ public class MapGraph {
 		/* Use this code in Week 3 End of Week Quiz
 		MapGraph theMap = new MapGraph();
 		System.out.print("DONE. \nLoading the map...");
-		GraphLoader.loadRoadMap("data/mapfiles/utc.map", theMap);
+		GraphLoader.loadRoadMap("data/maps/utc.map", theMap);
 		System.out.println("DONE.");
 
 		GeographicPoint start = new GeographicPoint(32.868629, -117.215393);
