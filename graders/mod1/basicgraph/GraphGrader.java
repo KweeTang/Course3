@@ -29,13 +29,13 @@ public class GraphGrader {
     }
 
     /** Format readable feedback */
-    public static String printOutput(double score, String feedback) {
-        return "Score: " + score + "\nFeedback: " + feedback;
+    public static String makeJson(double score, String feedback) {
+        return "{\"fractionalScore\": " + score + ", \"feedback\": \"" + feedback + "\"}";
     }
 
     /** Format test number and description */
     public static String appendFeedback(int num, String test) {
-        return "\n** Test #" + num + ": " + test + "...";
+        return "\\n** Test #" + num + ": " + test + "...";
     }
 
     public static void main(String[] args) {
@@ -53,16 +53,16 @@ public class GraphGrader {
         GraphAdjList lst = new GraphAdjList();
         GraphAdjMatrix mat = new GraphAdjMatrix();
         
-        feedback += "\n\nGRAPH: " + desc;
+        feedback += "\\n\\nGRAPH: " + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list"); 
 
         // Load the graph, get the user's answer, and compare with right answer
-        GraphLoader.loadGraph("data/graders/mod1/graph" + i + ".txt", lst);
+        GraphLoader.loadGraph("data/graph" + i + ".txt", lst);
         List<Integer> result = lst.getDistance2(start);
         judge(result, corr);
  
         feedback += appendFeedback(i * 2, "Testing adjacency matrix");
-        GraphLoader.loadGraph("data/graders/mod1/graph" + i + ".txt", mat);
+        GraphLoader.loadGraph("data/graph" + i + ".txt", mat);
         result = mat.getDistance2(start);
         judge(result, corr);
     }
@@ -79,9 +79,9 @@ public class GraphGrader {
         GraphAdjList lst = new GraphAdjList();
         GraphAdjMatrix mat = new GraphAdjMatrix();
 
-        String prefix = "data/graders/mod1/";
+        String prefix = "data/";
 
-        feedback += "\n\n" + desc;
+        feedback += "\\n\\n" + desc;
         feedback += appendFeedback(i * 2 - 1, "Testing adjacency list");
 
         // Different method calls for different graph types
@@ -128,14 +128,14 @@ public class GraphGrader {
     public ArrayList<Integer> readCorrect(String file) {
         ArrayList<Integer> ret = new ArrayList<Integer>();
         try {
-            BufferedReader br = new BufferedReader(new FileReader("data/graders/mod1/" + file));
+            BufferedReader br = new BufferedReader(new FileReader("data/" + file));
             String next;
             while ((next = br.readLine()) != null) {
                 ret.add(Integer.parseInt(next));
             }
         } catch (Exception e) {
             // shouldn't happen
-            feedback += "\nCould not open answer file! Please submit a bug report.";
+            feedback += "\\nCould not open answer file! Please submit a bug report.";
         }
         return ret;
     }
@@ -145,6 +145,14 @@ public class GraphGrader {
         feedback = "";
         correct = 0;
         ArrayList<Integer> correctAns;
+
+        PrintWriter out;
+        try {
+            out = new PrintWriter("output.out");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
 
         try {
             correctAns = new ArrayList<Integer>();
@@ -186,10 +194,11 @@ public class GraphGrader {
                 feedback = "Some tests failed. Check your code for errors, then try again:" + feedback;
 
         } catch (Exception e) {
-            feedback += "\nError during runtime: " + e;
+            feedback += "\\nError during runtime: " + e;
             e.printStackTrace();
         }
             
-        System.out.println(printOutput((double)correct / TESTS, feedback));
+        out.println(makeJson((double)correct / TESTS, feedback));
+        out.close();
     }
 }

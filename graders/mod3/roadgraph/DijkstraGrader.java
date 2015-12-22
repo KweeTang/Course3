@@ -103,8 +103,7 @@ public class DijkstraGrader implements Runnable {
     public void printCorrect(String file, MapGraph graph, GeographicPoint start, GeographicPoint end) {
         try {
             PrintWriter outfile = new PrintWriter(file);
-            Consumer<GeographicPoint> temp = (x) -> {};
-            List<GeographicPoint> path = graph.dijkstra(start, end, temp);
+            List<GeographicPoint> path = graph.dijkstra(start, end);
             if (path != null) {
                 for (GeographicPoint point : path) {
                     outfile.println(point.getX() + " " + point.getY());
