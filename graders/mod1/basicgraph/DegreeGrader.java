@@ -106,7 +106,10 @@ public class DegreeGrader {
     }
 
     public void judge(List<Integer> result, List<Integer> corr) {
-        if (result.size() != corr.size() || !result.containsAll(corr)) {
+        if (result == null) {
+            feedback += "FAILED. Result is NULL.";
+        }
+        if (!printList(result).equals(printList(corr))) {
             feedback += "FAILED. Expected " + printList(corr) + ", got " + printList(result) + ". ";
         } else {
             feedback += "PASSED.";
