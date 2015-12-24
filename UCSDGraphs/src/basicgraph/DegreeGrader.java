@@ -120,7 +120,7 @@ public class DegreeGrader {
     	if(result==null) {
     		feedback += "FAILED. Result is NULL";
     	}
-    	else if (printList(result).equals(printList(corr))) {
+    	else if (!printList(result).equals(printList(corr))) {
             feedback += "FAILED. Expected " + printList(corr) + ", got " + printList(result) + ". ";
         } else {
             feedback += "PASSED.";
