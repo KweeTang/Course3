@@ -94,7 +94,9 @@ public class SearchGrader implements Runnable {
             } else {
                 feedback += "FAILED. Your implementation returned null; expected \\n" + printBFSList(corr.path) + ".";
             }
-        } else if (bfs.size() != corr.path.size() || !corr.path.containsAll(bfs)) {
+        } else if (corr.path == null) {
+            feedback += "FAILED. Your implementation returned \\n" + printBFSList(bfs) + "; expected null.";
+        } else if (!printBFSList(corr.path).equals(printBFSList(bfs))) {
             feedback += "FAILED. Expected: \\n" + printBFSList(corr.path) + "Got: \\n" + printBFSList(bfs);
             if (bfs.size() != corr.path.size()) {
                 feedback += "Your result has size " + bfs.size() + "; expected " + corr.path.size() + ".";
