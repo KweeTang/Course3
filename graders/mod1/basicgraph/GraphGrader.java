@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import util.GraphLoader;
 
@@ -94,11 +95,22 @@ public class GraphGrader {
         }
 
         List<Integer> result = lst.getDistance2(start);
+/*
+        try {
+            PrintWriter tempout = new PrintWriter(prefix + file + ".twoaway");
+            for (int j : result) {
+                tempout.println(j);
+            }
+            tempout.close();
+        } catch (Exception e) {
+        }
+*/
         judge(result, corr);
 
         feedback += appendFeedback(i * 2, "Testing adjacency matrix");
         result = mat.getDistance2(start);
         judge(result, corr);
+        
     }
 
     /** Compare the user's result with the right answer.
@@ -162,11 +174,14 @@ public class GraphGrader {
             correctAns = new ArrayList<Integer>();
             correctAns.add(4);
             correctAns.add(6);
+            correctAns.add(6);
             correctAns.add(8);
             runTest(2, "Undirected straight line (0<->1<->2<->3<->...)", 6, correctAns);
 
             correctAns = new ArrayList<Integer>();
-            correctAns.add(0);
+            for (int i = 0; i < 9; i++) {
+                correctAns.add(0);
+            }
             runTest(3, "Star graph - 0 is connected in both directions to all nodes except itself (starting at 0)", 0, correctAns);
 
             correctAns = new ArrayList<Integer>();
