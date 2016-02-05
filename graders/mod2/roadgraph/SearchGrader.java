@@ -87,12 +87,16 @@ public class SearchGrader implements Runnable {
 
         feedback += appendFeedback(i * 3, "Testing BFS");
         List<GeographicPoint> bfs = result.bfs(start, end);
-        if (bfs == null) {
+        if (bfs == null || bfs.size() == 0) {
             if (corr.path == null) {
                 feedback += "PASSED.";
                 correct++;
             } else {
-                feedback += "FAILED. Your implementation returned null; expected \\n" + printBFSList(corr.path) + ".";
+                String listType = "an empty list";
+                if (bfs == null) {
+                    listType = "null";
+                }
+                feedback += "FAILED. Your implementation returned " + listType + "; expected \\n" + printBFSList(corr.path) + ".";
             }
         } else if (corr.path == null) {
             feedback += "FAILED. Your implementation returned \\n" + printBFSList(bfs) + "; expected null.";
