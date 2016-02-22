@@ -88,5 +88,7 @@ java "$FILENAME" > extra.out 2> err.out
 if [ -s output.out ]; then
   cat output.out
 else
-  echo "{ \"fractionalScore\": 0.0, \"feedback\":\"Program terminated unexpectedly. Make sure you aren't calling System.exit().\" }"
+  cp extra.out err.out /grader
+  python /grader/no_output.py
+  exit 0
 fi

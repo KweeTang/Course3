@@ -48,6 +48,7 @@ COPY mod3/roadgraph/* /grader/mod3/roadgraph/
 
 
 COPY compile_error.py /grader/compile_error.py
+COPY no_output.py /grader/no_output.py
 
 RUN chmod a+rwx -R /grader/
 

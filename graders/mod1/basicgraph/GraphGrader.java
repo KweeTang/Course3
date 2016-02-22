@@ -26,6 +26,9 @@ public class GraphGrader {
             res += i + "-";
         }
         // Last character will be a '-'
+        if (lst.size() == 0) {
+            return res;
+        }
         return res.substring(0, res.length() - 1);
     }
 

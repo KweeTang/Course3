@@ -59,42 +59,38 @@ class MapEdge
 		this.length = length;
 	}
 	
-	MapNode getPoint2Node() {
+	// return the MapNode for the end point
+	MapNode getEndNode() {
 	   return end;
 	}
 	
+	// return the location of the start point
 	GeographicPoint getStartPoint()
 	{
 		return start.getLocation();
 	}
 	
+	// return the location of the end point
 	GeographicPoint getEndPoint()
 	{
 		return end.getLocation();
 	}
 	
+	// return the length
 	double getLength()
 	{
 		return length;
 	}
 	
-	MapNode getOtherPoint(MapNode point)
-	{
-		if (point.equals(start)) {
-			return end;
-		}
-		else if (point.equals(end)) {
-			return start;
-		}
-		throw new IllegalArgumentException(point + " is not an endpoint for this edge");
-			
-	}
 	
+	
+	// return road name
 	public String getRoadName()
 	{
 		return roadName;
 	}
 	
+	// given one node in an edge, return the other node
 	MapNode getOtherNode(MapNode node)
 	{
 		if (node.equals(start)) 
@@ -105,7 +101,7 @@ class MapEdge
 			"a point that is not in the edge");
 	}
 	
-
+	// return String containing details about the edge
 	public String toString()
 	{
 		String toReturn = "[EDGE between ";
