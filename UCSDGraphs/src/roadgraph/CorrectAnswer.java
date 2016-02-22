@@ -13,6 +13,7 @@ public class CorrectAnswer {
     public CorrectAnswer(String file, boolean hasEdges) {
         try {
             Scanner s = new Scanner(new File(file));
+            s.useLocale(Locale.ENGLISH);
             if (hasEdges) {
                 vertices = s.nextInt();
                 edges = s.nextInt();

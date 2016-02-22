@@ -7,6 +7,14 @@ MOD2_ID="KzMMz"
 MOD3_PART1_ID="PzTAu"
 MOD3_PART2_ID="16MuO"
 
+do_unzip () {
+  7z e -ozipfile $1 > /dev/null
+  if [ ! $? -eq 0 ]; then
+    echo "{ \"fractionalScore\": 0.0, \"feedback\":\"Could not unzip input file. The grader does not support files such as .rar - try using .zip.\" }"
+    exit 0;
+  fi
+}
+  
 
 while [ $# -gt 1 ]
   do
@@ -35,7 +43,7 @@ if [ "$PARTID" == "$MOD1_PART1_ID" ] || [ "$PARTID" == "$MOD1_PART2_ID" ]; then
     FILENAME="basicgraph.GraphGrader"
   fi
   GRADER_DIRECTORY="mod1"
-  7z e -ozipfile /shared/submission/mod1.zip > /dev/null
+  do_unzip /shared/submission/mod1.zip
   cd zipfile
   if [ ! -f "GraphAdjList.java" ]; then
     rm -rf __MACOSX > /dev/null
@@ -47,7 +55,7 @@ if [ "$PARTID" == "$MOD1_PART1_ID" ] || [ "$PARTID" == "$MOD1_PART2_ID" ]; then
 elif [ "$PARTID" == "$MOD2_ID" ]; then
   FILENAME="roadgraph.SearchGrader"
   GRADER_DIRECTORY="mod2"
-  7z e -ozipfile /shared/submission/mod2.zip > /dev/null
+  do_unzip /shared/submission/mod2.zip
   cd zipfile
   if [ ! -f "MapGraph.java" ]; then
     rm -rf __MACOSX > /dev/null
@@ -63,7 +71,7 @@ elif [ "$PARTID" == "$MOD3_PART1_ID" ] || [ "$PARTID" == "$MOD3_PART2_ID" ]; the
     FILENAME="roadgraph.AStarGrader"
   fi
   GRADER_DIRECTORY="mod3"
-  7z e -ozipfile /shared/submission/mod3.zip > /dev/null
+  do_unzip /shared/submission/mod3.zip
   cd zipfile
   if [ ! -f "MapGraph.java" ]; then
     rm -rf __MACOSX > /dev/null

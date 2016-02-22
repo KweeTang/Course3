@@ -71,12 +71,16 @@ public class AStarGrader implements Runnable {
     public void judge(int i, MapGraph result, CorrectAnswer corr, GeographicPoint start, GeographicPoint end) {
         feedback += appendFeedback(i, "Running A* from (" + start.getX() + ", " + start.getY() + ") to (" + end.getX() + ", " + end.getY() + ")");
         List<GeographicPoint> path = result.aStarSearch(start, end);
-        if (path == null) {
+        if (path == null || path.size() == 0) {
             if (corr.path == null) {
                 feedback += "PASSED.";
                 correct++;
             } else {
-                feedback += "FAILED. Your implementation returned null; expected \\n" + printPath(corr.path) + ".";
+                String listType = "an empty list";
+                if (path == null)
+                    listType = "null";
+
+                feedback += "FAILED. Your implementation returned " + listType + "; expected \\n" + printPath(corr.path) + ".";
             }
         } else if (path.size() != corr.path.size() || !corr.path.containsAll(path)) {
             feedback += "FAILED. Expected: \\n" + printPath(corr.path) + "Got: \\n" + printPath(path);
