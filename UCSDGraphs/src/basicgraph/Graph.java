@@ -227,6 +227,7 @@ public abstract class Graph {
 	
 
 	
+	/** Main method provided with some basic tests.  */
 	public static void main (String[] args) {
 		GraphLoader.createIntersectionsFile("data/maps/ucsd.map", "data/intersections/ucsd.intersections");
 		

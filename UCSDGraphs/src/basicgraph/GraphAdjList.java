@@ -33,7 +33,6 @@ public class GraphAdjList extends Graph {
 	 */
 	public void implementAddVertex() {
 		int v = getNumVertices();
-		// System.out.println("Adding vertex "+v);
 		ArrayList<Integer> neighbors = new ArrayList<Integer>();
 		adjListsMap.put(v,  neighbors);
 	}

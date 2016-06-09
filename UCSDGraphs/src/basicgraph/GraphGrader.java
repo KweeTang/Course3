@@ -18,7 +18,11 @@ public class GraphGrader {
 
     private static final int TESTS = 16;
 
-    /** Turn a list into a readable and printable string */
+    /**
+     * Turn a list into a readable and printable string
+     * @param lst  The list to process
+     * @return  The list items formatted as a printable string
+     */
     public static String printList(List<Integer> lst) {
         String res = "";
         for (int i : lst) {
@@ -28,16 +32,30 @@ public class GraphGrader {
         return res.substring(0, res.length() - 1);
     }
 
-    /** Format readable feedback */
+    /**
+     * Format readable feedback
+     * @param score  The score received
+     * @param feedback  The feedback message
+     * @return  A string where the feedback are score a formatted nicely
+     */
     public static String printOutput(double score, String feedback) {
         return "Score: " + score + "\nFeedback: " + feedback;
     }
 
-    /** Format test number and description */
+    /**
+     * Format test number and description
+     * @param num  The test number
+     * @param test The test description
+     * @return A String with the test number and description neatly formatted.
+     */
     public static String appendFeedback(int num, String test) {
         return "\n** Test #" + num + ": " + test + "...";
     }
 
+    /** Run the grader
+     * 
+     * @param args Doesn't use command line parameters
+     */
     public static void main(String[] args) {
         GraphGrader grader = new GraphGrader();
         grader.run();
