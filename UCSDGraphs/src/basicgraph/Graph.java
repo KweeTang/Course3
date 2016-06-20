@@ -76,8 +76,8 @@ public abstract class Graph {
 	
 	/**
 	 * Add new edge to the graph between given vertices,
-	 * @param u Index of the start point of the edge to be added. 
-	 * @param v Index of the end point of the edge to be added. 
+	 * @param v Index of the start point of the edge to be added. 
+	 * @param w Index of the end point of the edge to be added. 
 	 */
 	public void addEdge(int v , int w) {
 		numEdges ++;

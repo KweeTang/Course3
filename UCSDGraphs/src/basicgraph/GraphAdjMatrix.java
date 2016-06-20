@@ -42,9 +42,6 @@ public class GraphAdjMatrix extends Graph {
 			}
 			adjMatrix = newAdjMatrix;
 		}
-		for (int i=0; i < adjMatrix[v].length; i++) {
-			adjMatrix[v][i] = 0;
-		}
 	}
 	
 	/** 
