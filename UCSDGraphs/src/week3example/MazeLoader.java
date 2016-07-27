@@ -1,7 +1,7 @@
 /**
  * 
  */
-package week2example;
+package week3example;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

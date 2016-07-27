@@ -104,7 +104,7 @@ public class GraphAdjMatrix extends Graph {
 	 * @return List<Integer> a list of indices of vertices.  
 	 */	
 	public List<Integer> getDistance2(int v) {
-		// XXX Implement this method in week 1
+		// XXX Implement this method in week 2
 		return null;
 	}
 	
@@ -113,17 +113,16 @@ public class GraphAdjMatrix extends Graph {
 	 * @return the String
 	 */
 	public String adjacencyString() {
-		int dim = adjMatrix.length;
+		int dim = getNumVertices();
 		String s = "Adjacency matrix";
 		s += " (size " + dim + "x" + dim + " = " + dim* dim + " integers):";
 		for (int i = 0; i < dim; i ++) {
 			s += "\n\t"+i+": ";
-			for (int j = 0; j < adjMatrix[i].length; j++) {
+			for (int j = 0; j < dim; j++) {
 			s += adjMatrix[i][j] + ", ";
 			}
 		}
 		return s;
 	}
-
 
 }

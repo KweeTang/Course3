@@ -16,7 +16,7 @@ import geography.*;
 
 /**
  * @author UCSD MOOC Development Team
- * Grader for Module 3, Part 2.
+ * Grader for Module 4, Part 2.
  */
 public class AStarGrader implements Runnable {
     public String feedback;

@@ -1,7 +1,7 @@
 /**
  * A class that represents a maze to navigate through.
  */
-package week2example;
+package week3example;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,9 @@ import java.util.Queue;
 import java.util.Stack;
 
 /**
- * @author Christine
+ * A class that represents a 2D maze, represented using a graph.  
+ * 
+ * @author UCSD Intermediate Programming MOOC Team
  *
  */
 public class Maze {
@@ -23,6 +25,9 @@ public class Maze {
 
 	private final int DEFAULT_SIZE = 10;
 
+	/** 
+	 * Create a new empty maze with default size 10x10
+	 */
 	public Maze() {
 
 		cells = new MazeNode[DEFAULT_SIZE][DEFAULT_SIZE];
@@ -30,13 +35,21 @@ public class Maze {
 		this.height = DEFAULT_SIZE;
 	}
 
-	/** Create a new empty Maze */
+	/** 
+	 * Create a new empty Maze with specified height and width
+	 * 
+	 * */
 	public Maze(int width, int height) {
 		cells = new MazeNode[height][width];
 		this.width = width;
 		this.height = height;
 	}
 
+	/**
+	 * Reset the maze to have the given height and width
+	 * @param width The width of the maze
+	 * @param height The height of the maze
+	 */
 	public void initialize(int width, int height) {
 		cells = new MazeNode[height][width];
 		this.width = width;
@@ -44,6 +57,12 @@ public class Maze {
 
 	}
 
+	/**
+	 * Add a graph node (i.e. not a wall) at the given location.
+	 * Any grid entry that doesn't contain a node is interpreted as a wall.
+	 * @param row  The row where the node exists
+	 * @param col  The column where the node exists
+	 */
 	public void addNode(int row, int col) {
 		cells[row][col] = new MazeNode(row, col);
 	}
@@ -76,6 +95,9 @@ public class Maze {
 		}
 	}
 
+	/**
+	 * Print the maze grid to the screen.
+	 */
 	public void printMaze() {
 		for (int r = 0; r < height; r++) {
 			for (int c = 0; c < width; c++) {
@@ -90,6 +112,15 @@ public class Maze {
 
 	}
 
+	/**
+	 * Change the display of the maze so that it will print the 
+	 * path found from start to goal.
+	 * 
+	 * NOTE: This method could use redesigning so that it did not expose
+	 * the MazeNode class to the outside world.
+	 * 
+	 * @param path A path of MazeNodes from start to goal.
+	 */
 	public void setPath(List<MazeNode> path) {
 		int index = 0;
 		for (MazeNode n : path) {
@@ -105,6 +136,10 @@ public class Maze {
 
 	}
 
+	/**
+	 * Clear (reset) the maze so that it will not disply a path
+	 * from start to goal.
+	 */
 	public void clearPath() {
 		for (int r = 0; r < cells.length; r++) {
 			for (int c = 0; c < cells[r].length; c++) {
@@ -117,6 +152,9 @@ public class Maze {
 	}
 
 	/** depth first search from (startRow,startCol) to (endRow,endCol)
+	 * 
+	 * NOTE: This method is refactored during the videos in week 3.  
+	 * The refactored code is shown commented out below.
 	 * 
 	 * @param startRow  The row of the starting position
 	 * @param startCol  The column of the starting position
@@ -137,33 +175,7 @@ public class Maze {
 		}
 
 		HashMap<MazeNode, MazeNode> parentMap = new HashMap<MazeNode, MazeNode>();
-		boolean found = dfsSearch(start, goal, parentMap);
 		
-		if (!found) {
-			System.out.println("No path exists");
-			return new LinkedList<MazeNode>();
-		}
-
-		// reconstruct the path
-		return constructPath(start, goal, parentMap);
-	}
-	
-	private List<MazeNode> constructPath(MazeNode start, MazeNode goal,
-			HashMap<MazeNode, MazeNode> parentMap)
-	{
-		LinkedList<MazeNode> path = new LinkedList<MazeNode>();
-		MazeNode curr = goal;
-		while (curr != start) {
-			path.addFirst(curr);
-			curr = parentMap.get(curr);
-		}
-		path.addFirst(start);
-		return path;
-	}
-
-	private boolean dfsSearch(MazeNode start, MazeNode goal, 
-			HashMap<MazeNode, MazeNode> parentMap)
-	{
 		HashSet<MazeNode> visited = new HashSet<MazeNode>();
 		Stack<MazeNode> toExplore = new Stack<MazeNode>();
 		toExplore.push(start);
@@ -187,18 +199,35 @@ public class Maze {
 				}
 			}
 		}
-		return found;
+		
+		if (!found) {
+			System.out.println("No path exists");
+			return new LinkedList<MazeNode>();
+		}
+
+		// reconstruct the path
+		LinkedList<MazeNode> path = new LinkedList<MazeNode>();
+		MazeNode curr = goal;
+		while (curr != start) {
+			path.addFirst(curr);
+			curr = parentMap.get(curr);
+		}
+		path.addFirst(start);
+		return path;
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
+	/** breadth first search from (startRow,startCol) to (endRow,endCol)
+	 * 
+	 * Note: This method could also stand to be refactored.
+	 * 
+	 * @param startRow  The row of the starting position
+	 * @param startCol  The column of the starting position
+	 * @param endRow The row of the end position
+	 * @param endCol The column of the end position
+	 * @return the path from starting position to ending position, or
+	 * an empty list if there is no path.
+	 */
 	public List<MazeNode> bfs(int startRow, int startCol, int endRow, int endCol) {
 		MazeNode start = cells[startRow][startCol];
 		MazeNode goal = cells[endRow][endCol];

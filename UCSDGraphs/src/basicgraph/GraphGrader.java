@@ -9,7 +9,7 @@ import util.GraphLoader;
 
 /**
  * @author UCSD MOOC Development Team
- * Grader for Module 1, Part 2
+ * Grader for Module 2, Part 2
  */
 public class GraphGrader {
     private String feedback;

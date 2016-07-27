@@ -11,7 +11,7 @@ import util.GraphLoader;
 
 /**
  * @author UCSD MOOC Development Team
- * Grader for Module 1, Part 1.
+ * Grader for Module 2, Part 1.
  */
 public class DegreeGrader {
     private String feedback;  // Feedback from the grader

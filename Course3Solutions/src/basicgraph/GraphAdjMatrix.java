@@ -144,12 +144,12 @@ public class GraphAdjMatrix extends Graph {
 	 * @return the String
 	 */
 	public String adjacencyString() {
-		int dim = adjMatrix.length;
+		int dim = getNumVertices();
 		String s = "Adjacency matrix";
 		s += " (size " + dim + "x" + dim + " = " + dim* dim + " integers):";
 		for (int i = 0; i < dim; i ++) {
 			s += "\n\t"+i+": ";
-			for (int j = 0; j < adjMatrix[i].length; j++) {
+			for (int j = 0; j < dim; j++) {
 			s += adjMatrix[i][j] + ", ";
 			}
 		}

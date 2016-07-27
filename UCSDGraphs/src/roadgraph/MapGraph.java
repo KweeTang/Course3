@@ -23,7 +23,7 @@ import util.GraphLoader;
  *
  */
 public class MapGraph {
-	//TODO: Add your member variables here in WEEK 2
+	//TODO: Add your member variables here in WEEK 3
 	
 	
 	/** 
@@ -31,7 +31,7 @@ public class MapGraph {
 	 */
 	public MapGraph()
 	{
-		// TODO: Implement in this constructor in WEEK 2
+		// TODO: Implement in this constructor in WEEK 3
 	}
 	
 	/**
@@ -40,7 +40,7 @@ public class MapGraph {
 	 */
 	public int getNumVertices()
 	{
-		//TODO: Implement this method in WEEK 2
+		//TODO: Implement this method in WEEK 3
 		return 0;
 	}
 	
@@ -50,7 +50,7 @@ public class MapGraph {
 	 */
 	public Set<GeographicPoint> getVertices()
 	{
-		//TODO: Implement this method in WEEK 2
+		//TODO: Implement this method in WEEK 3
 		return null;
 	}
 	
@@ -60,7 +60,7 @@ public class MapGraph {
 	 */
 	public int getNumEdges()
 	{
-		//TODO: Implement this method in WEEK 2
+		//TODO: Implement this method in WEEK 3
 		return 0;
 	}
 
@@ -75,7 +75,7 @@ public class MapGraph {
 	 */
 	public boolean addVertex(GeographicPoint location)
 	{
-		// TODO: Implement this method in WEEK 2
+		// TODO: Implement this method in WEEK 3
 		return false;
 	}
 	
@@ -94,7 +94,7 @@ public class MapGraph {
 	public void addEdge(GeographicPoint from, GeographicPoint to, String roadName,
 			String roadType, double length) throws IllegalArgumentException {
 
-		//TODO: Implement this method in WEEK 2
+		//TODO: Implement this method in WEEK 3
 		
 	}
 	
@@ -123,7 +123,7 @@ public class MapGraph {
 	public List<GeographicPoint> bfs(GeographicPoint start, 
 			 					     GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
-		// TODO: Implement this method in WEEK 2
+		// TODO: Implement this method in WEEK 3
 		
 		// Hook for visualization.  See writeup.
 		//nodeSearched.accept(next.getLocation());
@@ -157,7 +157,7 @@ public class MapGraph {
 	public List<GeographicPoint> dijkstra(GeographicPoint start, 
 										  GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
-		// TODO: Implement this method in WEEK 3
+		// TODO: Implement this method in WEEK 4
 
 		// Hook for visualization.  See writeup.
 		//nodeSearched.accept(next.getLocation());
@@ -189,7 +189,7 @@ public class MapGraph {
 	public List<GeographicPoint> aStarSearch(GeographicPoint start, 
 											 GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
 	{
-		// TODO: Implement this method in WEEK 3
+		// TODO: Implement this method in WEEK 4
 		
 		// Hook for visualization.  See writeup.
 		//nodeSearched.accept(next.getLocation());

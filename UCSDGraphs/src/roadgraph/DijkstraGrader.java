@@ -15,7 +15,7 @@ import geography.*;
 
 /**
  * @author UCSD MOOC Development Team
- * Grader for Module 3, Part 1.
+ * Grader for Module 4, Part 1.
  */
 public class DijkstraGrader implements Runnable {
     public String feedback;

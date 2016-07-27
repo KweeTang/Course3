@@ -1,7 +1,7 @@
 /**
  * 
  */
-package week2example;
+package week3example;
 
 import java.util.LinkedList;
 import java.util.List;
