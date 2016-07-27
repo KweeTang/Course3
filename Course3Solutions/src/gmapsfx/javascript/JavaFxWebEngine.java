@@ -26,6 +26,16 @@ public class JavaFxWebEngine implements IWebEngine {
      */
     public JavaFxWebEngine( WebEngine engine ) {
         this.webEngine = engine;
+        webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) ->
+        {
+            JSObject window = (JSObject) webEngine.executeScript("window");
+            ConsoleBridge bridge = new ConsoleBridge();
+            window.setMember("java", bridge);
+            webEngine.executeScript("console.log = function(message)\n" +
+                "{\n" +
+                "    java.log(\"***JS Console: \" + message);\n" +
+                "};");
+        });
     }
 
     
