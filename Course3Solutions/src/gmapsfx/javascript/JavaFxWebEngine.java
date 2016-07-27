@@ -8,6 +8,7 @@ package gmapsfx.javascript;
 
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
+import netscape.javascript.JSObject;
 
 /**
  * This class provides an implementation of the IWebEngine interface utilizing 
